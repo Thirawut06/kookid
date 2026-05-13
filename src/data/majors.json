@@ -1,0 +1,122 @@
+[
+  {
+    "id": "MAJ_NURSING_CHULA",
+    "nameTh": "พยาบาลศาสตร์",
+    "facultyNameTh": "คณะพยาบาลศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "CHULA",
+    "studyTrackRequired": ["sci_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota", "admission"],
+      "notes": "รับนักเรียนสายวิทย์-คณิตเป็นหลัก รายละเอียดเกณฑ์คะแนนดูจาก MyTCAS ประจำปี"
+    }
+  },
+  {
+    "id": "MAJ_NURSING_MAHIDOL",
+    "nameTh": "พยาบาลศาสตร์",
+    "facultyNameTh": "คณะพยาบาลศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "MAHIDOL",
+    "studyTrackRequired": ["sci_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota", "admission"],
+      "notes": "เป็นสาขาที่มีการแข่งขันสูงในกลุ่มสุขภาพ"
+    }
+  },
+  {
+    "id": "MAJ_MEDTECH_MAHIDOL",
+    "nameTh": "เทคนิคการแพทย์",
+    "facultyNameTh": "คณะเทคนิคการแพทย์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "MAHIDOL",
+    "studyTrackRequired": ["sci_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota", "admission"],
+      "notes": "ต้องใช้พื้นฐานชีววิทยาและเคมีค่อนข้างมาก"
+    }
+  },
+  {
+    "id": "MAJ_PUBLIC_HEALTH_KKU",
+    "nameTh": "สาธารณสุขศาสตร์",
+    "facultyNameTh": "คณะสาธารณสุขศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "KKU",
+    "studyTrackRequired": ["sci_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota", "admission"],
+      "notes": "เน้นงานด้านส่งเสริมสุขภาพและงานเชิงระบบสาธารณสุข"
+    }
+  },
+  {
+    "id": "MAJ_SPORT_SCIENCE_CMU",
+    "nameTh": "วิทยาศาสตร์การกีฬา",
+    "facultyNameTh": "คณะวิทยาศาสตร์การกีฬา",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "CMU",
+    "studyTrackRequired": ["sci_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota"],
+      "notes": "เหมาะกับผู้ที่สนใจกีฬา ฟิตเนส และการออกกำลังกายเพื่อสุขภาพ"
+    }
+  },
+  {
+    "id": "MAJ_BBA_CHULA",
+    "nameTh": "บริหารธุรกิจบัณฑิต (หลักสูตรนานาชาติ)",
+    "facultyNameTh": "คณะพาณิชยศาสตร์และการบัญชี",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "CHULA",
+    "studyTrackRequired": ["sci_math", "arts_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "admission"],
+      "notes": "สาขา BBA จุฬาฯ เป็นที่นิยมสูง ต้องใช้คะแนนภาษาอังกฤษและคะแนนสอบวัดความถนัดธุรกิจ"
+    }
+  },
+  {
+    "id": "MAJ_ACCOUNTING_CHULA",
+    "nameTh": "การบัญชี",
+    "facultyNameTh": "คณะพาณิชยศาสตร์และการบัญชี",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "CHULA",
+    "studyTrackRequired": ["sci_math", "arts_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota", "admission"],
+      "notes": "การบัญชีเป็นหนึ่งในสาขาที่มีผู้สมัครสูงสุด และต้องการพื้นฐานคณิตศาสตร์ดี"
+    }
+  },
+  {
+    "id": "MAJ_BUS_ADMIN_KU",
+    "nameTh": "บริหารธุรกิจ",
+    "facultyNameTh": "คณะบริหารธุรกิจ",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "KU",
+    "studyTrackRequired": ["sci_math", "arts"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota", "admission"],
+      "notes": "เหมาะกับผู้ที่สนใจการจัดการ การตลาด และการเป็นผู้ประกอบการ"
+    }
+  },
+  {
+    "id": "MAJ_ECON_TU",
+    "nameTh": "เศรษฐศาสตร์",
+    "facultyNameTh": "คณะเศรษฐศาสตร์",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "TU",
+    "studyTrackRequired": ["sci_math", "arts_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota", "admission"],
+      "notes": "ต้องการพื้นฐานคณิตศาสตร์และการคิดวิเคราะห์ด้านเศรษฐกิจ"
+    }
+  },
+  {
+    "id": "MAJ_MARKETING_SPU",
+    "nameTh": "การตลาด",
+    "facultyNameTh": "คณะบริหารธุรกิจ",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "SPU",
+    "studyTrackRequired": ["arts", "arts_math"],
+    "tcasInfo": {
+      "rounds": ["portfolio", "admission"],
+      "notes": "เหมาะกับผู้ที่สนใจการตลาดดิจิทัล แบรนด์ดิ้ง และการสื่อสารการตลาด"
+    }
+  }
+]

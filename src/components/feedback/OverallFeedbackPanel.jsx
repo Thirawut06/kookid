@@ -1,0 +1,138 @@
+import React, { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart } from "lucide-react";
+
+// 1–5 emoji scale (change here to update icons/labels)
+const FIT_SCORES = [
+  { value: 1, emoji: "😞", label: "ไม่ตรงเลย" },
+  { value: 2, emoji: "😕", label: "ไม่ค่อยตรง" },
+  { value: 3, emoji: "😐", label: "พอตรง" },
+  { value: 4, emoji: "😊", label: "ตรงดี" },
+  { value: 5, emoji: "🤩", label: "ตรงมาก" },
+];
+
+// Dropdown options for "which part felt off"
+const ISSUE_OPTIONS = [
+  { value: "career_not_fit", label: "อาชีพที่แนะนำ" },
+  { value: "major_not_fit", label: "คณะที่แนะนำ" },
+  { value: "personality_not_fit", label: "คำอธิบายตัวตน/บุคลิกภาพ" },
+  { value: "dont_know", label: "ไม่แน่ใจ" },
+];
+
+/**
+ * Overall feedback panel shown at the bottom of the Results page.
+ * @param {{ onSubmit: (overallFitScore: number, selectedIssue: string | null, comment: string | null) => void, isSubmitting: boolean, submitted: boolean }} props
+ */
+export default function OverallFeedbackPanel({ onSubmit, isSubmitting, submitted }) {
+  const [fitScore, setFitScore] = useState(null);
+  const [issue, setIssue] = useState("");
+  const [comment, setComment] = useState("");
+
+  const showIssueDropdown = fitScore !== null && fitScore <= 3;
+
+  const handleSubmit = () => {
+    if (!fitScore) return; // require a score
+    onSubmit(fitScore, issue || null, comment.trim() || null);
+  };
+
+  if (submitted) {
+    return (
+      <Card className="p-5 sm:p-6 border-2 border-primary/20 text-center">
+        <p className="text-2xl mb-2">🎉</p>
+        <p className="font-semibold text-foreground">ขอบคุณสำหรับ Feedback!</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          สิ่งที่คุณให้มาจะช่วยให้ระบบดีขึ้นสำหรับรุ่นน้องต่อไป
+        </p>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="p-5 sm:p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-card">
+      <h2 className="text-lg font-semibold text-foreground mb-1 flex items-center gap-2">
+        <Heart className="w-5 h-5 text-primary" />
+        ผลลัพธ์โดยรวม ตรงกับตัวเองแค่ไหน?
+      </h2>
+      <p className="text-xs text-muted-foreground mb-4">บอกเราเพื่อปรับปรุงระบบให้ดีขึ้น</p>
+
+      {/* 1–5 fit score */}
+      <div className="flex gap-2 sm:gap-3 justify-center mb-4">
+        {FIT_SCORES.map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => { setFitScore(opt.value); setIssue(""); }}
+            className={cn(
+              "flex flex-col items-center gap-1 px-3 py-2 rounded-xl border-2 transition-all flex-1",
+              fitScore === opt.value
+                ? "border-primary bg-primary/10"
+                : "border-border/50 hover:border-primary/30 hover:bg-primary/5"
+            )}
+          >
+            <span className="text-2xl">{opt.emoji}</span>
+            <span className={cn(
+              "text-[10px] font-medium text-center leading-tight",
+              fitScore === opt.value ? "text-primary" : "text-muted-foreground"
+            )}>{opt.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Issue dropdown — only shows if score ≤ 3 */}
+      <AnimatePresence>
+        {showIssueDropdown && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <p className="text-sm font-medium text-foreground mb-2">
+              ถ้ารู้สึกไม่ค่อยตรง คิดว่าส่วนไหนไม่ตรงที่สุด?
+            </p>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {ISSUE_OPTIONS.map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => setIssue(issue === opt.value ? "" : opt.value)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg border text-sm transition-all",
+                    issue === opt.value
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border/50 text-muted-foreground hover:border-primary/40"
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Optional comment box */}
+      {fitScore !== null && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Textarea
+            placeholder="อยากอธิบายเพิ่ม (ไม่บังคับ)"
+            value={comment}
+            onChange={e => setComment(e.target.value.slice(0, 200))}
+            className="mb-4 text-sm resize-none h-20"
+          />
+          <p className="text-[10px] text-muted-foreground text-right mb-4">{comment.length}/200</p>
+        </motion.div>
+      )}
+
+      <Button
+        onClick={handleSubmit}
+        disabled={!fitScore || isSubmitting}
+        className="w-full rounded-xl"
+      >
+        {isSubmitting ? "กำลังบันทึก..." : "บันทึก Feedback"}
+      </Button>
+    </Card>
+  );
+}

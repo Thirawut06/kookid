@@ -1,0 +1,92 @@
+[
+  {
+    "id": "CHULA",
+    "nameTh": "จุฬาลงกรณ์มหาวิทยาลัย",
+    "nameEn": "Chulalongkorn University",
+    "shortName": "จุฬาฯ",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.chula.ac.th/"
+  },
+  {
+    "id": "TU",
+    "nameTh": "มหาวิทยาลัยธรรมศาสตร์",
+    "nameEn": "Thammasat University",
+    "shortName": "มธ.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.tu.ac.th/"
+  },
+  {
+    "id": "KU",
+    "nameTh": "มหาวิทยาลัยเกษตรศาสตร์",
+    "nameEn": "Kasetsart University",
+    "shortName": "มก.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.ku.ac.th/"
+  },
+  {
+    "id": "MAHIDOL",
+    "nameTh": "มหาวิทยาลัยมหิดล",
+    "nameEn": "Mahidol University",
+    "shortName": "ม.มหิดล",
+    "type": "public",
+    "region": "central",
+    "websiteUrl": "https://www.mahidol.ac.th/"
+  },
+  {
+    "id": "CMU",
+    "nameTh": "มหาวิทยาลัยเชียงใหม่",
+    "nameEn": "Chiang Mai University",
+    "shortName": "มช.",
+    "type": "public",
+    "region": "north",
+    "websiteUrl": "https://www.cmu.ac.th/"
+  },
+  {
+    "id": "KMITL",
+    "nameTh": "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง",
+    "nameEn": "King Mongkut's Institute of Technology Ladkrabang",
+    "shortName": "สจล.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.kmitl.ac.th/"
+  },
+  {
+    "id": "KMUTNB",
+    "nameTh": "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ",
+    "nameEn": "King Mongkut's University of Technology North Bangkok",
+    "shortName": "มจพ.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.kmutnb.ac.th/"
+  },
+  {
+    "id": "KKU",
+    "nameTh": "มหาวิทยาลัยขอนแก่น",
+    "nameEn": "Khon Kaen University",
+    "shortName": "มข.",
+    "type": "public",
+    "region": "northeast",
+    "websiteUrl": "https://www.kku.ac.th/"
+  },
+  {
+    "id": "SU",
+    "nameTh": "มหาวิทยาลัยศิลปากร",
+    "nameEn": "Silpakorn University",
+    "shortName": "มศก.",
+    "type": "public",
+    "region": "central",
+    "websiteUrl": "https://www.su.ac.th/"
+  },
+  {
+    "id": "SPU",
+    "nameTh": "มหาวิทยาลัยศรีปทุม",
+    "nameEn": "Sripatum University",
+    "shortName": "มศป.",
+    "type": "private",
+    "region": "bangkok",
+    "websiteUrl": "https://www.spu.ac.th/"
+  }
+]
