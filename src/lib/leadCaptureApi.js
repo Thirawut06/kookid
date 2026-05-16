@@ -146,12 +146,13 @@ export async function upsertLeadCapture({
   return profileId;
 }
 
-export async function recordProgramInterest({ userProfileId, majorId, interestLevel = "request_info" }) {
+export async function recordProgramInterest({ userProfileId, majorId, universityId, interestLevel = "request_info" }) {
   const store = readStore();
   const record = {
     id: "interest_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now(),
     userProfileId,
     majorId,
+    universityId: universityId || null,
     interestLevel,
     createdAt: new Date().toISOString(),
   };
@@ -161,7 +162,7 @@ export async function recordProgramInterest({ userProfileId, majorId, interestLe
 
   if (supabase) {
     const { error } = await supabase.from("program_interests").insert([
-      { user_profile_id: userProfileId, major_id: majorId, interest_level: interestLevel },
+      { user_profile_id: userProfileId, major_id: majorId, university_id: universityId || null, interest_level: interestLevel },
     ]);
 
     if (error) {

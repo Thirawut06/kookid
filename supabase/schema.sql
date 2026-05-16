@@ -21,16 +21,30 @@ create table if not exists public.quiz_results (
   created_at timestamptz not null default now()
 );
 
-alter table public.quiz_results
-  add constraint quiz_results_user_profile_id_key unique (user_profile_id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'quiz_results_user_profile_id_key'
+      and conrelid = 'public.quiz_results'::regclass
+  ) then
+    alter table public.quiz_results
+      add constraint quiz_results_user_profile_id_key unique (user_profile_id);
+  end if;
+end $$;
 
 create table if not exists public.program_interests (
   id uuid primary key default gen_random_uuid(),
   user_profile_id text not null references public.user_profiles(id) on delete cascade,
   major_id text not null,
+  university_id text,
   interest_level text not null default 'request_info',
   created_at timestamptz not null default now()
 );
+
+alter table public.program_interests
+  add column if not exists university_id text;
 
 create index if not exists idx_quiz_results_user_profile_id on public.quiz_results(user_profile_id);
 create index if not exists idx_program_interests_user_profile_id on public.program_interests(user_profile_id);
@@ -92,10 +106,43 @@ create table if not exists public.career_feedback (
   created_at timestamptz not null default now()
 );
 
+alter table public.career_feedback enable row level security;
+
 create index if not exists idx_career_feedback_user_profile_id on public.career_feedback(user_profile_id);
+
+drop policy if exists "public insert career_feedback" on public.career_feedback;
 
 create policy "public insert career_feedback"
   on public.career_feedback
+  for insert
+  with check (true);
+
+create table if not exists public.event_logs (
+  id uuid primary key default gen_random_uuid(),
+  event_name text not null,
+  user_profile_id text references public.user_profiles(id) on delete set null,
+  session_id text,
+  page text,
+  payload jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table public.event_logs enable row level security;
+
+create index if not exists idx_event_logs_event_name on public.event_logs(event_name);
+create index if not exists idx_event_logs_created_at on public.event_logs(created_at);
+create index if not exists idx_event_logs_user_profile_id on public.event_logs(user_profile_id);
+
+drop policy if exists "public read event_logs" on public.event_logs;
+drop policy if exists "public insert event_logs" on public.event_logs;
+
+create policy "public read event_logs"
+  on public.event_logs
+  for select
+  using (true);
+
+create policy "public insert event_logs"
+  on public.event_logs
   for insert
   with check (true);
 

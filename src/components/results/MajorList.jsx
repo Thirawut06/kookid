@@ -2,11 +2,18 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, Building2 } from "lucide-react";
+import { GraduationCap, Building2, Gift } from "lucide-react";
 import { motion } from "framer-motion";
 import MajorFeedbackButton from "@/components/feedback/MajorFeedbackButton";
 
-export default function MajorList({ majors, topCareers, majorFeedback, onMajorFeedback, onProgramInterest }) {
+export default function MajorList({
+  majors,
+  topCareers,
+  majorFeedback,
+  onMajorFeedback,
+  onProgramInterest,
+  requestedMajorIds,
+}) {
   // Group majors by clusterId (matches field in majors.json)
   const clusterMap = {};
   topCareers.slice(0, 3).forEach(c => {
@@ -30,7 +37,9 @@ export default function MajorList({ majors, topCareers, majorFeedback, onMajorFe
             {group.nameTh}
           </h3>
           <div className="grid gap-2">
-          {group.majors.map((major, mi) => (
+            {group.majors.map((major, mi) => {
+              const alreadyRequested = Boolean(requestedMajorIds?.[major.id]);
+              return (
             <Card key={major.id} className="p-3 sm:p-4 border border-border/50 hover:shadow-sm transition-shadow">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-start gap-2.5">
@@ -57,22 +66,26 @@ export default function MajorList({ majors, topCareers, majorFeedback, onMajorFe
                   onChange={onMajorFeedback}
                 />
               )}
-              <div className="mt-3 pt-3 border-t border-border/50 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="text-[11px] text-muted-foreground leading-relaxed">
-                  พื้นที่สำหรับข้อมูลโควต้าและทุนจากมหาวิทยาลัยนี้
-                </div>
+              <div className="mt-3 pt-3 border-t border-border/50 space-y-2">
                 <Button
                   type="button"
-                  variant="outline"
                   size="sm"
-                  className="w-full sm:w-auto rounded-full border-primary/20 text-primary hover:bg-primary/5"
+                  disabled={alreadyRequested}
+                  className="w-full rounded-xl h-auto py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-sm disabled:bg-amber-100 disabled:text-amber-700 disabled:opacity-100"
                   onClick={() => onProgramInterest?.(major)}
                 >
-                  ขอข้อมูลโควต้า/ทุนจากมหาวิทยาลัยนี้
+                  <Gift className="w-4 h-4 mr-1.5 shrink-0" />
+                  {alreadyRequested
+                    ? "ส่งคำขอแล้ว"
+                    : "สนใจรับโควต้า / ทุนการศึกษาจากมหาวิทยาลัยนี้"}
                 </Button>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  กดปุ่มนี้ถ้าคุณอยากให้มหาวิทยาลัยส่งข้อมูลโควต้า/ทุนที่ตรงกับผลของคุณมาให้ (ไม่มีค่าใช้จ่าย)
+                </p>
               </div>
             </Card>
-          ))}
+              );
+            })}
             {group.majors.length === 0 && (
               <p className="text-xs text-muted-foreground italic">ไม่มีสาขาที่จับคู่ในกลุ่มนี้</p>
             )}

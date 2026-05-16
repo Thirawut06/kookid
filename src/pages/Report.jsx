@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { getCareerClusters } from "@/lib/dataLoader";
 import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
 import { hasLeadCapture, getStoredQuizResult, upsertLeadCapture } from "@/lib/leadCaptureApi";
+import { trackEvent } from "@/lib/analyticsApi";
 
 const RIASEC_LABELS = { R: "Realistic", I: "Investigative", A: "Artistic", S: "Social", E: "Enterprising", C: "Conventional" };
 const RIASEC_COLORS = { R: "#6366f1", I: "#0ea5e9", A: "#f59e0b", S: "#22c55e", E: "#ef4444", C: "#8b5cf6" };
@@ -43,6 +44,12 @@ export default function Report() {
     setResult(parsedResult);
     setLeadUnlocked(Boolean(profileId && hasLeadCapture(profileId)));
     setIsReady(true);
+
+    trackEvent("report_viewed", {
+      page: "report",
+      userProfileId: profileId || null,
+      hasLead: Boolean(profileId && hasLeadCapture(profileId)),
+    });
   }, [navigate, profileId]);
 
   // Auto-trigger print dialog once content is loaded
@@ -57,6 +64,11 @@ export default function Report() {
       userProfileId: profileId,
       result,
       ...leadData,
+    });
+
+    trackEvent("lead_submitted", {
+      page: "report",
+      userProfileId: nextProfileId,
     });
 
     const nextResult = { ...result, userProfileId: nextProfileId };

@@ -107,7 +107,7 @@ export default function LeadCaptureForm({
             id="contact"
             value={form.contact}
             onChange={(e) => updateField("contact", e.target.value)}
-            placeholder="เช่น 08x-xxx-xxxx หรือ Line ID"
+            placeholder="เบอร์โทรศัพท์ หรือ LINE ID เช่น 08x-xxx-xxxx / @lineid"
             autoComplete="tel"
           />
           {errors.contact && <p className="text-xs text-destructive">{errors.contact}</p>}
@@ -151,6 +151,9 @@ export default function LeadCaptureForm({
             </Label>
             <div className="text-xs text-muted-foreground">
               อ่านรายละเอียดเพิ่มเติมได้ที่ <Link to="/privacy" className="underline underline-offset-4 text-primary">นโยบายความเป็นส่วนตัว / PDPA</Link>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              เราจะไม่ส่งข้อมูลของคุณให้มหาวิทยาลัยแบบสุ่ม ข้อมูลจะถูกใช้กับมหาวิทยาลัยที่เกี่ยวข้องกับผลการประเมินของคุณเท่านั้น
             </div>
           </div>
         </div>

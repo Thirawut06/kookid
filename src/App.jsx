@@ -8,6 +8,7 @@ import Quiz from './pages/Quiz';
 import Results from './pages/Results';
 import Report from './pages/Report';
 import Privacy from './pages/Privacy';
+import AdminDashboard from './pages/AdminDashboard';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/results" element={<Results />} />
           <Route path="/report/:profileId" element={<Report />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>

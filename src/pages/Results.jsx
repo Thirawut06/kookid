@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeft, RotateCcw, Sparkles, BarChart3, Briefcase, GraduationCap, Download, ListChecks } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analyticsApi";
 
 import RIASECChart from "@/components/results/RIASECChart";
 import AcademicScores from "@/components/results/AcademicScores";
@@ -40,6 +41,7 @@ export default function Results() {
   const [sessionProfileId] = useState(() => getOrCreateSessionProfileId());
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const [requestedMajorIds, setRequestedMajorIds] = useState(() => readRequestedMajors());
 
   // Feedback state — keyed by clusterId / majorId → interestLevel
   const [careerFeedback, setCareerFeedback] = useState({});
@@ -58,6 +60,13 @@ export default function Results() {
     upsertQuizResult(leadProfileId, result);
   }, [result, leadProfileId]);
 
+  useEffect(() => {
+    trackEvent("results_viewed", {
+      page: "results",
+      hasLead: Boolean(leadProfileId && hasLeadCapture(leadProfileId)),
+    });
+  }, [leadProfileId]);
+
   if (!result) return null;
 
   const { profile, clusters, majors, summary } = result;
@@ -67,6 +76,12 @@ export default function Results() {
   const hasCapturedLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
 
   const openReport = () => {
+    trackEvent("report_open_clicked", {
+      page: "results",
+      hasLead: hasCapturedLead,
+      userProfileId: userProfileId || null,
+    });
+
     if (!userProfileId || !hasCapturedLead) {
       setPendingAction({ type: "report" });
       setLeadDialogOpen(true);
@@ -76,8 +91,16 @@ export default function Results() {
   };
 
   const handleProgramInterest = (major) => {
+    trackEvent("program_interest_clicked", {
+      page: "results",
+      userProfileId: userProfileId || null,
+      majorId: major.id,
+    });
+
+    if (requestedMajorIds?.[major.id]) return;
+
     if (!userProfileId || !hasCapturedLead) {
-      setPendingAction({ type: "program_interest", majorId: major.id });
+      setPendingAction({ type: "program_interest", majorId: major.id, universityId: major.universityId });
       setLeadDialogOpen(true);
       return;
     }
@@ -85,9 +108,20 @@ export default function Results() {
     recordProgramInterest({
       userProfileId,
       majorId: major.id,
+      universityId: major.universityId,
       interestLevel: "request_info",
     })
       .then(() => {
+        setRequestedMajorIds(prev => {
+          const next = { ...prev, [major.id]: true };
+          sessionStorage.setItem("kookid_requested_majors", JSON.stringify(next));
+          return next;
+        });
+        trackEvent("program_interest_submitted", {
+          page: "results",
+          userProfileId,
+          majorId: major.id,
+        });
         toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
       })
       .catch((error) => {
@@ -103,6 +137,11 @@ export default function Results() {
       ...leadData,
     });
 
+    trackEvent("lead_submitted", {
+      page: "results",
+      userProfileId: nextProfileId,
+    });
+
     setLeadProfileId(nextProfileId);
     sessionStorage.setItem("tcas_quiz_result", JSON.stringify({ ...result, userProfileId: nextProfileId }));
 
@@ -110,7 +149,18 @@ export default function Results() {
       await recordProgramInterest({
         userProfileId: nextProfileId,
         majorId: pendingAction.majorId,
+        universityId: pendingAction.universityId,
         interestLevel: "request_info",
+      });
+      setRequestedMajorIds(prev => {
+        const next = { ...prev, [pendingAction.majorId]: true };
+        sessionStorage.setItem("kookid_requested_majors", JSON.stringify(next));
+        return next;
+      });
+      trackEvent("program_interest_submitted", {
+        page: "results",
+        userProfileId: nextProfileId,
+        majorId: pendingAction.majorId,
       });
       toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
     } else if (pendingAction?.type === "report") {
@@ -260,6 +310,9 @@ export default function Results() {
             <GraduationCap className="w-5 h-5 text-primary" />
             สาขาวิชาที่แนะนำ
           </h2>
+          <p className="text-xs text-muted-foreground mb-3">
+            เราจะไม่ส่งข้อมูลของคุณให้มหาวิทยาลัยแบบสุ่ม ข้อมูลจะถูกใช้กับมหาวิทยาลัยที่เกี่ยวข้องกับผลการประเมินของคุณเท่านั้น
+          </p>
           <Card className="p-5 sm:p-6 border border-border/50">
             <MajorList
               majors={majors}
@@ -267,6 +320,7 @@ export default function Results() {
               majorFeedback={majorFeedback}
               onMajorFeedback={handleMajorFeedback}
               onProgramInterest={handleProgramInterest}
+              requestedMajorIds={requestedMajorIds}
             />
           </Card>
         </motion.div>
@@ -294,6 +348,30 @@ export default function Results() {
           />
         </motion.div>
 
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="mb-10">
+          <Card className="p-5 sm:p-6 border border-border/50">
+            <h3 className="text-base font-semibold text-foreground mb-3">คำถามที่พบบ่อย</h3>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium text-foreground">ข้อมูลของฉันถูกใช้ทำอะไร?</p>
+                <p className="text-muted-foreground mt-1">ใช้เพื่อแนะนำโควต้า ทุนการศึกษา และข้อมูลที่สอดคล้องกับผลการประเมินของคุณเท่านั้น</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">ต้องเสียเงินไหม?</p>
+                <p className="text-muted-foreground mt-1">ไม่มีค่าใช้จ่าย คุณสามารถขอข้อมูลโควต้า/ทุนได้ฟรี</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">มหาวิทยาลัยจะติดต่อมาเมื่อไหร่?</p>
+                <p className="text-muted-foreground mt-1">โดยทั่วไปจะมีการติดต่อเมื่อมีโควต้าหรือทุนที่ตรงกับผลของคุณผ่านช่องทางที่คุณให้ไว้</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">ต้องกรอกข้อมูลซ้ำทุกครั้งไหม?</p>
+                <p className="text-muted-foreground mt-1">หากใช้อุปกรณ์เดิม ระบบจะจำข้อมูลที่ยืนยันแล้วและไม่ต้องกรอกใหม่บ่อยครั้ง</p>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
         {/* Navigation Actions */}
         <div className="flex flex-wrap items-center justify-center gap-3 pb-10">
           <Link to="/">
@@ -319,6 +397,9 @@ export default function Results() {
           <p className="text-sm text-muted-foreground">
             กรอกข้อมูลสั้น ๆ เพื่อให้คู่คิด KooKid ส่งต่อข้อมูลโควต้า ทุนการศึกษา หรือรายงานที่เหมาะกับคุณได้ครบถ้วน
           </p>
+          <p className="text-xs text-muted-foreground">
+            เราจะไม่ส่งข้อมูลของคุณให้มหาวิทยาลัยแบบสุ่ม ข้อมูลจะถูกใช้กับมหาวิทยาลัยที่เกี่ยวข้องกับผลการประเมินของคุณเท่านั้น
+          </p>
           <LeadCaptureForm
             onSubmit={handleLeadSubmit}
             submitLabel="ยืนยัน"
@@ -327,4 +408,13 @@ export default function Results() {
       </Dialog>
     </div>
   );
+}
+
+function readRequestedMajors() {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(sessionStorage.getItem("kookid_requested_majors") || "{}");
+  } catch {
+    return {};
+  }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, GraduationCap, Target, Sparkles, Clock, CheckCircle } from "lucide-react";
@@ -17,6 +17,7 @@ const stats = [
 ];
 
 export default function Landing() {
+  const navigate = useNavigate();
   const [dbStatus, setDbStatus] = useState("กำลังเชื่อมต่อฐานข้อมูล...");
 
   useEffect(() => {
@@ -40,6 +41,18 @@ export default function Landing() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "a") {
+        event.preventDefault();
+        navigate("/admin");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -113,6 +126,7 @@ export default function Landing() {
       <footer className="border-t border-border/50 py-8 text-center text-sm text-muted-foreground">
         <div>คู่คิด KooKid · เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6</div>
         <div className="mt-1 text-xs text-muted-foreground/80">{dbStatus}</div>
+        <div className="mt-2 text-[10px] text-muted-foreground/50">Admin shortcut available for internal team</div>
       </footer>
     </div>
   );

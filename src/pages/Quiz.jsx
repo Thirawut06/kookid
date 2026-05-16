@@ -8,6 +8,7 @@ import { SECTIONS, getQuestionsBySection, allQuestions } from "@/lib/quizData";
 import { computeProfile } from "@/lib/scoringEngine";
 import { computeMatches } from "@/lib/matchingEngine";
 import { generatePersonalitySummary, generateWhyMatch } from "@/lib/summaryGenerator";
+import { trackEvent } from "@/lib/analyticsApi";
 
 import SectionStepper from "@/components/quiz/SectionStepper";
 import ProgressBar from "@/components/quiz/ProgressBar";
@@ -17,12 +18,23 @@ import MultiChoiceQuestion from "@/components/quiz/MultiChoiceQuestion";
 // How many questions to show per page in the interests section
 const INTEREST_PAGE_SIZE = 6;
 
+/**
+ * @typedef {string | number | Array<string | number> | null | undefined} QuizAnswer
+ * @typedef {Record<string, QuizAnswer>} QuizAnswerMap
+ */
+
 export default function Quiz() {
   const navigate = useNavigate();
   const [sectionIndex, setSectionIndex] = useState(0);
   const [interestPage, setInterestPage] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(/** @type {QuizAnswerMap} */ ({}));
   const [computing, setComputing] = useState(false);
+
+  React.useEffect(() => {
+    trackEvent("quiz_started", {
+      page: "quiz",
+    });
+  }, []);
 
   const currentSection = SECTIONS[sectionIndex];
   const sectionQuestions = useMemo(
@@ -41,6 +53,10 @@ export default function Quiz() {
   const answeredCount = allQuestions.filter(q => answers[q.id] !== undefined).length;
   const totalCount = allQuestions.length;
 
+  /**
+   * @param {string} questionId
+   * @param {QuizAnswer} value
+   */
   const handleAnswer = (questionId, value) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
@@ -104,6 +120,11 @@ export default function Quiz() {
         summary,
         answers,
       };
+
+      trackEvent("quiz_completed", {
+        page: "quiz",
+        topClusterIds: clustersWithWhy.slice(0, 3).map(c => c.clusterId),
+      });
 
       // Store in sessionStorage so Results page can read it
       sessionStorage.setItem("tcas_quiz_result", JSON.stringify(result));
