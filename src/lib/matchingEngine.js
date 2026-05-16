@@ -44,14 +44,14 @@ const ALL_DIMS = ["R", "I", "A", "S", "E", "C", "Academic_Math", "Academic_Sci"]
 //   CLUSTER_EDUCATION_TEACHING → high S (social), A (artistic/expressive)
 //   CLUSTER_TOURISM_HOSPITALITY_AGRI → high S, E, R (hands-on/practical)
 const CLUSTER_PROFILES = {
-  CLUSTER_SOCIAL_LAW_MEDIA:           { R: 20, I: 55, A: 75, S: 80, E: 70, C: 45, Academic_Math: 30, Academic_Sci: 25 },
-  CLUSTER_HEALTH_NURSING_ALLIED:      { R: 55, I: 65, A: 30, S: 85, E: 35, C: 60, Academic_Math: 40, Academic_Sci: 70 },
-  CLUSTER_BUSINESS_ACCOUNTING_ECON:   { R: 20, I: 60, A: 30, S: 50, E: 85, C: 75, Academic_Math: 65, Academic_Sci: 25 },
-  CLUSTER_ENGINEERING_IT_DATA:        { R: 80, I: 85, A: 30, S: 25, E: 45, C: 70, Academic_Math: 85, Academic_Sci: 70 },
-  CLUSTER_HEALTH_MEDICINE_PHARMA:     { R: 60, I: 90, A: 20, S: 70, E: 35, C: 65, Academic_Math: 65, Academic_Sci: 90 },
-  CLUSTER_SCIENCE_RESEARCH:           { R: 70, I: 90, A: 35, S: 40, E: 30, C: 65, Academic_Math: 75, Academic_Sci: 85 },
-  CLUSTER_EDUCATION_TEACHING:         { R: 25, I: 55, A: 65, S: 85, E: 60, C: 40, Academic_Math: 35, Academic_Sci: 35 },
-  CLUSTER_TOURISM_HOSPITALITY_AGRI:   { R: 60, I: 40, A: 55, S: 70, E: 65, C: 45, Academic_Math: 30, Academic_Sci: 45 },
+  CLUSTER_SOCIAL_LAW_MEDIA:           { R: 28, I: 50, A: 78, S: 89, E: 68, C: 42, Academic_Math: 30, Academic_Sci: 25 },
+  CLUSTER_HEALTH_NURSING_ALLIED:      { R: 58, I: 79, A: 30, S: 90, E: 34, C: 69, Academic_Math: 40, Academic_Sci: 70 },
+  CLUSTER_BUSINESS_ACCOUNTING_ECON:   { R: 24, I: 63, A: 32, S: 68, E: 89, C: 82, Academic_Math: 65, Academic_Sci: 25 },
+  CLUSTER_ENGINEERING_IT_DATA:        { R: 83, I: 90, A: 28, S: 22, E: 44, C: 73, Academic_Math: 85, Academic_Sci: 70 },
+  CLUSTER_HEALTH_MEDICINE_PHARMA:     { R: 62, I: 90, A: 22, S: 78, E: 33, C: 72, Academic_Math: 65, Academic_Sci: 90 },
+  CLUSTER_SCIENCE_RESEARCH:           { R: 79, I: 90, A: 34, S: 38, E: 30, C: 72, Academic_Math: 75, Academic_Sci: 85 },
+  CLUSTER_EDUCATION_TEACHING:         { R: 26, I: 77, A: 72, S: 88, E: 64, C: 38, Academic_Math: 35, Academic_Sci: 35 },
+  CLUSTER_TOURISM_HOSPITALITY_AGRI:   { R: 71, I: 35, A: 60, S: 82, E: 79, C: 42, Academic_Math: 30, Academic_Sci: 45 },
 };
 
 /**
