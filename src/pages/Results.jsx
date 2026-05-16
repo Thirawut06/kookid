@@ -22,6 +22,7 @@ import {
   upsertLeadCapture,
   upsertQuizResult,
   recordProgramInterest,
+  getStoredLeadProfile,
 } from "@/lib/leadCaptureApi";
 
 function getOrCreateSessionProfileId() {
@@ -74,6 +75,7 @@ export default function Results() {
   const topClusters = clusters ?? [];
   const userProfileId = leadProfileId;
   const hasCapturedLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
+  const leadProfile = userProfileId ? getStoredLeadProfile(userProfileId) : null;
 
   const openReport = () => {
     trackEvent("report_open_clicked", {
@@ -225,6 +227,11 @@ export default function Results() {
           </div>
           <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-1">คู่คิด KooKid</div>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">สรุปผลแบบทดสอบ</h1>
+          {leadProfile?.nickname && leadProfile?.gradeAndSchool && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              สวัสดี {leadProfile.nickname} จาก {leadProfile.gradeAndSchool}
+            </p>
+          )}
           <button
             onClick={openReport}
             className="mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"

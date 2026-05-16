@@ -31,6 +31,17 @@ function createProfileId() {
   return "prof_" + Math.random().toString(36).slice(2, 11) + "_" + Date.now();
 }
 
+export function getOrCreateActiveProfileId() {
+  if (typeof window === "undefined") return createProfileId();
+
+  const existing = window.localStorage.getItem(ACTIVE_PROFILE_KEY);
+  if (existing) return existing;
+
+  const profileId = createProfileId();
+  window.localStorage.setItem(ACTIVE_PROFILE_KEY, profileId);
+  return profileId;
+}
+
 function getStoredProfile(profileId) {
   if (!profileId) return null;
   const store = readStore();
@@ -81,6 +92,37 @@ export function getStoredQuizResult(userProfileId) {
   return store.quizResults?.[userProfileId] ?? null;
 }
 
+export function getStoredLeadProfile(userProfileId) {
+  if (!userProfileId) return null;
+  const store = readStore();
+  return store.profiles?.[userProfileId] ?? null;
+}
+
+export function savePreQuizInfo({ nickname, gradeAndSchool }) {
+  if (typeof window === "undefined") return null;
+
+  const profileId = getOrCreateActiveProfileId();
+  const store = readStore();
+  const now = new Date().toISOString();
+  const existing = store.profiles?.[profileId] ?? {};
+
+  store.profiles[profileId] = {
+    ...existing,
+    userProfileId: profileId,
+    nickname,
+    gradeAndSchool,
+    contact: existing.contact || "",
+    email: existing.email || "",
+    schoolProvince: existing.schoolProvince || "",
+    consentAccepted: Boolean(existing.consentAccepted),
+    consentAt: existing.consentAt || null,
+    updatedAt: now,
+  };
+
+  writeStore(store);
+  return profileId;
+}
+
 export function upsertQuizResult(userProfileId, result) {
   if (!userProfileId || !result) return;
 
@@ -123,7 +165,7 @@ export async function upsertLeadCapture({
   schoolProvince,
 }) {
   const store = readStore();
-  const profileId = userProfileId || createProfileId();
+  const profileId = userProfileId || getOrCreateActiveProfileId();
   const now = new Date().toISOString();
   const existing = store.profiles?.[profileId] ?? {};
 
@@ -156,7 +198,7 @@ export async function upsertLeadCapture({
 
   // Persist to Supabase and let callers await failures.
   if (supabase) {
-    await ensureRemoteLeadProfile(userProfileId);
+    await ensureRemoteLeadProfile(profileId);
 
     const { error } = await supabase.from("user_profiles").upsert([
       {

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getCareerClusters } from "@/lib/dataLoader";
 import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
-import { hasLeadCapture, getStoredQuizResult, upsertLeadCapture } from "@/lib/leadCaptureApi";
+import { hasLeadCapture, getStoredQuizResult, upsertLeadCapture, getStoredLeadProfile } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
 
 const RIASEC_LABELS = { R: "Realistic", I: "Investigative", A: "Artistic", S: "Social", E: "Enterprising", C: "Conventional" };
@@ -25,6 +25,7 @@ export default function Report() {
   const [result, setResult] = useState(null);
   const [leadUnlocked, setLeadUnlocked] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const leadProfile = profileId ? getStoredLeadProfile(profileId) : null;
 
   useEffect(() => {
     const sessionRaw = sessionStorage.getItem("tcas_quiz_result");
@@ -140,6 +141,9 @@ export default function Report() {
           <div className="text-right">
             <p className="text-xs text-gray-500 font-medium">ผลของคุณ</p>
             <p className="text-lg font-bold" style={{color:"#1a4fba"}}>{summary.topTraits?.[0]?.label ?? ""}</p>
+            {leadProfile?.nickname && leadProfile?.gradeAndSchool && (
+              <p className="mt-1 text-[10px] text-gray-500">{leadProfile.nickname} · {leadProfile.gradeAndSchool}</p>
+            )}
           </div>
         </div>
 
