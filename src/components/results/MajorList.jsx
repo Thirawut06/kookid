@@ -1,11 +1,12 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GraduationCap, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 import MajorFeedbackButton from "@/components/feedback/MajorFeedbackButton";
 
-export default function MajorList({ majors, topCareers, majorFeedback, onMajorFeedback }) {
+export default function MajorList({ majors, topCareers, majorFeedback, onMajorFeedback, onProgramInterest }) {
   // Group majors by clusterId (matches field in majors.json)
   const clusterMap = {};
   topCareers.slice(0, 3).forEach(c => {
@@ -56,6 +57,20 @@ export default function MajorList({ majors, topCareers, majorFeedback, onMajorFe
                   onChange={onMajorFeedback}
                 />
               )}
+              <div className="mt-3 pt-3 border-t border-border/50 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-[11px] text-muted-foreground leading-relaxed">
+                  พื้นที่สำหรับข้อมูลโควต้าและทุนจากมหาวิทยาลัยนี้
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto rounded-full border-primary/20 text-primary hover:bg-primary/5"
+                  onClick={() => onProgramInterest?.(major)}
+                >
+                  ขอข้อมูลโควต้า/ทุนจากมหาวิทยาลัยนี้
+                </Button>
+              </div>
             </Card>
           ))}
             {group.majors.length === 0 && (

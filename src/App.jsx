@@ -7,6 +7,7 @@ import Landing from './pages/Landing';
 import Quiz from './pages/Quiz';
 import Results from './pages/Results';
 import Report from './pages/Report';
+import Privacy from './pages/Privacy';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/results" element={<Results />} />
           <Route path="/report/:profileId" element={<Report />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>

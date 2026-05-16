@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, GraduationCap, Target, Sparkles, Clock, CheckCircle } from "lucide-react";
+import { supabase } from "@/utils/supabase";
 
 const features = [
   { icon: Target, title: "ค้นหาตัวตน", desc: "วิเคราะห์ความสนใจและจุดแข็งของคุณผ่านแบบทดสอบ RIASEC" },
@@ -16,6 +17,30 @@ const stats = [
 ];
 
 export default function Landing() {
+  const [dbStatus, setDbStatus] = useState("กำลังเชื่อมต่อฐานข้อมูล...");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function checkSupabase() {
+      if (!supabase) {
+        if (mounted) setDbStatus("ยังไม่ได้ตั้งค่า Supabase");
+        return;
+      }
+
+      const { error } = await supabase.from("program_interests").select("id", { count: "exact", head: true });
+      if (!mounted) return;
+
+      setDbStatus(error ? "เชื่อมต่อฐานข้อมูลไม่สำเร็จ" : "เชื่อมต่อ Supabase พร้อมใช้งาน");
+    }
+
+    checkSupabase();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
@@ -86,7 +111,8 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="border-t border-border/50 py-8 text-center text-sm text-muted-foreground">
-        คู่คิด KooKid · เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6
+        <div>คู่คิด KooKid · เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6</div>
+        <div className="mt-1 text-xs text-muted-foreground/80">{dbStatus}</div>
       </footer>
     </div>
   );

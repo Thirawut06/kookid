@@ -4,8 +4,12 @@
  * Reads quiz result from sessionStorage and renders a one-page print layout.
  */
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { getCareerClusters } from "@/lib/dataLoader";
+import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
+import { hasLeadCapture, getStoredQuizResult, upsertLeadCapture } from "@/lib/leadCaptureApi";
 
 const RIASEC_LABELS = { R: "Realistic", I: "Investigative", A: "Artistic", S: "Social", E: "Enterprising", C: "Conventional" };
 const RIASEC_COLORS = { R: "#6366f1", I: "#0ea5e9", A: "#f59e0b", S: "#22c55e", E: "#ef4444", C: "#8b5cf6" };
@@ -16,22 +20,79 @@ const CLUSTER_MAP = Object.fromEntries(getCareerClusters().map(c => [c.id, c]));
 
 export default function Report() {
   const navigate = useNavigate();
+  const { profileId } = useParams();
   const [result, setResult] = useState(null);
+  const [leadUnlocked, setLeadUnlocked] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("tcas_quiz_result");
-    if (!raw) { navigate("/"); return; }
-    setResult(JSON.parse(raw));
-  }, [navigate]);
+    const sessionRaw = sessionStorage.getItem("tcas_quiz_result");
+    let parsedResult = null;
+
+    if (sessionRaw) {
+      parsedResult = JSON.parse(sessionRaw);
+    } else if (profileId) {
+      parsedResult = getStoredQuizResult(profileId);
+    }
+
+    if (!parsedResult) {
+      navigate("/results");
+      return;
+    }
+
+    setResult(parsedResult);
+    setLeadUnlocked(Boolean(profileId && hasLeadCapture(profileId)));
+    setIsReady(true);
+  }, [navigate, profileId]);
 
   // Auto-trigger print dialog once content is loaded
   useEffect(() => {
-    if (!result) return;
+    if (!result || !leadUnlocked) return;
     const timer = setTimeout(() => window.print(), 800);
     return () => clearTimeout(timer);
-  }, [result]);
+  }, [result, leadUnlocked]);
 
-  if (!result) return null;
+  const handleLeadSubmit = async (leadData) => {
+    const nextProfileId = upsertLeadCapture({
+      userProfileId: profileId,
+      result,
+      ...leadData,
+    });
+
+    const nextResult = { ...result, userProfileId: nextProfileId };
+    sessionStorage.setItem("tcas_quiz_result", JSON.stringify(nextResult));
+    setResult(nextResult);
+    setLeadUnlocked(true);
+  };
+
+  if (!isReady || !result) return null;
+
+  if (!leadUnlocked) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-10">
+        <Card className="w-full max-w-2xl p-5 sm:p-7 border-border/60 shadow-sm">
+          <div className="text-center mb-6">
+            <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-2">คู่คิด KooKid</div>
+            <h1 className="text-2xl font-bold text-foreground">ยืนยันข้อมูลก่อนดูรายงานฉบับเต็ม</h1>
+            <p className="mt-3 text-sm text-muted-foreground">
+              รายงานฉบับนี้จะแสดงได้หลังจากยืนยันข้อมูลติดต่อและความยินยอม PDPA ตามความสมัครใจ
+            </p>
+          </div>
+          <LeadCaptureForm
+            onSubmit={handleLeadSubmit}
+            submitLabel="ยืนยันและดูรายงาน"
+            compact
+            className="space-y-5"
+          />
+          <div className="mt-4 text-center">
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/results">กลับไปหน้าผลการทดสอบ</Link>
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   const { profile, clusters, careers, summary } = result;
   const topClusters = (clusters ?? careers ?? []).slice(0, 3);

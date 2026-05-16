@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, RotateCcw, Sparkles, BarChart3, Briefcase, GraduationCap, Download, ListChecks } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -13,9 +14,16 @@ import MajorList from "@/components/results/MajorList";
 import OverallFeedbackPanel from "@/components/feedback/OverallFeedbackPanel";
 import ActionPlan from "@/components/results/ActionPlan";
 import { submitCareerFeedback, submitMajorFeedback, submitResultFeedback } from "@/lib/feedbackApi";
+import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
+import {
+  getStoredUserProfileId,
+  hasLeadCapture,
+  upsertLeadCapture,
+  upsertQuizResult,
+  recordProgramInterest,
+} from "@/lib/leadCaptureApi";
 
-// Generates a stable session-scoped profile ID (stored in sessionStorage)
-function getOrCreateProfileId() {
+function getOrCreateSessionProfileId() {
   const key = "tcas_profile_id";
   let id = sessionStorage.getItem(key);
   if (!id) {
@@ -28,6 +36,10 @@ function getOrCreateProfileId() {
 export default function Results() {
   const navigate = useNavigate();
   const [result, setResult] = useState(null);
+  const [leadProfileId, setLeadProfileId] = useState(() => getStoredUserProfileId());
+  const [sessionProfileId] = useState(() => getOrCreateSessionProfileId());
+  const [leadDialogOpen, setLeadDialogOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
 
   // Feedback state — keyed by clusterId / majorId → interestLevel
   const [careerFeedback, setCareerFeedback] = useState({});
@@ -41,12 +53,69 @@ export default function Results() {
     setResult(JSON.parse(raw));
   }, [navigate]);
 
+  useEffect(() => {
+    if (!result || !leadProfileId || !hasLeadCapture(leadProfileId)) return;
+    upsertQuizResult(leadProfileId, result);
+  }, [result, leadProfileId]);
+
   if (!result) return null;
 
   const { profile, clusters, majors, summary } = result;
   // Use clusters directly from computeMatches
   const topClusters = clusters ?? [];
-  const userProfileId = getOrCreateProfileId();
+  const userProfileId = leadProfileId;
+  const hasCapturedLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
+
+  const openReport = () => {
+    if (!userProfileId || !hasCapturedLead) {
+      setPendingAction({ type: "report" });
+      setLeadDialogOpen(true);
+      return;
+    }
+    window.open(`/report/${userProfileId}`, "_blank");
+  };
+
+  const handleProgramInterest = (major) => {
+    if (!userProfileId || !hasCapturedLead) {
+      setPendingAction({ type: "program_interest", majorId: major.id });
+      setLeadDialogOpen(true);
+      return;
+    }
+
+    recordProgramInterest({
+      userProfileId,
+      majorId: major.id,
+      interestLevel: "request_info",
+    });
+    toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
+  };
+
+  const handleLeadSubmit = async (leadData) => {
+    const nextProfileId = upsertLeadCapture({
+      userProfileId,
+      result,
+      ...leadData,
+    });
+
+    setLeadProfileId(nextProfileId);
+    sessionStorage.setItem("tcas_quiz_result", JSON.stringify({ ...result, userProfileId: nextProfileId }));
+
+    if (pendingAction?.type === "program_interest") {
+      recordProgramInterest({
+        userProfileId: nextProfileId,
+        majorId: pendingAction.majorId,
+        interestLevel: "request_info",
+      });
+      toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
+    } else if (pendingAction?.type === "report") {
+      window.open(`/report/${nextProfileId}`, "_blank");
+      toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
+    } else {
+      toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
+    }
+    setPendingAction(null);
+    setLeadDialogOpen(false);
+  };
 
   const handleCareerFeedback = (clusterId, level) => {
     setCareerFeedback(prev => ({ ...prev, [clusterId]: level }));
@@ -71,9 +140,9 @@ export default function Results() {
 
     try {
       await Promise.all([
-        careerItems.length > 0 ? submitCareerFeedback(userProfileId, careerItems) : Promise.resolve(),
-        majorItems.length > 0 ? submitMajorFeedback(userProfileId, majorItems) : Promise.resolve(),
-        submitResultFeedback(userProfileId, overallFitScore, selectedIssue, comment),
+        careerItems.length > 0 ? submitCareerFeedback(sessionProfileId, careerItems) : Promise.resolve(),
+        majorItems.length > 0 ? submitMajorFeedback(sessionProfileId, majorItems) : Promise.resolve(),
+        submitResultFeedback(sessionProfileId, overallFitScore, selectedIssue, comment),
       ]);
       setFeedbackSubmitted(true);
       toast.success("ขอบคุณสำหรับ Feedback! เราจะใช้ข้อมูลนี้เพื่อปรับการแนะนำให้ดีขึ้นสำหรับคุณและรุ่นน้อง");
@@ -100,14 +169,18 @@ export default function Results() {
           </div>
           <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-1">คู่คิด KooKid</div>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">สรุปผลแบบทดสอบ</h1>
-          {/* Download PDF button — opens printable report in new tab */}
           <button
-            onClick={() => window.open(`/report/${userProfileId}`, "_blank")}
+            onClick={openReport}
             className="mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
             ดาวน์โหลดผลเป็น PDF
           </button>
+          {!hasCapturedLead && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              กรุณายืนยันข้อมูลติดต่อก่อนเพื่อปลดล็อกรายงานฉบับเต็ม
+            </p>
+          )}
         </motion.div>
 
         {/* Personality Summary */}
@@ -187,6 +260,7 @@ export default function Results() {
               topCareers={topClusters}
               majorFeedback={majorFeedback}
               onMajorFeedback={handleMajorFeedback}
+              onProgramInterest={handleProgramInterest}
             />
           </Card>
         </motion.div>
@@ -230,6 +304,21 @@ export default function Results() {
           </Link>
         </div>
       </div>
+
+      <Dialog open={leadDialogOpen} onOpenChange={setLeadDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl">ยืนยันข้อมูลเพื่อปลดล็อกรายงานฉบับเต็ม</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            กรอกข้อมูลสั้น ๆ เพื่อให้คู่คิด KooKid ส่งต่อข้อมูลโควต้า ทุนการศึกษา หรือรายงานที่เหมาะกับคุณได้ครบถ้วน
+          </p>
+          <LeadCaptureForm
+            onSubmit={handleLeadSubmit}
+            submitLabel="ยืนยัน"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

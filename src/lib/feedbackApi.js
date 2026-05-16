@@ -6,6 +6,8 @@
 
 const STORAGE_KEY = "kookid_feedback";
 
+import { supabase } from "@/utils/supabase";
+
 function readStore() {
   if (typeof window === "undefined") return { career: [], major: [], result: [] };
   try {
@@ -34,6 +36,15 @@ export async function submitCareerFeedback(userProfileId, items) {
   }));
   store.career.push(...records);
   writeStore(store);
+
+  if (supabase) {
+    try {
+      const inserts = records.map(r => ({ user_profile_id: r.userProfileId, career_cluster_id: r.careerClusterId, interest_level: r.interestLevel }));
+      await supabase.from("career_feedback").insert(inserts);
+    } catch (err) {
+      console.error("Supabase submitCareerFeedback error:", err);
+    }
+  }
 }
 
 /**
@@ -50,6 +61,15 @@ export async function submitMajorFeedback(userProfileId, items) {
   }));
   store.major.push(...records);
   writeStore(store);
+
+  if (supabase) {
+    try {
+      const inserts = records.map(r => ({ user_profile_id: r.userProfileId, major_id: r.majorId, interest_level: r.interestLevel }));
+      await supabase.from("program_interests").insert(inserts);
+    } catch (err) {
+      console.error("Supabase submitMajorFeedback error:", err);
+    }
+  }
 }
 
 /**
@@ -69,4 +89,12 @@ export async function submitResultFeedback(userProfileId, overallFitScore, selec
   };
   store.result.push(record);
   writeStore(store);
+
+  if (supabase) {
+    try {
+      await supabase.from("quiz_results").insert([{ user_profile_id: userProfileId, result: record }]);
+    } catch (err) {
+      console.error("Supabase submitResultFeedback error:", err);
+    }
+  }
 }
