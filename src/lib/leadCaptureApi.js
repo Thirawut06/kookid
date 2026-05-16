@@ -58,20 +58,27 @@ export function upsertQuizResult(userProfileId, result) {
     linkedAt: new Date().toISOString(),
   };
   writeStore(store);
+}
 
-  // Try to persist to Supabase in background if available
-  if (supabase) {
-    (async () => {
-      try {
-        await supabase.from("quiz_results").insert([{ user_profile_id: userProfileId, result }]);
-      } catch (err) {
-        console.error("Supabase upsertQuizResult error:", err);
-      }
-    })();
+async function persistQuizResultToSupabase(userProfileId, result) {
+  if (!supabase) return;
+
+  const { error } = await supabase
+    .from("quiz_results")
+    .upsert([
+      {
+        user_profile_id: userProfileId,
+        result,
+        linked_at: new Date().toISOString(),
+      },
+    ], { onConflict: "user_profile_id" });
+
+  if (error) {
+    throw error;
   }
 }
 
-export function upsertLeadCapture({
+export async function upsertLeadCapture({
   userProfileId,
   result,
   nickname,
@@ -112,38 +119,34 @@ export function upsertLeadCapture({
     window.localStorage.setItem(ACTIVE_PROFILE_KEY, profileId);
   }
 
-  // Persist to Supabase (async, best-effort)
+  // Persist to Supabase and let callers await failures.
   if (supabase) {
-    (async () => {
-      try {
-        await supabase.from("user_profiles").upsert([
-          {
-            id: profileId,
-            nickname,
-            grade_and_school: gradeAndSchool,
-            contact,
-            email: email || null,
-            school_province: schoolProvince || null,
-            consent_accepted: true,
-            consent_at: new Date().toISOString(),
-          },
-        ]);
+    const { error } = await supabase.from("user_profiles").upsert([
+      {
+        id: profileId,
+        nickname,
+        grade_and_school: gradeAndSchool,
+        contact,
+        email: email || null,
+        school_province: schoolProvince || null,
+        consent_accepted: true,
+        consent_at: now,
+      },
+    ]);
 
-        if (result) {
-          await supabase.from("quiz_results").insert([
-            { user_profile_id: profileId, result },
-          ]);
-        }
-      } catch (err) {
-        console.error("Supabase upsertLeadCapture error:", err);
-      }
-    })();
+    if (error) {
+      throw error;
+    }
+
+    if (result) {
+      await persistQuizResultToSupabase(profileId, result);
+    }
   }
 
   return profileId;
 }
 
-export function recordProgramInterest({ userProfileId, majorId, interestLevel = "request_info" }) {
+export async function recordProgramInterest({ userProfileId, majorId, interestLevel = "request_info" }) {
   const store = readStore();
   const record = {
     id: "interest_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now(),
@@ -157,15 +160,13 @@ export function recordProgramInterest({ userProfileId, majorId, interestLevel = 
   writeStore(store);
 
   if (supabase) {
-    (async () => {
-      try {
-        await supabase.from("program_interests").insert([
-          { user_profile_id: userProfileId, major_id: majorId, interest_level: interestLevel },
-        ]);
-      } catch (err) {
-        console.error("Supabase recordProgramInterest error:", err);
-      }
-    })();
+    const { error } = await supabase.from("program_interests").insert([
+      { user_profile_id: userProfileId, major_id: majorId, interest_level: interestLevel },
+    ]);
+
+    if (error) {
+      throw error;
+    }
   }
 
   return record;

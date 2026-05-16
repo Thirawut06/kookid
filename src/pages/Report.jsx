@@ -53,7 +53,7 @@ export default function Report() {
   }, [result, leadUnlocked]);
 
   const handleLeadSubmit = async (leadData) => {
-    const nextProfileId = upsertLeadCapture({
+    const nextProfileId = await upsertLeadCapture({
       userProfileId: profileId,
       result,
       ...leadData,

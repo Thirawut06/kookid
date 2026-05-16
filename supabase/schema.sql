@@ -21,6 +21,9 @@ create table if not exists public.quiz_results (
   created_at timestamptz not null default now()
 );
 
+alter table public.quiz_results
+  add constraint quiz_results_user_profile_id_key unique (user_profile_id);
+
 create table if not exists public.program_interests (
   id uuid primary key default gen_random_uuid(),
   user_profile_id text not null references public.user_profiles(id) on delete cascade,

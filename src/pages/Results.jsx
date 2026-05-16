@@ -86,12 +86,18 @@ export default function Results() {
       userProfileId,
       majorId: major.id,
       interestLevel: "request_info",
-    });
-    toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
+    })
+      .then(() => {
+        toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
+      })
+      .catch((error) => {
+        console.error("Program interest submit failed:", error);
+        toast.error("บันทึกคำขอข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
+      });
   };
 
   const handleLeadSubmit = async (leadData) => {
-    const nextProfileId = upsertLeadCapture({
+    const nextProfileId = await upsertLeadCapture({
       userProfileId,
       result,
       ...leadData,
@@ -101,7 +107,7 @@ export default function Results() {
     sessionStorage.setItem("tcas_quiz_result", JSON.stringify({ ...result, userProfileId: nextProfileId }));
 
     if (pendingAction?.type === "program_interest") {
-      recordProgramInterest({
+      await recordProgramInterest({
         userProfileId: nextProfileId,
         majorId: pendingAction.majorId,
         interestLevel: "request_info",
