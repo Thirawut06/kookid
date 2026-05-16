@@ -7,6 +7,7 @@
 const STORAGE_KEY = "kookid_feedback";
 
 import { supabase } from "@/utils/supabase";
+import { ensureRemoteLeadProfile } from "@/lib/leadCaptureApi";
 
 function readStore() {
   if (typeof window === "undefined") return { career: [], major: [], result: [] };
@@ -39,6 +40,7 @@ export async function submitCareerFeedback(userProfileId, items) {
 
   if (supabase) {
     try {
+      await ensureRemoteLeadProfile(userProfileId);
       const inserts = records.map(r => ({ user_profile_id: r.userProfileId, career_cluster_id: r.careerClusterId, interest_level: r.interestLevel }));
       await supabase.from("career_feedback").insert(inserts);
     } catch (err) {
@@ -64,6 +66,7 @@ export async function submitMajorFeedback(userProfileId, items) {
 
   if (supabase) {
     try {
+      await ensureRemoteLeadProfile(userProfileId);
       const inserts = records.map(r => ({ user_profile_id: r.userProfileId, major_id: r.majorId, interest_level: r.interestLevel }));
       await supabase.from("program_interests").insert(inserts);
     } catch (err) {
@@ -92,6 +95,7 @@ export async function submitResultFeedback(userProfileId, overallFitScore, selec
 
   if (supabase) {
     try {
+      await ensureRemoteLeadProfile(userProfileId);
       await supabase.from("quiz_results").insert([{ user_profile_id: userProfileId, result: record }]);
     } catch (err) {
       console.error("Supabase submitResultFeedback error:", err);

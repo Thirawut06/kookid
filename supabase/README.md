@@ -1,4 +1,6 @@
-Run the SQL in `supabase/schema.sql` using the Supabase SQL editor or psql.
+For a brand-new database, run `supabase/schema.sql`.
+
+For an existing database, use the same file safely because it only adds missing tables, columns, indexes, and policies. Supabase may still show a generic warning when the SQL touches table structure, but this script does not contain any `DROP TABLE` or `DROP COLUMN` statements.
 
 Quick steps (Supabase project UI):
 1. Open your Supabase project
@@ -20,3 +22,4 @@ supabase db query supabase/schema.sql
 Notes:
 - `schema.sql` enables minimal RLS policies granting public insert/select for MVP; review before production.
 - The `pgcrypto` extension is required for `gen_random_uuid()`.
+- If you already have data, avoid using any "reset database" or destructive migration wizard; run the SQL as a normal query instead.

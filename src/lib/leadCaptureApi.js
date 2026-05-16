@@ -31,6 +31,39 @@ function createProfileId() {
   return "prof_" + Math.random().toString(36).slice(2, 11) + "_" + Date.now();
 }
 
+function getStoredProfile(profileId) {
+  if (!profileId) return null;
+  const store = readStore();
+  return store.profiles?.[profileId] || null;
+}
+
+export async function ensureRemoteLeadProfile(userProfileId) {
+  if (!supabase || !userProfileId) return false;
+
+  const profile = getStoredProfile(userProfileId);
+  if (!profile) return false;
+
+  const { error } = await supabase.from("user_profiles").upsert([
+    {
+      id: userProfileId,
+      nickname: profile.nickname,
+      grade_and_school: profile.gradeAndSchool,
+      contact: profile.contact,
+      email: profile.email || null,
+      school_province: profile.schoolProvince || null,
+      consent_accepted: Boolean(profile.consentAccepted),
+      consent_at: profile.consentAt || profile.updatedAt || new Date().toISOString(),
+      updated_at: profile.updatedAt || new Date().toISOString(),
+    },
+  ]);
+
+  if (error) {
+    throw error;
+  }
+
+  return true;
+}
+
 export function getStoredUserProfileId() {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(ACTIVE_PROFILE_KEY);
@@ -62,6 +95,8 @@ export function upsertQuizResult(userProfileId, result) {
 
 async function persistQuizResultToSupabase(userProfileId, result) {
   if (!supabase) return;
+
+  await ensureRemoteLeadProfile(userProfileId);
 
   const { error } = await supabase
     .from("quiz_results")
@@ -121,6 +156,8 @@ export async function upsertLeadCapture({
 
   // Persist to Supabase and let callers await failures.
   if (supabase) {
+    await ensureRemoteLeadProfile(userProfileId);
+
     const { error } = await supabase.from("user_profiles").upsert([
       {
         id: profileId,
@@ -161,6 +198,8 @@ export async function recordProgramInterest({ userProfileId, majorId, university
   writeStore(store);
 
   if (supabase) {
+    await ensureRemoteLeadProfile(userProfileId);
+
     const { error } = await supabase.from("program_interests").insert([
       { user_profile_id: userProfileId, major_id: majorId, university_id: universityId || null, interest_level: interestLevel },
     ]);

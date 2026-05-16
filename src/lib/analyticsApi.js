@@ -1,4 +1,5 @@
 import { supabase } from "@/utils/supabase";
+import { ensureRemoteLeadProfile } from "@/lib/leadCaptureApi";
 
 const EVENT_STORAGE_KEY = "kookid_event_logs";
 const SESSION_KEY = "kookid_session_id";
@@ -37,6 +38,14 @@ export async function trackEvent(eventName, payload = {}) {
   const sessionId = getSessionId();
   const userProfileId = payload.userProfileId || null;
 
+  if (userProfileId) {
+    try {
+      await ensureRemoteLeadProfile(userProfileId);
+    } catch (error) {
+      console.warn("trackEvent profile sync skipped:", error);
+    }
+  }
+
   const localRecord = {
     id: "evt_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now(),
     eventName,
@@ -56,7 +65,7 @@ export async function trackEvent(eventName, payload = {}) {
   const { error } = await supabase.from("event_logs").insert([
     {
       event_name: eventName,
-      user_profile_id: userProfileId,
+      user_profile_id: userProfileId || null,
       session_id: sessionId,
       page,
       payload,
