@@ -145,6 +145,7 @@ export default function Quiz() {
 
       const result = {
         profile,
+        hollandCode: profile.hollandCode,
         clusters: clustersWithWhy,
         majors,
         summary,

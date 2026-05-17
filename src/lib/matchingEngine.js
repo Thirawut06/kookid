@@ -17,6 +17,7 @@
 // ============================================================
 
 import { getCareerClusters, getMajorsByCluster, getUniversityById } from './dataLoader';
+import { buildHollandCode } from './scoringEngine';
 
 // Dimension weights: how much each quiz dimension contributes to scoring.
 // RIASEC dimensions are weighted at 1.0; academic signals at 0.6.
@@ -28,6 +29,30 @@ const DIMENSION_WEIGHTS = {
 };
 
 const ALL_DIMS = ["R", "I", "A", "S", "E", "C", "Academic_Math", "Academic_Sci"];
+
+const HOLLAND_CLUSTER_RULES = {
+  R: ["CLUSTER_ENGINEERING_IT_DATA", "CLUSTER_SCIENCE_RESEARCH", "CLUSTER_HEALTH_MEDICINE_PHARMA", "CLUSTER_HEALTH_NURSING_ALLIED"],
+  I: ["CLUSTER_ENGINEERING_IT_DATA", "CLUSTER_SCIENCE_RESEARCH", "CLUSTER_HEALTH_MEDICINE_PHARMA", "CLUSTER_HEALTH_NURSING_ALLIED"],
+  A: ["CLUSTER_SOCIAL_LAW_MEDIA"],
+  S: ["CLUSTER_EDUCATION_TEACHING", "CLUSTER_HEALTH_NURSING_ALLIED", "CLUSTER_HEALTH_MEDICINE_PHARMA"],
+  E: ["CLUSTER_BUSINESS_ACCOUNTING_ECON", "CLUSTER_TOURISM_HOSPITALITY_AGRI", "CLUSTER_SOCIAL_LAW_MEDIA"],
+  C: ["CLUSTER_BUSINESS_ACCOUNTING_ECON", "CLUSTER_ENGINEERING_IT_DATA", "CLUSTER_SCIENCE_RESEARCH"],
+};
+
+const HOLLAND_PREFIX_RULES = {
+  RI: ["CLUSTER_ENGINEERING_IT_DATA", "CLUSTER_SCIENCE_RESEARCH", "CLUSTER_HEALTH_MEDICINE_PHARMA"],
+  IR: ["CLUSTER_ENGINEERING_IT_DATA", "CLUSTER_SCIENCE_RESEARCH", "CLUSTER_HEALTH_MEDICINE_PHARMA"],
+  RA: ["CLUSTER_SOCIAL_LAW_MEDIA"],
+  AR: ["CLUSTER_SOCIAL_LAW_MEDIA"],
+  RS: ["CLUSTER_HEALTH_NURSING_ALLIED", "CLUSTER_HEALTH_MEDICINE_PHARMA"],
+  SR: ["CLUSTER_HEALTH_NURSING_ALLIED", "CLUSTER_HEALTH_MEDICINE_PHARMA"],
+  ES: ["CLUSTER_BUSINESS_ACCOUNTING_ECON", "CLUSTER_EDUCATION_TEACHING"],
+  SE: ["CLUSTER_EDUCATION_TEACHING", "CLUSTER_HEALTH_NURSING_ALLIED"],
+  EC: ["CLUSTER_BUSINESS_ACCOUNTING_ECON"],
+  CE: ["CLUSTER_BUSINESS_ACCOUNTING_ECON"],
+  IC: ["CLUSTER_ENGINEERING_IT_DATA", "CLUSTER_SCIENCE_RESEARCH"],
+  CI: ["CLUSTER_ENGINEERING_IT_DATA", "CLUSTER_SCIENCE_RESEARCH", "CLUSTER_BUSINESS_ACCOUNTING_ECON"],
+};
 
 // ---------------------------------------------------------------------------
 // Cluster RIASEC + Academic profiles
@@ -65,6 +90,9 @@ const CLUSTER_PROFILES = {
 export function computeMatches(profile, topN = 5) {
   const clusters = getCareerClusters(); // loaded from /data/careerClusters.json
   const userVector = buildUserVector(profile.traitScores);
+  const hollandCode = (profile.hollandCode || buildHollandCode(profile.traitScores || []) || "").toUpperCase();
+  const firstLetter = hollandCode[0] || "";
+  const firstTwoLetters = hollandCode.slice(0, 2);
 
   // Score each cluster using weighted cosine similarity
   const scored = clusters.map(cluster => {
@@ -72,6 +100,10 @@ export function computeMatches(profile, topN = 5) {
     const profileKey = cluster.clusterId || cluster.id;
     const clusterVector = buildClusterVector(profileKey);
     const similarity = weightedCosineSimilarity(userVector, clusterVector);
+    const baseScore = similarity * 100;
+    const firstLetterBoost = HOLLAND_CLUSTER_RULES[firstLetter]?.includes(profileKey) ? 18 : 0;
+    const prefixBoost = HOLLAND_PREFIX_RULES[firstTwoLetters]?.includes(profileKey) ? 12 : 0;
+    const combinedScore = Math.min(100, Math.round(baseScore + firstLetterBoost + prefixBoost));
     return {
       // expose the canonical cluster key so callers can look up majors by that id
       clusterId: profileKey,
@@ -80,7 +112,8 @@ export function computeMatches(profile, topN = 5) {
       nameTh: cluster.nameTh,
       descriptionTh: cluster.descriptionTh,
       marketNotes: cluster.marketNotes ?? [],
-      matchScore: Math.round(similarity * 100),
+      matchScore: combinedScore,
+      hollandCode,
     };
   });
 

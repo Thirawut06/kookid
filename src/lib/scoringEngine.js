@@ -3,10 +3,11 @@
 // Computes RIASEC + Academic scores from quiz answers.
 // ============================================================
 
-import { allQuestions } from './quizData';
+import { riasecQuestions } from './quizData';
 
 const RIASEC_DIMS = ["R", "I", "A", "S", "E", "C"];
 const ACADEMIC_DIMS = ["Academic_Math", "Academic_Sci"];
+const HOLLAND_ORDER = ["R", "I", "A", "S", "E", "C"];
 
 // Subjects that give bonuses to Academic dimensions
 const MATH_BONUS_SUBJECTS = ["math", "physics", "computer"];
@@ -24,13 +25,14 @@ const BONUS_POINTS = 10;
 export function computeProfile(answers) {
   const riasecScores = computeRIASEC(answers);
   const academicScores = computeAcademic(answers);
+  const hollandCode = buildHollandCode(riasecScores);
 
   const traitScores = [
     ...riasecScores,
     ...academicScores,
   ];
 
-  return { traitScores };
+  return { traitScores, hollandCode };
 }
 
 /**
@@ -40,8 +42,8 @@ export function computeProfile(answers) {
  */
 function computeRIASEC(answers) {
   return RIASEC_DIMS.map(dim => {
-    const questions = allQuestions.filter(q =>
-      q.section === "interests" && q.tags.includes(dim)
+    const questions = riasecQuestions.filter(q =>
+      q.section === "riasec" && q.tags.includes(dim)
     );
 
     let rawScore = 0;
@@ -68,36 +70,11 @@ function computeRIASEC(answers) {
  * - Bonus from subject preferences
  */
 function computeAcademic(answers) {
-  // Gather Likert-based scores
-  const mathQuestions = allQuestions.filter(q =>
-    q.section === "academic" && q.tags.includes("Academic_Math")
-  );
-  const sciQuestions = allQuestions.filter(q =>
-    q.section === "academic" && q.tags.includes("Academic_Sci")
-  );
-
-  const mathRaw = averageLikert(answers, mathQuestions);
-  const sciRaw = averageLikert(answers, sciQuestions);
-
-  // Subject bonuses from Q_AC_1 (favorite subjects)
-  const favSubjects = answers["Q_AC_1"] || [];
-  const favArray = Array.isArray(favSubjects) ? favSubjects : [favSubjects];
-
-  let mathBonus = 0;
-  let sciBonus = 0;
-  favArray.forEach(subId => {
-    if (MATH_BONUS_SUBJECTS.includes(subId)) mathBonus += BONUS_POINTS;
-    if (SCI_BONUS_SUBJECTS.includes(subId)) sciBonus += BONUS_POINTS;
-  });
-
   return ACADEMIC_DIMS.map(dim => {
-    const base = dim === "Academic_Math" ? mathRaw : sciRaw;
-    const bonus = dim === "Academic_Math" ? mathBonus : sciBonus;
-    const normalizedScore = Math.min(100, Math.round(base + bonus));
     return {
       dimension: dim,
-      rawScore: normalizedScore,
-      normalizedScore,
+      rawScore: 0,
+      normalizedScore: 0,
     };
   });
 }
@@ -118,4 +95,27 @@ function averageLikert(answers, questions) {
   });
   if (count === 0) return 0;
   return ((sum / count) / 5) * 100; // 5 = max likert
+}
+
+/**
+ * Build the 3-letter Holland Code from the top 3 RIASEC dimensions.
+ * Uses raw summed scores first, then normalized score, then canonical order for ties.
+ */
+export function buildHollandCode(riasecScores = []) {
+  return riasecScores
+    .slice()
+    .sort((a, b) => {
+      if ((b.rawScore ?? 0) !== (a.rawScore ?? 0)) {
+        return (b.rawScore ?? 0) - (a.rawScore ?? 0);
+      }
+
+      if ((b.normalizedScore ?? 0) !== (a.normalizedScore ?? 0)) {
+        return (b.normalizedScore ?? 0) - (a.normalizedScore ?? 0);
+      }
+
+      return HOLLAND_ORDER.indexOf(a.dimension) - HOLLAND_ORDER.indexOf(b.dimension);
+    })
+    .slice(0, 3)
+    .map(score => score.dimension)
+    .join("");
 }

@@ -1,45 +1,45 @@
-// ============================================================
-// TCAS Career Quiz — Question Bank
-// All questions for MVP 0.1: Interests (RIASEC) + Academic + Constraints
-// ============================================================
+export const riasecQuestions = [
+  // R - Realistic (5 ข้อ) [cite: 252]
+  { id: "R1", section: "riasec", type: "likert", text: "สร้างหรือประกอบตู้ เฟอร์นิเจอร์ หรือชิ้นงานไม้", tags: ["R"] },
+  { id: "R2", section: "riasec", type: "likert", text: "ซ่อมแซมเครื่องใช้ไฟฟ้าในบ้าน", tags: ["R"] },
+  { id: "R3", section: "riasec", type: "likert", text: "ประกอบชิ้นส่วนอิเล็กทรอนิกส์หรือคอมพิวเตอร์", tags: ["R"] },
+  { id: "R4", section: "riasec", type: "likert", text: "ขับรถเพื่อส่งของหรือสินค้าตามบ้านและสำนักงาน", tags: ["R"] },
+  { id: "R5", section: "riasec", type: "likert", text: "ตรวจสอบคุณภาพของชิ้นส่วนหรือสินค้าก่อนส่งมอบ", tags: ["R"] },
 
-// ------ SECTION 1: Interests / RIASEC (24 questions, 4 per dimension) ------
-const riasecQuestions = [
-  // R — Realistic
-  { id: "Q_R_1", section: "interests", type: "likert", text: "ฉันรับได้กับการทำงานที่ต้องเปื้อนฝุ่น ลุยแดด หรือใช้แรงกายค่อนข้างหนักเป็นประจำ", tags: ["R"], weight: 1.0 },
-  { id: "Q_R_2", section: "interests", type: "likert", text: "ฉันโอเคถ้าต้องทำงานในสถานที่อย่างไซต์ก่อสร้าง โรงงาน หรือพื้นที่ภาคสนามที่ไม่สะดวกสบายเหมือนออฟฟิศ", tags: ["R"], weight: 1.0 },
-  { id: "Q_R_3", section: "interests", type: "likert", text: "ฉันสามารถทำตามกฎความปลอดภัยและขั้นตอนการทำงานที่เคร่งครัดได้ต่อเนื่อง แม้จะรู้สึกยุ่งยากบ้าง", tags: ["R"], weight: 1.0 },
-  { id: "Q_R_4", section: "interests", type: "likert", text: "ถ้างานที่ทำต้องซ่อมแซม/ติดตั้งอุปกรณ์เดิม ๆ ซ้ำหลายครั้ง ฉันก็ยังทำได้โดยไม่รู้สึกเบื่อจนอยากเลิก", tags: ["R"], weight: 1.0 },
+  // I - Investigative (5 ข้อ) [cite: 253]
+  { id: "I1", section: "riasec", type: "likert", text: "คิดค้นหรือพัฒนายารักษาโรคใหม่ๆ", tags: ["I"] },
+  { id: "I2", section: "riasec", type: "likert", text: "ศึกษาวิธีการลดมลพิษทางน้ำหรือปัญหาสิ่งแวดล้อม", tags: ["I"] },
+  { id: "I3", section: "riasec", type: "likert", text: "ทำการทดลองทางเคมีหรือวิทยาศาสตร์", tags: ["I"] },
+  { id: "I4", section: "riasec", type: "likert", text: "ส่องกล้องจุลทรรศน์เพื่อตรวจดูตัวอย่างเลือดหรือเซลล์", tags: ["I"] },
+  { id: "I5", section: "riasec", type: "likert", text: "พัฒนาวิธีหรือระบบเพื่อพยากรณ์อากาศให้แม่นยำขึ้น", tags: ["I"] },
 
-  // I — Investigative
-  { id: "Q_I_1", section: "interests", type: "likert", text: "ฉันสามารถนั่งโฟกัสกับโจทย์ยาก ๆ หรือปัญหาซับซ้อน (เช่น หา Bug หรืออ่านบทความวิจัย) ได้นานหลายชั่วโมงโดยไม่ทิ้งไปกลางคัน", tags: ["I"], weight: 1.0 },
-  { id: "Q_I_2", section: "interests", type: "likert", text: "ฉันพร้อมที่จะเรียนรู้เนื้อหายาก ๆ ใหม่ ๆ อย่างต่อเนื่อง เพราะรู้ว่าถ้าหยุดอัปเดตความรู้ งานสายนี้จะตามไม่ทัน", tags: ["I"], weight: 1.0 },
-  { id: "Q_I_3", section: "interests", type: "likert", text: "เวลาติดปัญหายาก ๆ ฉันเลือกค้นข้อมูล/ทดลองหลายวิธีแก้ มากกว่ารอให้คนอื่นบอกคำตอบ", tags: ["I"], weight: 1.0 },
-  { id: "Q_I_4", section: "interests", type: "likert", text: "ฉันรับได้ถ้าคะแนนสอบหรือผลทดลองครั้งแรกออกมาไม่ดี และพร้อมปรับแผนแล้วลองใหม่หลายรอบ", tags: ["I"], weight: 1.0 },
+  // A - Artistic (5 ข้อ) [cite: 254]
+  { id: "A1", section: "riasec", type: "likert", text: "เขียนหนังสือ นิยาย หรือบทละคร", tags: ["A"] },
+  { id: "A2", section: "riasec", type: "likert", text: "แต่งเพลง หรือเรียบเรียงดนตรี", tags: ["A"] },
+  { id: "A3", section: "riasec", type: "likert", text: "สร้างเทคนิคพิเศษ (Special Effects) สำหรับภาพยนตร์หรือวิดีโอ", tags: ["A"] },
+  { id: "A4", section: "riasec", type: "likert", text: "วาดฉาก หรือจัดฉากสำหรับการแสดง", tags: ["A"] },
+  { id: "A5", section: "riasec", type: "likert", text: "เขียนบทภาพยนตร์หรือรายการโทรทัศน์", tags: ["A"] },
 
-  // A — Artistic
-  { id: "Q_A_1", section: "interests", type: "likert", text: "ฉันรับได้ถ้าต้องแก้งานหลายรอบ หรือถูกให้กลับไปใช้ดราฟต์เก่า หลังจากทุ่มเททำผลงานใหม่มานาน", tags: ["A"], weight: 1.0 },
-  { id: "Q_A_2", section: "interests", type: "likert", text: "ฉันสามารถแยกแยะความรู้สึกส่วนตัวออกจากงานได้ เมื่อผลงานที่ภูมิใจถูกวิจารณ์อย่างหนักว่า ‘ยังไม่ตอบโจทย์ลูกค้า/ตลาด’", tags: ["A"], weight: 1.0 },
-  { id: "Q_A_3", section: "interests", type: "likert", text: "ฉันโอเคกับการทำงานที่กำหนดเส้นตาย (Deadline) ชัดเจน และบางครั้งอาจต้องอดนอนเร่งงานให้ทันส่ง", tags: ["A"], weight: 1.0 },
-  { id: "Q_A_4", section: "interests", type: "likert", text: "ถ้างานที่ลูกค้าหรือหัวหน้าเลือกไม่ตรงกับสไตล์ที่ฉันชอบที่สุด แต่ตอบโจทย์เขามากกว่า ฉันก็ยังทำต่อได้", tags: ["A"], weight: 1.0 },
+  // S - Social (5 ข้อ) [cite: 258]
+  { id: "S1", section: "riasec", type: "likert", text: "ช่วยเหลือและให้คำปรึกษาคนที่มีปัญหาความเครียดหรืออารมณ์", tags: ["S"] },
+  { id: "S2", section: "riasec", type: "likert", text: "ให้คำแนะนำด้านอาชีพหรือการเรียนต่อแก่ผู้อื่น", tags: ["S"] },
+  { id: "S3", section: "riasec", type: "likert", text: "ทำกายภาพบำบัดหรือฟื้นฟูสมรรถภาพให้ผู้ป่วย", tags: ["S"] },
+  { id: "S4", section: "riasec", type: "likert", text: "ทำงานอาสาสมัครในมูลนิธิหรือองค์กรไม่แสวงหาผลกำไร", tags: ["S"] },
+  { id: "S5", section: "riasec", type: "likert", text: "เป็นครูสอนหนังสือเด็กนักเรียนมัธยม", tags: ["S"] },
 
-  // S — Social
-  { id: "Q_S_1", section: "interests", type: "likert", text: "ฉันสามารถควบคุมอารมณ์และพูดดีได้ แม้ต้องเจอคนที่เหวี่ยงวีน พูดจาไม่ดี หรือไม่ให้ความร่วมมือ", tags: ["S"], weight: 1.0 },
-  { id: "Q_S_2", section: "interests", type: "likert", text: "ฉันยินดีอธิบายเรื่องเดิมซ้ำ ๆ ให้คนที่เข้าใจช้ากว่าคนอื่น โดยไม่แสดงอาการรำคาญออกไป", tags: ["S"], weight: 1.0 },
-  { id: "Q_S_3", section: "interests", type: "likert", text: "ฉันรับได้ถ้าต้องทำงานในเวลาที่คนส่วนใหญ่พักผ่อน (เช่น เสาร์-อาทิตย์ หรือเวรดึก) เพื่อดูแลคนอื่น", tags: ["S"], weight: 1.0 },
-  { id: "Q_S_4", section: "interests", type: "likert", text: "หลังจากฟังปัญหาหนัก ๆ ของคนอื่น ฉันยังพอแยกได้ว่าอะไรคือเรื่องของเขา ไม่เอามาเครียดแทนตลอดเวลา", tags: ["S"], weight: 1.0 },
+  // E - Enterprising (5 ข้อ) [cite: 259]
+  { id: "E1", section: "riasec", type: "likert", text: "เป็นผู้จัดการหรือดูแลแผนกในบริษัทขนาดใหญ่", tags: ["E"] },
+  { id: "E2", section: "riasec", type: "likert", text: "เริ่มต้นทำธุรกิจ หรือเปิดกิจการของตัวเอง", tags: ["E"] },
+  { id: "E3", section: "riasec", type: "likert", text: "เจรจาต่อรองข้อตกลง หรือสัญญาทางธุรกิจ", tags: ["E"] },
+  { id: "E4", section: "riasec", type: "likert", text: "วางแผนการตลาดและโปรโมตเสื้อผ้าหรือสินค้าคอลเลกชันใหม่", tags: ["E"] },
+  { id: "E5", section: "riasec", type: "likert", text: "ขายสินค้า หรือนำเสนอสินค้าให้ลูกค้าในห้างสรรพสินค้า", tags: ["E"] },
 
-  // E — Enterprising
-  { id: "Q_E_1", section: "interests", type: "likert", text: "ฉันสามารถรับมือกับความกดดัน เมื่อมียอดขายหรือเป้าหมาย (KPI) ชัดเจน และถูกวัดผลเป็นตัวเลขทุกเดือน", tags: ["E"], weight: 1.0 },
-  { id: "Q_E_2", section: "interests", type: "likert", text: "ฉันกล้าเข้าไปคุย/เสนอไอเดียกับคนแปลกหน้า หรือผู้ใหญ่ที่มีตำแหน่งสูงกว่าฉัน เพื่อผลลัพธ์ของงาน", tags: ["E"], weight: 1.0 },
-  { id: "Q_E_3", section: "interests", type: "likert", text: "ฉันรับได้ถ้าต้องโดนปฏิเสธข้อเสนอหรือไอเดียซ้ำ ๆ และยังกล้าลองใหม่โดยไม่รู้สึกท้อจนหยุดไปเลย", tags: ["E"], weight: 1.0 },
-  { id: "Q_E_4", section: "interests", type: "likert", text: "ถ้างานต้องให้ฉันรับผิดชอบตัดสินใจเรื่องสำคัญ ๆ ของทีม ฉันพร้อมรับทั้งคำชมและคำตำหนิจากผลลัพธ์นั้น", tags: ["E"], weight: 1.0 },
-
-  // C — Conventional
-  { id: "Q_C_1", section: "interests", type: "likert", text: "ฉันสามารถทำงานกับตัวเลขหรือเอกสารที่ต้องละเอียดและแม่นยำสูง (เช่น ตัวเลขเงิน, เอกสารสัญญา) ได้โดยไม่รู้สึกกดดันเกินไป", tags: ["C"], weight: 1.0 },
-  { id: "Q_C_2", section: "interests", type: "likert", text: "ฉันรู้สึกโอเคกับการทำงานที่รูปแบบคล้ายเดิมทุกวัน แต่ต้องรักษามาตรฐานให้เป๊ะสม่ำเสมอ", tags: ["C"], weight: 1.0 },
-  { id: "Q_C_3", section: "interests", type: "likert", text: "ฉันสบายใจกับการทำงานที่มีกฎ ระเบียบ และขั้นตอนตายตัว มากกว่างานที่เปลี่ยนไปมาโดยไม่มีหลักเกณฑ์ชัดเจน", tags: ["C"], weight: 1.0 },
-  { id: "Q_C_4", section: "interests", type: "likert", text: "ถ้าหัวหน้าหรือระบบกำหนดรูปแบบเอกสาร/ไฟล์/โฟลเดอร์ไว้ชัดเจน ฉันยินดีทำตามและช่วยให้ทีมรักษาระบบนั้นต่อไป", tags: ["C"], weight: 1.0 },
+  // C - Conventional (5 ข้อ) [cite: 260]
+  { id: "C1", section: "riasec", type: "likert", text: "ติดตั้งซอฟต์แวร์และดูแลระบบคอมพิวเตอร์ในเครือข่ายใหญ่", tags: ["C"] },
+  { id: "C2", section: "riasec", type: "likert", text: "ใช้เครื่องคิดเลข หรือโปรแกรมคำนวณตัวเลข", tags: ["C"] },
+  { id: "C3", section: "riasec", type: "likert", text: "บันทึกและจัดเก็บข้อมูลการรับ-ส่งสินค้า", tags: ["C"] },
+  { id: "C4", section: "riasec", type: "likert", text: "ตรวจเช็กสต็อกสินค้าหรืออุปกรณ์ด้วยเครื่องสแกนบาร์โค้ด", tags: ["C"] },
+  { id: "C5", section: "riasec", type: "likert", text: "คัดแยก จัดระเบียบ และแจกจ่ายเอกสารหรือพัสดุในองค์กร", tags: ["C"] }
 ];
 
 // ------ SECTION 2: Academic Profile (6 questions) ------
@@ -127,7 +127,7 @@ export function getQuestionsBySection(section) {
 }
 
 export const SECTIONS = [
-  { id: "interests", label: "ความสนใจ (RIASEC)", icon: "Heart", questionCount: 24 },
+  { id: "interests", label: "ความสนใจ (RIASEC)", icon: "Heart", questionCount: 30 },
   { id: "academic", label: "ด้านวิชาการ", icon: "BookOpen", questionCount: 6 },
   { id: "constraints", label: "ข้อจำกัด/ความต้องการ", icon: "Settings", questionCount: 4 },
 ];

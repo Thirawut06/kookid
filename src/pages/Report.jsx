@@ -11,6 +11,7 @@ import { getCareerClusters } from "@/lib/dataLoader";
 import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
 import { hasLeadCapture, getStoredQuizResult, upsertLeadCapture, getStoredLeadProfile } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
+import { buildHollandCode } from "@/lib/scoringEngine";
 
 const RIASEC_LABELS = { R: "Realistic", I: "Investigative", A: "Artistic", S: "Social", E: "Enterprising", C: "Conventional" };
 const RIASEC_COLORS = { R: "#6366f1", I: "#0ea5e9", A: "#f59e0b", S: "#22c55e", E: "#ef4444", C: "#8b5cf6" };
@@ -110,6 +111,7 @@ export default function Report() {
 
   const { profile, clusters, careers, summary } = result;
   const topClusters = (clusters ?? careers ?? []).slice(0, 3);
+  const hollandCode = result.hollandCode || profile.hollandCode || buildHollandCode(profile.traitScores || []);
 
   const riasecScores = profile.traitScores
     .filter(ts => ["R", "I", "A", "S", "E", "C"].includes(ts.dimension))
@@ -147,6 +149,12 @@ export default function Report() {
             )}
           </div>
         </div>
+
+        <section className="mb-5 rounded-lg border-2 px-4 py-3" style={{borderColor:"#1a4fba", background:"#eff6ff"}}>
+          <p className="text-xs font-semibold uppercase tracking-widest" style={{color:"#1a4fba"}}>Holland Code</p>
+          <p className="mt-1 text-3xl sm:text-4xl font-bold tracking-[0.25em]" style={{color:"#1a4fba"}}>{hollandCode}</p>
+          <p className="mt-1 text-sm text-gray-600">รหัสบุคลิกภาพ Holland Code ของคุณคือ: {hollandCode}</p>
+        </section>
 
         {/* Section 1 — Personality */}
         <section className="mb-5">

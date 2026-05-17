@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const DIMENSION_COLORS = {
@@ -20,7 +21,7 @@ const DIMENSION_LABELS = {
   C: "C — Conventional",
 };
 
-export default function RIASECChart({ traitScores }) {
+export default function RIASECChart({ traitScores, hollandCode }) {
   const riasec = traitScores
     .filter(ts => ["R", "I", "A", "S", "E", "C"].includes(ts.dimension))
     .sort((a, b) => {
@@ -29,7 +30,13 @@ export default function RIASECChart({ traitScores }) {
     });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      {hollandCode && (
+        <Card className="border-primary/20 bg-primary/5 px-4 py-3">
+          <p className="text-sm text-muted-foreground">รหัสบุคลิกภาพ Holland Code ของคุณคือ</p>
+          <p className="mt-1 text-2xl sm:text-3xl font-bold tracking-[0.2em] text-primary">{hollandCode}</p>
+        </Card>
+      )}
       {riasec.map((ts, i) => (
         <div key={ts.dimension} className="flex items-center gap-3">
           <span className="text-xs font-semibold w-28 sm:w-36 text-right text-muted-foreground shrink-0">

@@ -16,6 +16,7 @@ import OverallFeedbackPanel from "@/components/feedback/OverallFeedbackPanel";
 import ActionPlan from "@/components/results/ActionPlan";
 import { submitCareerFeedback, submitMajorFeedback, submitResultFeedback } from "@/lib/feedbackApi";
 import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
+import { buildHollandCode } from "@/lib/scoringEngine";
 import {
   getStoredUserProfileId,
   hasLeadCapture,
@@ -78,6 +79,7 @@ export default function Results() {
   const userProfileId = leadProfileId;
   const hasCapturedLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
   const leadProfile = userProfileId ? getStoredLeadProfile(userProfileId) : null;
+  const hollandCode = result.hollandCode || profile.hollandCode || buildHollandCode(profile.traitScores || []);
 
   const openReport = () => {
     trackEvent("report_open_clicked", {
@@ -265,6 +267,10 @@ export default function Results() {
               <Sparkles className="w-5 h-5 text-primary" />
               บุคลิกภาพของคุณ
             </h2>
+            <div className="mb-4 rounded-2xl border border-primary/20 bg-background/80 px-4 py-3">
+              <p className="text-sm text-muted-foreground">รหัสบุคลิกภาพ Holland Code ของคุณคือ</p>
+              <p className="mt-1 text-2xl sm:text-3xl font-bold tracking-[0.2em] text-primary">{hollandCode}</p>
+            </div>
             <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">{summary.summaryText}</p>
             {/* Bullet points from rule-based personality analysis */}
             {summary.bulletPoints?.length > 0 && (
@@ -294,7 +300,7 @@ export default function Results() {
             คะแนน RIASEC ของคุณ
           </h2>
           <Card className="p-5 sm:p-6 border border-border/50">
-            <RIASECChart traitScores={profile.traitScores} />
+            <RIASECChart traitScores={profile.traitScores} hollandCode={hollandCode} />
           </Card>
         </motion.div>
 
