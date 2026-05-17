@@ -89,6 +89,10 @@ export default function LeadCaptureForm({
 
   return (
     <form onSubmit={handleSubmit} className={cn("space-y-4", className)}>
+      <div>
+        <h2 className="text-lg font-semibold text-foreground">กรอกข้อมูลเพื่อดูรายงานฉบับเต็ม</h2>
+        <p className="text-sm text-muted-foreground mt-1">ระบบจะบันทึกผลการทดสอบของคุณ และอาจนำส่งข้อมูลนี้ให้มหาวิทยาลัยที่คุณสนใจเพื่อติดต่อกลับ</p>
+      </div>
       <div className={cn("grid gap-4", compact ? "md:grid-cols-1" : "md:grid-cols-2")}>
         <div className="space-y-2">
           <Label htmlFor="nickname">ชื่อเล่น <span className="text-destructive">*</span></Label>

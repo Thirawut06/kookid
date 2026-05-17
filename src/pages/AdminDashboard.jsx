@@ -514,7 +514,7 @@ export default function AdminDashboard() {
                   <th className="py-2 pr-2">ระดับชั้น</th>
                   <th className="py-2 pr-2">โรงเรียน</th>
                   <th className="py-2 pr-2">จังหวัดของโรงเรียน</th>
-                  <th className="py-2 pr-2">เบอร์โทร/ติดต่อ</th>
+                  <th className="py-2 pr-2">เบอร์โทร/LINE</th>
                   <th className="py-2 pr-2">อีเมล</th>
                   <th className="py-2 pr-2">กลุ่มอาชีพ</th>
                   <th className="py-2 pr-2">สาขา</th>

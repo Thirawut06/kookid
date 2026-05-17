@@ -59,13 +59,10 @@ export default function Landing() {
               คู่คิด KooKid
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
-              ค้นหาคณะและอาชีพ
-              <br />
-              <span className="text-primary">ที่ใช่สำหรับคุณ</span>
+              ค้นหาคณะและมหาวิทยาลัยที่ใช่สำหรับคุณ
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              แบบทดสอบวิเคราะห์ความสนใจ ความถนัด และบุคลิกภาพ
-              เพื่อแนะนำสาขาวิชาและมหาวิทยาลัยที่เหมาะกับคุณในระบบ TCAS
+              แบบทดสอบค้นหาตัวเอง 24 ข้อ พร้อมจับคู่สาขาและมหาวิทยาลัยที่เหมาะสมตามความสนใจของคุณ
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 mt-5 text-sm text-muted-foreground">

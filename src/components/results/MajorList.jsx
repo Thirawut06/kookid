@@ -71,13 +71,13 @@ export default function MajorList({
                   type="button"
                   size="sm"
                   disabled={alreadyRequested}
-                  className="w-full rounded-xl h-auto py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-sm disabled:bg-amber-100 disabled:text-amber-700 disabled:opacity-100"
+                  className="w-full rounded-xl h-auto py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm disabled:bg-blue-100 disabled:text-muted-foreground disabled:opacity-100"
                   onClick={() => onProgramInterest?.(major)}
                 >
                   <Gift className="w-4 h-4 mr-1.5 shrink-0" />
                   {alreadyRequested
                     ? "ส่งคำขอแล้ว"
-                    : "สนใจรับโควต้า / ทุนการศึกษาจากมหาวิทยาลัยนี้"}
+                    : "สนใจให้มหาวิทยาลัยนี้ติดต่อกลับ (ข้อมูลโควต้า/ทุน)"}
                 </Button>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
                   กดปุ่มนี้ถ้าคุณอยากให้มหาวิทยาลัยส่งข้อมูลโควต้า/ทุนที่ตรงกับผลของคุณมาให้ (ไม่มีค่าใช้จ่าย)
