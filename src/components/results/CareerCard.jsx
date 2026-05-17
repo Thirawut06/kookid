@@ -18,8 +18,16 @@ const RANK_STYLES = [
   "border-border/50",
 ];
 
-export default function CareerCard({ career, rank, feedbackValue, onFeedback }) {
+export default function CareerCard({ career, rank, feedbackValue, onFeedback, onCareerViewed }) {
   const [expanded, setExpanded] = useState(rank === 0);
+
+  const handleToggleExpanded = () => {
+    const nextExpanded = !expanded;
+    if (nextExpanded) {
+      onCareerViewed?.(career);
+    }
+    setExpanded(nextExpanded);
+  };
 
   return (
     <motion.div
@@ -32,7 +40,7 @@ export default function CareerCard({ career, rank, feedbackValue, onFeedback }) 
           "overflow-hidden cursor-pointer transition-shadow hover:shadow-md border-2",
           RANK_STYLES[rank] || RANK_STYLES[3]
         )}
-        onClick={() => setExpanded(!expanded)}
+        onClick={handleToggleExpanded}
       >
         <div className="p-4 sm:p-5">
           <div className="flex items-start justify-between gap-3">

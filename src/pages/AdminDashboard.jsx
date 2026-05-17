@@ -25,6 +25,21 @@ function downloadCsv(filename, rows) {
   URL.revokeObjectURL(url);
 }
 
+function splitGradeAndSchool(value) {
+  if (!value || typeof value !== "string") {
+    return { gradeLevel: "", schoolName: "" };
+  }
+
+  const parts = value.split("/").map(part => part.trim()).filter(Boolean);
+  if (parts.length === 0) return { gradeLevel: "", schoolName: "" };
+  if (parts.length === 1) return { gradeLevel: parts[0], schoolName: "" };
+
+  return {
+    gradeLevel: parts[0],
+    schoolName: parts.slice(1).join(" / "),
+  };
+}
+
 export default function AdminDashboard() {
   const majors = useMemo(() => getMajors(), []);
   const clusters = useMemo(() => getCareerClusters(), []);
@@ -36,6 +51,7 @@ export default function AdminDashboard() {
 
   const [profiles, setProfiles] = useState([]);
   const [interests, setInterests] = useState([]);
+  const [quizResults, setQuizResults] = useState([]);
   const [eventRows, setEventRows] = useState([]);
   const [quizCount, setQuizCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -56,6 +72,9 @@ export default function AdminDashboard() {
       const major = majorById[row.major_id] || null;
       const cluster = major ? clusterById[major.clusterId] : null;
       const profile = profileById[row.user_profile_id] || null;
+      const fallbackGradeAndSchool = splitGradeAndSchool(profile?.grade_and_school);
+      const gradeLevel = profile?.grade_level || profile?.gradeLevel || fallbackGradeAndSchool.gradeLevel || "-";
+      const schoolName = profile?.school_name || profile?.schoolName || fallbackGradeAndSchool.schoolName || "-";
       const universityId = row.university_id || major?.universityId || "-";
       const universityName = major?.universityNameTh || universityId;
 
@@ -64,8 +83,9 @@ export default function AdminDashboard() {
         createdAt: row.created_at,
         userProfileId: row.user_profile_id,
         nickname: profile?.nickname || "-",
-        gradeAndSchool: profile?.grade_and_school || "-",
-        schoolProvince: profile?.school_province || "-",
+        gradeLevel,
+        schoolName,
+        schoolProvince: profile?.school_province || profile?.schoolProvince || "-",
         contact: profile?.contact || "-",
         email: profile?.email || "-",
         majorId: row.major_id,
@@ -95,6 +115,12 @@ export default function AdminDashboard() {
     });
   }, [enrichedInterests, universityFilter, majorFilter]);
 
+  const hasActiveFilters = universityFilter !== "all" || majorFilter !== "all";
+
+  const filteredProfileIds = useMemo(() => {
+    return new Set(filteredRows.map(row => row.userProfileId));
+  }, [filteredRows]);
+
   const groupedStats = useMemo(() => {
     const map = new Map();
     filteredRows.forEach(row => {
@@ -120,6 +146,61 @@ export default function AdminDashboard() {
       .sort((a, b) => b.count - a.count);
   }, [eventRows]);
 
+  const clusterSummary = useMemo(() => {
+    const map = new Map();
+    const sourceQuizResults = hasActiveFilters
+      ? quizResults.filter(row => filteredProfileIds.has(row.user_profile_id))
+      : quizResults;
+
+    sourceQuizResults.forEach(row => {
+      const clustersFromResult = Array.isArray(row?.result?.clusters) ? row.result.clusters : [];
+      clustersFromResult.forEach(cluster => {
+        const clusterId = cluster.clusterId || cluster.id || cluster.nameTh;
+        if (!clusterId) return;
+
+        const current = map.get(clusterId) || {
+          clusterName: cluster.nameTh || clusterById[clusterId]?.nameTh || clusterId,
+          profileIds: new Set(),
+        };
+        current.profileIds.add(row.user_profile_id);
+        map.set(clusterId, current);
+      });
+    });
+
+    return Array.from(map.entries())
+      .map(([clusterId, data]) => ({
+        clusterId,
+        clusterName: data.clusterName,
+        count: data.profileIds.size,
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [quizResults, hasActiveFilters, filteredProfileIds, clusterById]);
+
+  const topCareers = useMemo(() => {
+    const map = new Map();
+
+    eventRows
+      .filter(row => row.event_name === "career_viewed")
+      .filter(row => {
+        if (!hasActiveFilters) return true;
+        return filteredProfileIds.has(row.user_profile_id);
+      })
+      .forEach(row => {
+        const payload = row.payload || {};
+        // Keep this payload contract flexible for future careers.json-based IDs.
+        const careerId = payload.careerId || payload.career_id || payload.clusterId || payload.cluster_id || "unknown";
+        const careerName = payload.careerName || payload.career_name || payload.clusterName || payload.cluster_name || clusterById[payload.clusterId]?.nameTh || "ไม่ระบุอาชีพ";
+        const key = `${careerId}::${careerName}`;
+        const current = map.get(key) || { careerName, count: 0 };
+        current.count += 1;
+        map.set(key, current);
+      });
+
+    return Array.from(map.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }, [eventRows, hasActiveFilters, filteredProfileIds, clusterById]);
+
   useEffect(() => {
     if (!isAuthed) return;
     if (!supabase) {
@@ -132,14 +213,15 @@ export default function AdminDashboard() {
       setIsLoading(true);
       setError("");
       try {
-        const [profilesRes, interestsRes, eventsRes, quizCountRes] = await Promise.all([
-          supabase.from("user_profiles").select("id,nickname,grade_and_school,contact,email,school_province,created_at"),
+        const [profilesRes, interestsRes, quizResultsRes, eventsRes, quizCountRes] = await Promise.all([
+          supabase.from("user_profiles").select("*"),
           supabase.from("program_interests").select("id,user_profile_id,major_id,university_id,created_at").order("created_at", { ascending: false }),
-          supabase.from("event_logs").select("event_name,created_at").order("created_at", { ascending: false }).limit(5000),
+          supabase.from("quiz_results").select("user_profile_id,result,created_at").order("created_at", { ascending: false }),
+          supabase.from("event_logs").select("event_name,created_at,user_profile_id,session_id,page,payload").order("created_at", { ascending: false }).limit(5000),
           supabase.from("quiz_results").select("id", { count: "exact", head: true }),
         ]);
 
-        const errors = [profilesRes.error, interestsRes.error, eventsRes.error, quizCountRes.error].filter(Boolean);
+        const errors = [profilesRes.error, interestsRes.error, quizResultsRes.error, eventsRes.error, quizCountRes.error].filter(Boolean);
         if (errors.length > 0) {
           throw errors[0];
         }
@@ -147,6 +229,7 @@ export default function AdminDashboard() {
         if (!mounted) return;
         setProfiles(profilesRes.data || []);
         setInterests(interestsRes.data || []);
+        setQuizResults(quizResultsRes.data || []);
         setEventRows(eventsRes.data || []);
         setQuizCount(quizCountRes.count || 0);
       } catch (err) {
@@ -180,8 +263,9 @@ export default function AdminDashboard() {
       "created_at",
       "user_profile_id",
       "nickname",
-      "grade_and_school",
-      "school_province",
+      "gradeLevel",
+      "schoolName",
+      "schoolProvince",
       "contact",
       "email",
       "cluster",
@@ -193,7 +277,8 @@ export default function AdminDashboard() {
       row.createdAt,
       row.userProfileId,
       row.nickname,
-      row.gradeAndSchool,
+      row.gradeLevel,
+      row.schoolName,
       row.schoolProvince,
       row.contact,
       row.email,
@@ -249,7 +334,7 @@ export default function AdminDashboard() {
       <div className="max-w-6xl mx-auto space-y-5">
         <div>
           <h1 className="text-2xl font-bold text-foreground">KooKid Admin Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">สรุปผู้ทำแบบทดสอบ คำขอข้อมูลโควต้า/ทุน และ event พื้นฐานของระบบ</p>
+          <p className="text-sm text-muted-foreground mt-1">สรุปผู้ทำแบบทดสอบ คำขอข้อมูลโควต้า/ทุน ความสนใจตามกลุ่มอาชีพ และ event พื้นฐานของระบบ</p>
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
@@ -273,7 +358,7 @@ export default function AdminDashboard() {
           <div className="flex flex-col sm:flex-row gap-3 sm:items-end sm:justify-between">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:max-w-2xl">
               <div>
-                <label className="text-xs text-muted-foreground">Filter by University</label>
+                <label className="text-xs text-muted-foreground">กรองตามมหาวิทยาลัย</label>
                 <select
                   className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                   value={universityFilter}
@@ -302,12 +387,63 @@ export default function AdminDashboard() {
 
             <div className="flex flex-col sm:flex-row gap-2">
               <Button onClick={handleExportCsv} className="rounded-xl">
-                Export program interests CSV
+                Export รายการคำขอ (CSV)
               </Button>
               <Button onClick={handleExportEventsCsv} variant="outline" className="rounded-xl">
-                Export event logs CSV
+                Export Event Logs (CSV)
               </Button>
             </div>
+          </div>
+        </Card>
+
+        <Card className="p-4 sm:p-5 border border-border/60">
+          <h2 className="text-base font-semibold text-foreground mb-3">สรุปจำนวนผู้สนใจตามกลุ่มสาขา (Cluster)</h2>
+          <div className="space-y-2">
+            {clusterSummary.map((row) => {
+              const maxCount = clusterSummary[0]?.count || 1;
+              const width = Math.max(8, Math.round((row.count / maxCount) * 100));
+              return (
+                <div key={row.clusterId} className="rounded-lg border border-border/50 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-medium text-foreground">{row.clusterName}</p>
+                    <p className="text-sm font-semibold text-foreground">{row.count}</p>
+                  </div>
+                  <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full bg-primary" style={{ width: `${width}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+            {clusterSummary.length === 0 && (
+              <p className="text-sm text-muted-foreground">ยังไม่มีข้อมูล cluster ตามตัวกรองที่เลือก</p>
+            )}
+          </div>
+        </Card>
+
+        <Card className="p-4 sm:p-5 border border-border/60">
+          <h2 className="text-base font-semibold text-foreground mb-3">อาชีพที่ได้รับความสนใจมากที่สุด</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[420px] text-sm">
+              <thead>
+                <tr className="text-left border-b border-border">
+                  <th className="py-2 pr-2">Career name</th>
+                  <th className="py-2 pr-2">Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topCareers.map((row, idx) => (
+                  <tr key={`${row.careerName}_${idx}`} className="border-b border-border/50">
+                    <td className="py-2 pr-2">{row.careerName}</td>
+                    <td className="py-2 pr-2 font-semibold">{row.count}</td>
+                  </tr>
+                ))}
+                {topCareers.length === 0 && (
+                  <tr>
+                    <td className="py-3 text-muted-foreground" colSpan={2}>ยังไม่มี event career_viewed ตามตัวกรองที่เลือก</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </Card>
 
@@ -370,13 +506,14 @@ export default function AdminDashboard() {
         <Card className="p-4 sm:p-5 border border-border/60">
           <h2 className="text-base font-semibold text-foreground mb-3">รายการคำขอ (ตามตัวกรองปัจจุบัน)</h2>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] text-sm">
+            <table className="w-full min-w-[980px] text-sm">
               <thead>
                 <tr className="text-left border-b border-border">
                   <th className="py-2 pr-2">เวลา</th>
                   <th className="py-2 pr-2">นักเรียน</th>
-                  <th className="py-2 pr-2">โรงเรียน/ระดับชั้น</th>
-                  <th className="py-2 pr-2">จังหวัด</th>
+                  <th className="py-2 pr-2">ระดับชั้น</th>
+                  <th className="py-2 pr-2">โรงเรียน</th>
+                  <th className="py-2 pr-2">จังหวัดของโรงเรียน</th>
                   <th className="py-2 pr-2">เบอร์โทร/ติดต่อ</th>
                   <th className="py-2 pr-2">อีเมล</th>
                   <th className="py-2 pr-2">กลุ่มอาชีพ</th>
@@ -389,7 +526,8 @@ export default function AdminDashboard() {
                   <tr key={row.id} className="border-b border-border/50">
                     <td className="py-2 pr-2 whitespace-nowrap">{new Date(row.createdAt).toLocaleString("th-TH")}</td>
                     <td className="py-2 pr-2">{row.nickname}</td>
-                    <td className="py-2 pr-2">{row.gradeAndSchool}</td>
+                    <td className="py-2 pr-2">{row.gradeLevel}</td>
+                    <td className="py-2 pr-2">{row.schoolName}</td>
                     <td className="py-2 pr-2">{row.schoolProvince}</td>
                     <td className="py-2 pr-2">{row.contact}</td>
                     <td className="py-2 pr-2">{row.email}</td>
@@ -400,7 +538,7 @@ export default function AdminDashboard() {
                 ))}
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td className="py-3 text-muted-foreground" colSpan={9}>ไม่พบรายการคำขอตามตัวกรองที่เลือก</td>
+                    <td className="py-3 text-muted-foreground" colSpan={10}>ไม่พบรายการคำขอตามตัวกรองที่เลือก</td>
                   </tr>
                 )}
               </tbody>

@@ -183,6 +183,16 @@ export default function Results() {
     setMajorFeedback(prev => ({ ...prev, [majorId]: level }));
   };
 
+  const handleCareerViewed = (career) => {
+    trackEvent("career_viewed", {
+      page: "results",
+      userProfileId: userProfileId || null,
+      careerId: career.careerId || career.clusterId || null,
+      careerName: career.nameTh || null,
+      clusterId: career.clusterId || null,
+    });
+  };
+
   /**
    * Called by OverallFeedbackPanel when user clicks "บันทึก Feedback".
    * Batches all three API calls; errors are non-blocking.
@@ -306,6 +316,7 @@ export default function Results() {
                 rank={i}
                 feedbackValue={careerFeedback[c.clusterId]}
                 onFeedback={handleCareerFeedback}
+                onCareerViewed={handleCareerViewed}
               />
             ))}
           </div>
