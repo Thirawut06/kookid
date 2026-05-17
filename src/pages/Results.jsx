@@ -58,7 +58,9 @@ export default function Results() {
 
   useEffect(() => {
     if (!result || !leadProfileId || !hasLeadCapture(leadProfileId)) return;
-    upsertQuizResult(leadProfileId, result);
+    upsertQuizResult(leadProfileId, result).catch((error) => {
+      console.error("Results quiz sync failed:", error);
+    });
   }, [result, leadProfileId]);
 
   useEffect(() => {

@@ -16,6 +16,7 @@ import {
   getOrCreateActiveProfileId,
   getStoredLeadProfile,
   savePreQuizInfo,
+  upsertQuizResult,
 } from "@/lib/leadCaptureApi";
 
 import SectionStepper from "@/components/quiz/SectionStepper";
@@ -159,6 +160,9 @@ export default function Quiz() {
 
       // Store in sessionStorage so Results page can read it
       sessionStorage.setItem("tcas_quiz_result", JSON.stringify(result));
+      upsertQuizResult(profileId, result).catch((error) => {
+        console.error("Quiz result persistence skipped:", error);
+      });
       navigate("/results");
     }, 800);
   };

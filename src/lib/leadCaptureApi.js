@@ -109,7 +109,13 @@ export function getStoredLeadProfile(userProfileId) {
   return store.profiles?.[userProfileId] ?? null;
 }
 
-export function savePreQuizInfo({ nickname, gradeLevel, schoolName, studyTrack, gradeAndSchool }) {
+export function savePreQuizInfo({
+  nickname = "",
+  gradeLevel = "",
+  schoolName = "",
+  studyTrack = "",
+  gradeAndSchool = "",
+} = {}) {
   if (typeof window === "undefined") return null;
 
   const profileId = getOrCreateActiveProfileId();
@@ -142,7 +148,7 @@ export function savePreQuizInfo({ nickname, gradeLevel, schoolName, studyTrack, 
   return profileId;
 }
 
-export function upsertQuizResult(userProfileId, result) {
+export async function upsertQuizResult(userProfileId, result) {
   if (!userProfileId || !result) return;
 
   const store = readStore();
@@ -152,6 +158,10 @@ export function upsertQuizResult(userProfileId, result) {
     linkedAt: new Date().toISOString(),
   };
   writeStore(store);
+
+  if (supabase) {
+    await persistQuizResultToSupabase(userProfileId, result);
+  }
 }
 
 async function persistQuizResultToSupabase(userProfileId, result) {

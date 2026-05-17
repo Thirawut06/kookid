@@ -3,362 +3,232 @@
     "id": "CAREER_CONTENT_CREATOR",
     "nameTh": "คอนเทนต์ครีเอเตอร์ / Creator",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
-    "hollandCode": ["A", "S", "E"],
-    "description": "ผลิตคอนเทนต์ลงโซเชียล เช่น TikTok, YouTube, IG ทำวิดีโอ รูป และข้อความให้ดึงดูดกลุ่มเป้าหมาย",
-    "exampleEmployers": ["เอเจนซี่โฆษณา", "สื่อออนไลน์", "อินฟลูเอนเซอร์/แบรนด์ส่วนตัว"],
-    "relatedMajors": ["CU_COMM", "BU_COMM_NEW_MEDIA", "RSU_COMM", "SPU_COMM", "RU_MASSCOMM"]
+    "hollandCode": "A; S; E",
+    "description": "ผลิตคอนเทนต์ลงโซเชียล เช่น TikTok",
+    "exampleEmployers": "YouTuber"
   },
   {
     "id": "CAREER_SOCIAL_MEDIA_MANAGER",
     "nameTh": "ผู้ดูแลโซเชียลมีเดีย (Social Media Manager)",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
-    "hollandCode": ["E", "A", "S"],
+    "hollandCode": "E; A; S",
     "description": "วางแผนและดูแลเพจ/โซเชียลของแบรนด์ ทำคอนเทนต์ปฏิทิน โฆษณา และวัดผลแคมเปญ",
-    "exampleEmployers": ["เอเจนซี่", "แบรนด์สินค้า", "สตาร์ตอัปอีคอมเมิร์ซ"],
-    "relatedMajors": ["CU_COMM", "TU_JOURN_MASSCOMM", "BU_COMM_NEW_MEDIA", "KU_HUMAN_COMM"]
+    "exampleEmployers": "เอเจนซี่; แบรนด์สินค้า; สตาร์ตอัปอีคอมเมิร์ซ"
   },
   {
     "id": "CAREER_JOURNALIST",
     "nameTh": "นักข่าว / ผู้สื่อข่าว",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
-    "hollandCode": ["S", "A", "E"],
+    "hollandCode": "S; A; E",
     "description": "ติดตามประเด็นสังคม การเมือง เศรษฐกิจ ลงพื้นที่ สัมภาษณ์ และเขียน/ตัดต่อข่าวเผยแพร่ในสื่อ",
-    "exampleEmployers": ["สถานีโทรทัศน์", "สำนักข่าวออนไลน์", "หนังสือพิมพ์"],
-    "relatedMajors": ["TU_JOURN_MASSCOMM", "CMU_MASSCOMM", "RU_MASSCOMM", "KU_HUMAN_COMM"]
+    "exampleEmployers": "สถานีโทรทัศน์; สำนักข่าวออนไลน์; หนังสือพิมพ์"
   },
   {
     "id": "CAREER_PR_OFFICER",
     "nameTh": "นักประชาสัมพันธ์ / PR",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
-    "hollandCode": ["S", "E", "A"],
+    "hollandCode": "S; E; A",
     "description": "สร้างภาพลักษณ์และความสัมพันธ์ที่ดีกับสาธารณะ เขียนข่าวประชาสัมพันธ์ จัดงาน และประสานสื่อ",
-    "exampleEmployers": ["องค์กรรัฐ", "บริษัทเอกชน", "เอเจนซี่ PR"],
-    "relatedMajors": ["CU_COMM", "SPU_COMM", "BU_COMM_NEW_MEDIA", "RSU_COMM"]
+    "exampleEmployers": "องค์กรรัฐ; บริษัทเอกชน; เอเจนซี่ PR"
   },
   {
     "id": "CAREER_MEDIA_PRODUCER",
     "nameTh": "โปรดิวเซอร์ / ผู้ผลิตรายการและวิดีโอ",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
-    "hollandCode": ["A", "E", "S"],
-    "description": "คิดคอนเซปต์รายการ คุมทีมถ่ายทำ ตัดต่อ และดูแลงานวิดีโอให้เสร็จตามเวลาและงบประมาณ",
-    "exampleEmployers": ["ช่องทีวี", "บริษัทโปรดักชันเฮาส์", "ทีมคอนเทนต์แบรนด์"],
-    "relatedMajors": ["CU_COMM", "BU_COMM_NEW_MEDIA", "RSU_COMM", "CMU_MASSCOMM"]
-  },
-
-  {
-    "id": "CAREER_SOFTWARE_ENGINEER",
-    "nameTh": "วิศวกรซอฟต์แวร์ / โปรแกรมเมอร์",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "hollandCode": ["I", "R", "C"],
-    "description": "ออกแบบและพัฒนาซอฟต์แวร์/แอป ทำงานกับโค้ด ทดสอบ และแก้บั๊กให้ระบบทำงานได้จริง",
-    "exampleEmployers": ["บริษัทซอฟต์แวร์", "สตาร์ตอัป", "ทีมพัฒนาในองค์กรใหญ่"],
-    "relatedMajors": ["KMUTT_IT", "BU_IT", "SPU_IT", "DPU_IT", "MFU_IT", "MSU_INFO_SCI"]
+    "hollandCode": "A; E; S",
+    "description": "คิดคอนเซปต์ ควบคุมงบประมาณ และบริหารทีมงานถ่ายทำจนได้ผลงานออกมา",
+    "exampleEmployers": "สถานีโทรทัศน์; โปรดักชันเฮาส์; สตูดิโอ"
   },
   {
-    "id": "CAREER_DATA_SCIENTIST",
-    "nameTh": "นักวิทยาศาสตร์ข้อมูล (Data Scientist)",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "hollandCode": ["I", "C", "R"],
-    "description": "ใช้สถิติ การเขียนโปรแกรม และแมชชีนเลิร์นนิง วิเคราะห์ข้อมูลเพื่อช่วยตัดสินใจเชิงธุรกิจ",
-    "exampleEmployers": ["ธนาคาร", "อีคอมเมิร์ซ", "บริษัทเทค", "สายงาน Data ในองค์กรใหญ่"],
-    "relatedMajors": ["KMUTT_IT", "CU_ENG", "KMITL_ENG", "BU_IT"]
+    "id": "CAREER_LAWYER",
+    "nameTh": "ทนายความ / ที่ปรึกษากฎหมาย",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "hollandCode": "E; I; S",
+    "description": "ให้คำปรึกษาทางกฎหมาย ว่าความในศาล หรือร่างสัญญาให้บริษัท",
+    "exampleEmployers": "สำนักงานกฎหมาย; ฝ่ายกฎหมายองค์กร (In-house); ศาล"
   },
   {
-    "id": "CAREER_SYSTEMS_ENGINEER",
-    "nameTh": "วิศวกรระบบ / System Engineer",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "hollandCode": ["R", "I", "C"],
-    "description": "ดูแลโครงสร้างพื้นฐานไอที เซิร์ฟเวอร์ ระบบเครือข่าย ให้ระบบองค์กรเสถียรและปลอดภัย",
-    "exampleEmployers": ["บริษัทไอที", "องค์กรใหญ่ที่มีระบบภายใน", "ผู้ให้บริการ Cloud/ISP"],
-    "relatedMajors": ["CU_ENG", "KMITL_ENG", "KMUTNB_ENG", "KKU_ENG", "BU_IT"]
-  },
-  {
-    "id": "CAREER_NETWORK_ENGINEER",
-    "nameTh": "วิศวกรเครือข่าย (Network Engineer)",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "hollandCode": ["R", "I", "C"],
-    "description": "ออกแบบ ติดตั้ง ดูแลเครือข่ายคอมพิวเตอร์ในองค์กร เช่น Router, Switch, Firewall",
-    "exampleEmployers": ["ผู้ให้บริการอินเทอร์เน็ต", "บริษัทมือถือ", "องค์กรใหญ่ที่มีสาขาเยอะ"],
-    "relatedMajors": ["CU_ENG", "KMITL_ENG", "KMUTNB_ENG", "MFU_IT", "MSU_INFO_SCI"]
-  },
-  {
-    "id": "CAREER_UX_UI_DESIGNER",
-    "nameTh": "นักออกแบบ UX/UI",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "hollandCode": ["A", "I", "S"],
-    "description": "ออกแบบประสบการณ์ผู้ใช้และหน้าตาเว็บ/แอปให้ใช้งานง่ายและสวยงาม ผสมดีไซน์กับการวิเคราะห์ผู้ใช้",
-    "exampleEmployers": ["บริษัทเทค", "สตูดิโอออกแบบดิจิทัล", "ทีม Product ในองค์กร"],
-    "relatedMajors": ["BU_IT", "SPU_IT", "DPU_IT", "KMUTT_IT"]
-  }  ,
-  {
-    "id": "CAREER_REGISTERED_NURSE",
+    "id": "CAREER_NURSE",
     "nameTh": "พยาบาลวิชาชีพ",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "hollandCode": ["S", "I", "C"],
-    "description": "ดูแลผู้ป่วยในโรงพยาบาล/คลินิก ประเมินอาการ ให้ยา ทำหัตถการพื้นฐาน และสื่อสารกับทีมแพทย์และครอบครัวผู้ป่วย",
-    "exampleEmployers": ["โรงพยาบาลรัฐ", "โรงพยาบาลเอกชน", "คลินิกเฉพาะทาง"],
-    "relatedMajors": ["MU_NURSING", "KKU_NURSING"]
+    "hollandCode": "S; I; R",
+    "description": "ดูแลและฟื้นฟูผู้ป่วย ทำงานใกล้ชิดกับแพทย์และญาติผู้ป่วย",
+    "exampleEmployers": "โรงพยาบาลรัฐ/เอกชน; คลินิกเฉพาะทาง; ศูนย์ดูแลผู้สูงอายุ"
   },
   {
-    "id": "CAREER_PUBLIC_HEALTH_OFFICER",
-    "nameTh": "นักวิชาการสาธารณสุข",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "hollandCode": ["S", "I", "C"],
-    "description": "ทำงานด้านส่งเสริมสุขภาพ วิเคราะห์ปัญหาสุขภาพชุมชน วางแผนรณรงค์และประเมินผลโครงการสาธารณสุข",
-    "exampleEmployers": ["สำนักงานสาธารณสุขจังหวัด", "โรงพยาบาลชุมชน", "องค์กรพัฒนาเอกชนด้านสุขภาพ"],
-    "relatedMajors": ["MU_NURSING", "CMU_ALLIED_HEALTH"]
-  },
-  {
-    "id": "CAREER_MEDICAL_TECHNOLOGIST",
-    "nameTh": "นักเทคนิคการแพทย์",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "hollandCode": ["I", "S", "C"],
-    "description": "ตรวจวิเคราะห์เลือด ปัสสาวะ และตัวอย่างอื่น ๆ ในห้องปฏิบัติการเพื่อช่วยแพทย์วินิจฉัยโรค",
-    "exampleEmployers": ["ห้องแล็บโรงพยาบาล", "ศูนย์ตรวจวิเคราะห์เอกชน"],
-    "relatedMajors": ["CMU_ALLIED_HEALTH"]
-  },
-  {
-    "id": "CAREER_PHYSIOTHERAPIST",
+    "id": "CAREER_PHYSICAL_THERAPIST",
     "nameTh": "นักกายภาพบำบัด",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "hollandCode": ["S", "I", "R"],
-    "description": "ประเมินและฟื้นฟูการเคลื่อนไหวของผู้ป่วยด้วยการออกกำลังบำบัด เครื่องมือ และเทคนิคเฉพาะทาง",
-    "exampleEmployers": ["โรงพยาบาล", "คลินิกกายภาพบำบัด", "ศูนย์ฟื้นฟูสมรรถภาพ"],
-    "relatedMajors": ["PSU_PHYS_THERAPY"]
+    "hollandCode": "S; R; I",
+    "description": "บำบัดและฟื้นฟูผู้ป่วยที่มีปัญหาการเคลื่อนไหว กล้ามเนื้อ และกระดูก",
+    "exampleEmployers": "โรงพยาบาล; คลินิกเวชศาสตร์ฟื้นฟู; สโมสรกีฬา"
   },
   {
-    "id": "CAREER_OCCUPATIONAL_THERAPIST",
-    "nameTh": "นักกิจกรรมบำบัด",
+    "id": "CAREER_MEDICAL_TECH",
+    "nameTh": "นักเทคนิคการแพทย์",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "hollandCode": ["S", "I", "A"],
-    "description": "ช่วยผู้ป่วยฝึกทำกิจวัตรประจำวันและปรับตัวให้กลับมาใช้ชีวิตหรือทำงานได้ใกล้เคียงเดิมมากที่สุด",
-    "exampleEmployers": ["โรงพยาบาล", "ศูนย์ฟื้นฟู", "หน่วยงานด้านคนพิการ"],
-    "relatedMajors": ["MU_NURSING", "CMU_ALLIED_HEALTH"]
-  }  ,
-  {
-    "id": "CAREER_PHYSICIAN",
-    "nameTh": "แพทย์",
-    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
-    "hollandCode": ["I", "S", "C"],
-    "description": "ตรวจ วินิจฉัย รักษา และติดตามอาการผู้ป่วย รวมถึงให้คำปรึกษาด้านสุขภาพ",
-    "exampleEmployers": ["โรงพยาบาลรัฐ", "โรงพยาบาลเอกชน", "คลินิก"],
-    "relatedMajors": ["MU_MED", "CU_MED", "KKU_MED"]
+    "hollandCode": "I; R; C",
+    "description": "ตรวจวิเคราะห์เลือด ปัสสาวะ หรือสารคัดหลั่งในห้องปฏิบัติการเพื่อช่วยแพทย์วินิจฉัยโรค",
+    "exampleEmployers": "ห้องแล็บโรงพยาบาล; ศูนย์ตรวจสุขภาพ; บริษัทเครื่องมือแพทย์"
   },
   {
-    "id": "CAREER_DENTIST",
-    "nameTh": "ทันตแพทย์",
+    "id": "CAREER_PUBLIC_HEALTH",
+    "nameTh": "นักวิชาการสาธารณสุข",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "hollandCode": "S; I; E",
+    "description": "ส่งเสริมสุขภาพชุมชน ป้องกันโรคติดต่อ และดูแลอนามัยสิ่งแวดล้อม",
+    "exampleEmployers": "โรงพยาบาลส่งเสริมสุขภาพตำบล (รพ.สต.); กรมควบคุมโรค; องค์กร NGO"
+  },
+  {
+    "id": "CAREER_DOCTOR",
+    "nameTh": "แพทย์ / หมอ",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
-    "hollandCode": ["I", "R", "S"],
-    "description": "ตรวจและรักษาสุขภาพช่องปาก อุดฟัน ถอนฟัน จัดฟัน ทำฟันปลอม และให้คำแนะนำการดูแลฟัน",
-    "exampleEmployers": ["คลินิกทันตกรรม", "โรงพยาบาล", "คลินิกของตนเอง"],
-    "relatedMajors": ["MU_MED", "CU_MED"]
+    "hollandCode": "I; S; R",
+    "description": "ตรวจวินิจฉัย สั่งยา และรักษาโรคให้ผู้ป่วย",
+    "exampleEmployers": "โรงพยาบาล; คลินิกส่วนตัว"
   },
   {
     "id": "CAREER_PHARMACIST",
     "nameTh": "เภสัชกร",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
-    "hollandCode": ["I", "C", "S"],
-    "description": "จ่ายยา ตรวจสอบความถูกต้องของยา ให้คำแนะนำการใช้ยา และดูแลคลังยา",
-    "exampleEmployers": ["โรงพยาบาล", "ร้านขายยา", "บริษัทยา"],
-    "relatedMajors": ["CU_PHARM"]
+    "hollandCode": "I; C; S",
+    "description": "จ่ายยา ให้คำปรึกษาการใช้ยา หรือวิจัยและพัฒนายาใหม่",
+    "exampleEmployers": "ร้านขายยา; โรงพยาบาล; บริษัทยา (R&D / QA)"
   },
   {
-    "id": "CAREER_VETERINARIAN",
-    "nameTh": "สัตวแพทย์",
+    "id": "CAREER_DENTIST",
+    "nameTh": "ทันตแพทย์",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
-    "hollandCode": ["I", "S", "R"],
-    "description": "ตรวจรักษาสุขภาพสัตว์ ฉีดวัคซีน ทำหัตถการ และให้คำแนะนำเจ้าของสัตว์เลี้ยง",
-    "exampleEmployers": ["โรงพยาบาลสัตว์", "คลินิกสัตวแพทย์", "ฟาร์ม/หน่วยงานรัฐ"],
-    "relatedMajors": ["MU_MED"]
+    "hollandCode": "I; R; S",
+    "description": "ดูแลรักษาโรคในช่องปาก ฟัน และเหงือก รวมถึงงานความงามทางทันตกรรม",
+    "exampleEmployers": "คลินิกทันตกรรม; โรงพยาบาล"
   },
   {
-    "id": "CAREER_MEDICAL_RESEARCHER",
-    "nameTh": "นักวิจัยด้านการแพทย์/ชีวการแพทย์",
-    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
-    "hollandCode": ["I", "R", "C"],
-    "description": "ทำวิจัยด้านยารักษาโรค วิธีรักษาใหม่ หรือนวัตกรรมทางการแพทย์ในห้องแล็บและสถาบันวิจัย",
-    "exampleEmployers": ["คณะแพทยศาสตร์", "สถาบันวิจัย", "บริษัทยา"],
-    "relatedMajors": ["MU_MED", "CU_PHARM", "CU_SCI"]
-  }  ,
-  {
-    "id": "CAREER_RESEARCH_SCIENTIST",
-    "nameTh": "นักวิทยาศาสตร์วิจัย",
-    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
-    "hollandCode": ["I", "R", "C"],
-    "description": "วางแผนและทำการทดลอง วิเคราะห์ผล และตีความข้อมูลทางวิทยาศาสตร์ในห้องปฏิบัติการ",
-    "exampleEmployers": ["สถาบันวิจัย", "คณะวิทยาศาสตร์", "บริษัทเทคโนโลยี/อุตสาหกรรม"],
-    "relatedMajors": ["CU_SCI", "KU_SCI", "CMU_SCI", "KKU_SCI"]
+    "id": "CAREER_SOFTWARE_ENGINEER",
+    "nameTh": "นักพัฒนาซอฟต์แวร์ / Software Engineer",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": "I; R; C",
+    "description": "เขียนโค้ด พัฒนาแอปพลิเคชัน และดูแลระบบไอทีให้ทำงานได้เสถียร",
+    "exampleEmployers": "บริษัท Tech; สตาร์ตอัป; แผนก IT ทุกอุตสาหกรรม"
   },
   {
-    "id": "CAREER_CHEMIST",
-    "nameTh": "นักเคมี",
-    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
-    "hollandCode": ["I", "R", "C"],
-    "description": "ศึกษาสารเคมี ปฏิกิริยา และสมบัติของวัตถุต่าง ๆ เพื่อพัฒนาผลิตภัณฑ์หรือควบคุมคุณภาพ",
-    "exampleEmployers": ["โรงงานอุตสาหกรรม", "ห้องแล็บ", "บริษัทเครื่องสำอาง/อาหาร"],
-    "relatedMajors": ["CU_SCI", "KU_SCI"]
+    "id": "CAREER_DATA_ANALYST",
+    "nameTh": "นักวิเคราะห์ข้อมูล / Data Analyst",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": "I; C; E",
+    "description": "วิเคราะห์ข้อมูลตัวเลข หา Insight เพื่อช่วยให้ธุรกิจตัดสินใจได้ดีขึ้น",
+    "exampleEmployers": "ธนาคาร; บริษัทอีคอมเมิร์ซ; เอเจนซี่โฆษณา"
   },
   {
-    "id": "CAREER_ENVIRONMENTAL_SCIENTIST",
-    "nameTh": "นักวิทยาศาสตร์สิ่งแวดล้อม",
-    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
-    "hollandCode": ["I", "S", "R"],
-    "description": "ศึกษาและติดตามปัญหาสิ่งแวดล้อม เช่น น้ำ อากาศ ขยะ เพื่อเสนอแนวทางแก้ไขและป้องกัน",
-    "exampleEmployers": ["หน่วยงานรัฐด้านสิ่งแวดล้อม", "บริษัทที่ปรึกษา", "องค์กรสิ่งแวดล้อม"],
-    "relatedMajors": ["KU_SCI", "CMU_SCI"]
+    "id": "CAREER_CIVIL_ENGINEER",
+    "nameTh": "วิศวกรโยธา",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": "R; I; E",
+    "description": "ออกแบบและควบคุมการก่อสร้างอาคาร ถนน สะพาน ให้ปลอดภัยและตามแบบ",
+    "exampleEmployers": "บริษัทรับเหมาก่อสร้าง; กรมทางหลวง; บริษัทอสังหาริมทรัพย์"
   },
   {
-    "id": "CAREER_STATISTICIAN",
-    "nameTh": "นักสถิติ",
-    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
-    "hollandCode": ["I", "C", "R"],
-    "description": "ออกแบบการเก็บข้อมูล วิเคราะห์ข้อมูล และสรุปผลทางสถิติ เพื่อสนับสนุนการตัดสินใจ",
-    "exampleEmployers": ["หน่วยงานวิจัย", "บริษัทที่มี Data เยอะ", "ธนาคาร/ประกัน"],
-    "relatedMajors": ["CU_SCI"]
+    "id": "CAREER_UX_UI_DESIGNER",
+    "nameTh": "นักออกแบบ UX/UI",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": "A; I; E",
+    "description": "ออกแบบหน้าตาแอป/เว็บให้สวยงามและใช้งานง่าย (User-friendly)",
+    "exampleEmployers": "Tech Company; Digital Agency"
   },
-  {
-    "id": "CAREER_LAB_TECHNICIAN",
-    "nameTh": "เจ้าหน้าที่ห้องปฏิบัติการ (Lab Technician)",
-    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
-    "hollandCode": ["R", "I", "C"],
-    "description": "ดูแลอุปกรณ์ เตรียมสาร และช่วยนักวิจัยทำการทดลองในห้องแล็บ",
-    "exampleEmployers": ["คณะวิทยาศาสตร์", "โรงงานอุตสาหกรรม", "บริษัทตรวจวิเคราะห์"],
-    "relatedMajors": ["CU_SCI", "KU_SCI", "CMU_SCI", "KKU_SCI"]
-  }  ,
   {
     "id": "CAREER_ACCOUNTANT",
-    "nameTh": "นักบัญชี",
+    "nameTh": "นักบัญชี / ผู้สอบบัญชี",
     "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "hollandCode": ["C", "E", "S"],
-    "description": "จัดทำงบการเงิน บันทึกบัญชี ตรวจสอบความถูกต้องของรายรับรายจ่าย และทำงานด้านภาษี",
-    "exampleEmployers": ["สำนักงานบัญชี", "บริษัทเอกชนทุกขนาด", "สำนักงานสอบบัญชี"],
-    "relatedMajors": ["CU_COMM"]
+    "hollandCode": "C; I; E",
+    "description": "บันทึก ตรวจสอบ และสรุปรายงานทางการเงินของบริษัทให้ถูกต้องตามกฎหมาย",
+    "exampleEmployers": "บริษัทตรวจสอบบัญชี (Big4); ฝ่ายบัญชีทุกบริษัท"
   },
   {
     "id": "CAREER_FINANCIAL_ANALYST",
     "nameTh": "นักวิเคราะห์การเงิน",
     "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "hollandCode": ["E", "C", "I"],
-    "description": "วิเคราะห์งบการเงิน ติดตามภาวะตลาด และประเมินโครงการลงทุนเพื่อช่วยผู้บริหารตัดสินใจ",
-    "exampleEmployers": ["ธนาคาร", "บริษัทหลักทรัพย์", "บริษัทเอกชนขนาดใหญ่"],
-    "relatedMajors": ["CU_COMM"]
+    "hollandCode": "I; E; C",
+    "description": "วิเคราะห์แนวโน้มเศรษฐกิจ หุ้น และให้คำแนะนำการลงทุน",
+    "exampleEmployers": "หลักทรัพย์; กองทุนรวม; ธนาคาร"
   },
   {
     "id": "CAREER_MARKETER",
-    "nameTh": "นักการตลาด / Marketing Executive",
+    "nameTh": "นักการตลาด / Marketing",
     "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "hollandCode": ["E", "S", "A"],
-    "description": "วางแผนแคมเปญการตลาด วิเคราะห์พฤติกรรมลูกค้า และทำงานร่วมกับทีมครีเอทีฟและเซลส์",
-    "exampleEmployers": ["แบรนด์สินค้า", "เอเจนซี่โฆษณา", "สตาร์ตอัป"],
-    "relatedMajors": ["BU_COMM_NEW_MEDIA", "SPU_COMM"]
+    "hollandCode": "E; A; C",
+    "description": "วางแผนกลยุทธ์โปรโมตสินค้า กระตุ้นยอดขาย และสร้างภาพลักษณ์แบรนด์",
+    "exampleEmployers": "FMCG; บริษัทเอกชนทั่วไป; เอเจนซี่"
   },
   {
-    "id": "CAREER_BUSINESS_ANALYST",
-    "nameTh": "นักวิเคราะห์ธุรกิจ (Business Analyst)",
+    "id": "CAREER_HR",
+    "nameTh": "ฝ่ายทรัพยากรบุคคล / HR",
     "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "hollandCode": ["E", "I", "C"],
-    "description": "เก็บและวิเคราะห์ข้อมูลกระบวนการทำงาน เสนอแนวทางปรับปรุงระบบและกระบวนการธุรกิจ",
-    "exampleEmployers": ["องค์กรใหญ่", "บริษัทที่ปรึกษา", "บริษัทเทค"],
-    "relatedMajors": ["BU_IT", "DPU_IT"]
+    "hollandCode": "S; E; C",
+    "description": "สรรหาพนักงาน ดูแลสวัสดิการ และพัฒนาศักยภาพคนในองค์กร",
+    "exampleEmployers": "องค์กรทุกขนาด"
   },
   {
-    "id": "CAREER_ENTREPRENEUR",
-    "nameTh": "ผู้ประกอบการ / เจ้าของธุรกิจ",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "hollandCode": ["E", "S", "C"],
-    "description": "สร้างและบริหารธุรกิจของตนเอง ตั้งแต่คิดไอเดีย วางแผนการเงิน การตลาด ไปจนถึงบริหารทีม",
-    "exampleEmployers": ["ธุรกิจส่วนตัวทุกประเภท", "สตาร์ตอัป"],
-    "relatedMajors": ["BU_COMM_NEW_MEDIA", "SPU_IT", "DPU_IT"]
-  }  ,
-  {
-    "id": "CAREER_SCHOOL_TEACHER",
-    "nameTh": "ครูโรงเรียน (ประถม/มัธยม)",
-    "clusterId": "CLUSTER_EDUCATION_TEACHING",
-    "hollandCode": ["S", "I", "A"],
-    "description": "สอนหนังสือ วางแผนการสอน ดูแลนักเรียน และประเมินผลการเรียนรู้ในโรงเรียน",
-    "exampleEmployers": ["โรงเรียนรัฐ", "โรงเรียนเอกชน", "โรงเรียนนานาชาติ"],
-    "relatedMajors": []
+    "id": "CAREER_SCIENTIST",
+    "nameTh": "นักวิทยาศาสตร์ / นักวิจัย",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "hollandCode": "I; R; C",
+    "description": "ทดลอง ค้นคว้า และวิจัยเพื่อสร้างองค์ความรู้หรือผลิตภัณฑ์ใหม่",
+    "exampleEmployers": "สถาบันวิจัย (เช่น NSTDA); บริษัทยา/อาหาร (R&D)"
   },
   {
-    "id": "CAREER_TUTOR",
-    "nameTh": "ติวเตอร์ / ครูสอนพิเศษ",
-    "clusterId": "CLUSTER_EDUCATION_TEACHING",
-    "hollandCode": ["S", "A", "I"],
-    "description": "สอนเสริมเนื้อหา เช่น คณิต วิทย์ ภาษา หรือวิชาเฉพาะ ให้เด็กหรือผู้ใหญ่ในรูปแบบกลุ่ม/ตัวต่อตัว",
-    "exampleEmployers": ["สถาบันกวดวิชา", "ธุรกิจติวเตอร์ส่วนตัว", "เรียนออนไลน์"],
-    "relatedMajors": []
+    "id": "CAREER_FOOD_SCIENTIST",
+    "nameTh": "นักวิทยาศาสตร์การอาหาร (Food Sci)",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "hollandCode": "I; R; E",
+    "description": "พัฒนาสูตรอาหาร ควบคุมคุณภาพ และยืดอายุการเก็บรักษาผลิตภัณฑ์",
+    "exampleEmployers": "โรงงานอุตสาหกรรมอาหาร; บริษัทเครื่องดื่ม"
   },
   {
-    "id": "CAREER_EDU_COUNSELOR",
-    "nameTh": "ครูแนะแนว / ที่ปรึกษาทางการศึกษา",
+    "id": "CAREER_TEACHER",
+    "nameTh": "ครู / อาจารย์ประถม-มัธยม",
     "clusterId": "CLUSTER_EDUCATION_TEACHING",
-    "hollandCode": ["S", "I", "E"],
-    "description": "ให้คำปรึกษาเด็กเรื่องการเรียน ชีวิตในโรงเรียน และเส้นทางการศึกษาต่อ",
-    "exampleEmployers": ["โรงเรียน", "ศูนย์ให้คำปรึกษา", "แพลตฟอร์มแนะแนวออนไลน์"],
-    "relatedMajors": []
+    "hollandCode": "S; E; A",
+    "description": "สอนหนังสือ ดูแลพฤติกรรม และประเมินผลนักเรียน",
+    "exampleEmployers": "โรงเรียนรัฐและเอกชน; สถาบันกวดวิชา"
   },
   {
     "id": "CAREER_INSTRUCTIONAL_DESIGNER",
     "nameTh": "นักออกแบบการเรียนการสอน (Instructional Designer)",
     "clusterId": "CLUSTER_EDUCATION_TEACHING",
-    "hollandCode": ["I", "A", "S"],
+    "hollandCode": "I; A; S",
     "description": "ออกแบบหลักสูตร สื่อการสอน และระบบการเรียนรู้ทั้งออนไลน์และออฟไลน์",
-    "exampleEmployers": ["บริษัท EdTech", "องค์กรใหญ่ที่มีอบรมภายใน", "สถาบันการศึกษา"],
-    "relatedMajors": []
+    "exampleEmployers": "บริษัท EdTech; องค์กรใหญ่ที่มีอบรมภายใน; สถาบันการศึกษา"
   },
   {
     "id": "CAREER_CORPORATE_TRAINER",
     "nameTh": "วิทยากรอบรม / Trainer องค์กร",
     "clusterId": "CLUSTER_EDUCATION_TEACHING",
-    "hollandCode": ["S", "E", "A"],
-    "description": "จัดอบรม พัฒนาทักษะให้พนักงานองค์กร เช่น Soft Skills, การขาย, ภาวะผู้นำ",
-    "exampleEmployers": ["HRD ขององค์กรใหญ่", "บริษัทเทรนนิง", "ที่ปรึกษาอิสระ"],
-    "relatedMajors": []
-  }  ,
+    "hollandCode": "S; E; A",
+    "description": "จัดอบรม พัฒนาทักษะให้พนักงานองค์กร เช่น Soft Skills การขาย ภาวะผู้นำ",
+    "exampleEmployers": "HRD ขององค์กรใหญ่; บริษัทเทรนนิง; ที่ปรึกษาอิสระ"
+  },
   {
     "id": "CAREER_TOUR_GUIDE",
     "nameTh": "มัคคุเทศก์ / ไกด์ทัวร์",
     "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
-    "hollandCode": ["S", "E", "R"],
-    "description": "พานักท่องเที่ยวเที่ยวสถานที่ต่าง ๆ ให้ข้อมูล ดูแลความปลอดภัยและประสบการณ์โดยรวม",
-    "exampleEmployers": ["บริษัททัวร์", "ไกด์อิสระ", "รีสอร์ต/โรงแรม"],
-    "relatedMajors": []
+    "hollandCode": "S; E; R",
+    "description": "พานักท่องเที่ยวเที่ยวสถานที่ต่าง ๆ ให้ข้อมูล ดูแลความปลอดภัยและประสบการณ์",
+    "exampleEmployers": "บริษัททัวร์; ไกด์อิสระ; รีสอร์ต/โรงแรม"
   },
   {
     "id": "CAREER_HOTEL_MANAGER",
     "nameTh": "ผู้จัดการโรงแรม / Hotel Manager",
     "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
-    "hollandCode": ["E", "S", "C"],
-    "description": "บริหารงานโรงแรมหรือรีสอร์ต ดูแลทีมหน้า-หลังบ้าน และบริการลูกค้าให้ได้มาตรฐาน",
-    "exampleEmployers": ["โรงแรม", "รีสอร์ต", "เชนโรงแรมข้ามชาติ"],
-    "relatedMajors": []
+    "hollandCode": "E; S; C",
+    "description": "บริหารงานโรงแรม ดูแลทีมหน้า-หลังบ้าน และบริการลูกค้าให้ได้มาตรฐาน",
+    "exampleEmployers": "โรงแรม; รีสอร์ต; เชนโรงแรมข้ามชาติ"
   },
   {
     "id": "CAREER_EVENT_PLANNER",
     "nameTh": "นักวางแผนงานอีเวนต์ / Organizer",
     "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
-    "hollandCode": ["E", "A", "S"],
-    "description": "วางแผนและประสานงานจัดอีเวนต์ เช่น งานคอนเสิร์ต งานสัมมนา งานเปิดตัวสินค้า",
-    "exampleEmployers": ["บริษัทออแกไนซ์", "ฝ่ายการตลาดขององค์กร", "ฟรีแลนซ์"],
-    "relatedMajors": ["BU_COMM_NEW_MEDIA", "SPU_COMM"]
-  },
-  {
-    "id": "CAREER_AGRICULTURE_OFFICER",
-    "nameTh": "เจ้าหน้าที่ส่งเสริมการเกษตร",
-    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
-    "hollandCode": ["S", "R", "I"],
-    "description": "ลงพื้นที่พบเกษตรกร ถ่ายทอดความรู้และเทคโนโลยีการเกษตรสมัยใหม่",
-    "exampleEmployers": ["กรมส่งเสริมการเกษตร", "หน่วยงานท้องถิ่น", "บริษัทเกษตร"],
-    "relatedMajors": []
-  },
-  {
-    "id": "CAREER_TRAVEL_CONTENT_CREATOR",
-    "nameTh": "คอนเทนต์ครีเอเตอร์สายท่องเที่ยว",
-    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
-    "hollandCode": ["A", "S", "E"],
-    "description": "ทำคอนเทนต์รีวิวที่พัก ร้านอาหาร และสถานที่ท่องเที่ยว ผ่านโซเชียลต่าง ๆ",
-    "exampleEmployers": ["ทำช่องส่วนตัว", "สื่อท่องเที่ยว", "ฝ่ายการตลาดโรงแรม/ทัวร์"],
-    "relatedMajors": ["CMU_MASSCOMM", "BU_COMM_NEW_MEDIA"]
+    "hollandCode": "E; A; S",
+    "description": "วางแผนและประสานงานจัดอีเวนต์ เช่น คอนเสิร์ต สัมมนา เปิดตัวสินค้า",
+    "exampleEmployers": "บริษัทออแกไนซ์; ฝ่ายการตลาดองค์กร"
   }
- ]
- 
+]

@@ -5,14 +5,11 @@
     "facultyNameTh": "คณะนิเทศศาสตร์",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
     "universityId": "CU",
-    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang"],
-      "tuitionFeePerSemester": 0,
-      "hasScholarship": true,
+    "studyTrackRequired": "sci_math; arts_math; arts_lang",
+    "tuitionFeePerSemester": 21000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["portfolio", "quota", "admission"],
-      "notes": "สายสื่อสาร/สื่อมวลชนชั้นนำของประเทศ นิยมสูงมากในกลุ่มนิเทศฯ"
-    }
+    "tcasInfo.rounds": "portfolio; quota; admission"
   },
   {
     "id": "TU_JOURN_MASSCOMM",
@@ -20,14 +17,11 @@
     "facultyNameTh": "คณะวารสารศาสตร์และสื่อสารมวลชน",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
     "universityId": "TU",
-    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math; arts_math; arts_lang",
+    "tuitionFeePerSemester": 18000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["portfolio", "admission"],
-      "notes": "เด่นด้านวารสาร/สื่อมวลชน สื่อสารสังคม การเมือง การพัฒนา"
-    }
+    "tcasInfo.rounds": "portfolio; admission"
   },
   {
     "id": "BU_COMM_NEW_MEDIA",
@@ -35,14 +29,11 @@
     "facultyNameTh": "คณะนิเทศศาสตร์",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
     "universityId": "BU",
-    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang", "vocational"],
-    "tuitionFeePerSemester": 0,
+    "studyTrackRequired": "sci_math; arts_math; arts_lang; vocational",
+    "tuitionFeePerSemester": 45000,
     "hasScholarship": true,
     "isPartner": true,
-    "tcasInfo": {
-      "rounds": ["direct_admission", "admission"],
-      "notes": "เอกชนยอดนิยมด้านสื่อใหม่/ครีเอทีฟ เน้นลงมือทำและผลงานจริง"
-    }
+    "tcasInfo.rounds": "direct_admission; admission"
   },
   {
     "id": "RSU_COMM",
@@ -50,14 +41,11 @@
     "facultyNameTh": "คณะนิเทศศาสตร์",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
     "universityId": "RSU",
-    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang", "vocational"],
-    "tuitionFeePerSemester": 0,
+    "studyTrackRequired": "sci_math; arts_math; arts_lang; vocational",
+    "tuitionFeePerSemester": 40000,
     "hasScholarship": true,
     "isPartner": true,
-    "tcasInfo": {
-      "rounds": ["direct_admission"],
-      "notes": "เด่นด้านสื่อดิจิทัล การตลาดดิจิทัล และเชื่อมอุตสาหกรรมจริง"
-    }
+    "tcasInfo.rounds": "direct_admission"
   },
   {
     "id": "CMU_MASSCOMM",
@@ -65,14 +53,11 @@
     "facultyNameTh": "คณะการสื่อสารมวลชน",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
     "universityId": "CMU",
-    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math; arts_math; arts_lang",
+    "tuitionFeePerSemester": 16000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "ตัวตึงสายสื่อในภาคเหนือ เน้นคอนเทนต์เข้าถึงท้องถิ่นและสื่อครอสแพลตฟอร์ม"
-    }
+    "tcasInfo.rounds": "quota; admission"
   },
   {
     "id": "SPU_COMM",
@@ -80,194 +65,47 @@
     "facultyNameTh": "คณะนิเทศศาสตร์",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
     "universityId": "SPU",
-    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang", "vocational"],
-    "tuitionFeePerSemester": 0,
+    "studyTrackRequired": "sci_math; arts_math; arts_lang; vocational",
+    "tuitionFeePerSemester": 35000,
     "hasScholarship": true,
     "isPartner": true,
-    "tcasInfo": {
-      "rounds": ["direct_admission"],
-      "notes": "เอกชนที่เน้นสื่อดิจิทัล โฆษณา ประชาสัมพันธ์ และการผลิตสื่อจริง"
-    }
+    "tcasInfo.rounds": "direct_admission; admission"
   },
   {
-    "id": "RU_MASSCOMM",
-    "nameTh": "นิเทศศาสตรบัณฑิต สาขานิเทศศาสตร์และสื่อดิจิทัล",
-    "facultyNameTh": "คณะสื่อสารมวลชน",
+    "id": "CU_LAW",
+    "nameTh": "นิติศาสตรบัณฑิต",
+    "facultyNameTh": "คณะนิติศาสตร์",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
-    "universityId": "RU",
-    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang", "vocational"],
-    "tuitionFeePerSemester": 0,
+    "universityId": "CU",
+    "studyTrackRequired": "sci_math; arts_math; arts_lang",
+    "tuitionFeePerSemester": 21000,
     "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "ม.เปิดที่เข้าถึงได้กว้าง เน้นสื่อดิจิทัล/ภาพยนตร์/สื่อสร้างสรรค์"
-    }
+    "tcasInfo.rounds": "portfolio; admission"
   },
   {
-    "id": "KU_HUMAN_COMM",
-    "nameTh": "ศิลปศาสตรบัณฑิต สาขาการสื่อสารมวลชน",
-    "facultyNameTh": "คณะมนุษยศาสตร์",
+    "id": "TU_LAW",
+    "nameTh": "นิติศาสตรบัณฑิต",
+    "facultyNameTh": "คณะนิติศาสตร์",
     "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
-    "universityId": "KU",
-    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "universityId": "TU",
+    "studyTrackRequired": "sci_math; arts_math; arts_lang",
+    "tuitionFeePerSemester": 18000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "สายสื่อสารมวลชนในมหาวิทยาลัยสายวิทย์–เกษตรใหญ่ของประเทศ"
-    }
+    "tcasInfo.rounds": "admission"
   },
   {
-    "id": "CU_ENG",
-    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
-    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "CU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "id": "RU_LAW",
+    "nameTh": "นิติศาสตรบัณฑิต",
+    "facultyNameTh": "คณะนิติศาสตร์",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "RU",
+    "studyTrackRequired": "sci_math; arts_math; arts_lang; vocational",
+    "tuitionFeePerSemester": 1200,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["portfolio", "quota", "admission"],
-      "notes": "สายวิศวะชั้นนำของไทย แข่งขันสูง เหมาะกับเด็ก I+R+C สูง"
-    }
-  },
-  {
-    "id": "KMITL_ENG",
-    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
-    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "KMITL",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["portfolio", "admission"],
-      "notes": "เด่นด้านวิศวกรรมและเทคโนโลยี/เซมิคอนดักเตอร์ ติดอันดับโลกด้าน Engineering"
-    }
-  },
-  {
-    "id": "KMUTNB_ENG",
-    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
-    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "KMUTNB",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "วิศวะสายเทคโนโลยีอุตสาหกรรม โครงสร้างพื้นฐานและเครื่องกล/ไฟฟ้า"
-    }
-  },
-  {
-    "id": "KKU_ENG",
-    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
-    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "KKU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "วิศวะตัวตึงภาคอีสาน ติด TOP10 วิศวะรัฐที่นักเรียนอยากเข้า"
-    }
-  },
-  {
-    "id": "KMUTT_IT",
-    "nameTh": "วิทยาศาสตรบัณฑิต สาขาวิทยาการคอมพิวเตอร์ / เทคโนโลยีสารสนเทศ",
-    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศ (หรือเทียบเท่า)",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "KMUTT",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["portfolio", "admission"],
-      "notes": "เน้น Computer Science / IT / Data ติดอันดับโลกด้านเทคโนโลยี"
-    }
-  },
-  {
-    "id": "MFU_IT",
-    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศ",
-    "facultyNameTh": "สำนักวิชาเทคโนโลยีสารสนเทศ",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "MFU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "เด่นสาย IT/เทคโนโลยีภาคเหนือ มีบรรยากาศนานาชาติ"
-    }
-  },
-  {
-    "id": "MSU_INFO_SCI",
-    "nameTh": "วิทยาศาสตรบัณฑิต สาขาวิทยาการสารสนเทศ",
-    "facultyNameTh": "คณะวิทยาการสารสนเทศ",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "MSU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "สาย IT/สารสนเทศตัวแทนภาคอีสาน"
-    }
-  },
-  {
-    "id": "BU_IT",
-    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศและนวัตกรรม",
-    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศและนวัตกรรม",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "BU",
-    "studyTrackRequired": ["sci_math", "arts_math", "vocational"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": true,
-    "tcasInfo": {
-      "rounds": ["direct_admission", "admission"],
-      "notes": "เอกชนยอดนิยมสาย IT/Dev/UX/สตาร์ตอัป"
-    }
-  },
-  {
-    "id": "SPU_IT",
-    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศ",
-    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศ",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "SPU",
-    "studyTrackRequired": ["sci_math", "arts_math", "vocational"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": true,
-    "tcasInfo": {
-      "rounds": ["direct_admission"],
-      "notes": "เอกชนด้าน IT ที่เปิดโอกาสเด็กสายอาชีพ/แผนอื่น"
-    }
-  },
-  {
-    "id": "DPU_IT",
-    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศ",
-    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศ (หรือวิทยาลัยที่เกี่ยวข้อง)",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
-    "universityId": "DPU",
-    "studyTrackRequired": ["sci_math", "arts_math", "vocational"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": true,
-    "tcasInfo": {
-      "rounds": ["direct_admission"],
-      "notes": "สาย IT/ธุรกิจดิจิทัลของมหาวิทยาลัยธุรกิจบัณฑิตย์"
-    }
+    "tcasInfo.rounds": "direct_admission"
   },
   {
     "id": "MU_NURSING",
@@ -275,14 +113,23 @@
     "facultyNameTh": "คณะพยาบาลศาสตร์",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
     "universityId": "MU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 25000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["portfolio", "admission"],
-      "notes": "พยาบาลสายสุขภาพดูแลคน (ตัวแทนสายพยาบาล/สุขภาพ Allied)"
-    }
+    "tcasInfo.rounds": "portfolio; quota; admission"
+  },
+  {
+    "id": "CU_NURSING",
+    "nameTh": "พยาบาลศาสตรบัณฑิต",
+    "facultyNameTh": "คณะพยาบาลศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "CU",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 21000,
+    "hasScholarship": false,
+    "isPartner": false,
+    "tcasInfo.rounds": "admission"
   },
   {
     "id": "KKU_NURSING",
@@ -290,60 +137,35 @@
     "facultyNameTh": "คณะพยาบาลศาสตร์",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
     "universityId": "KKU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 18000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "ตัวแทนสายพยาบาลในภาคอีสาน"
-    }
+    "tcasInfo.rounds": "quota; admission"
   },
   {
-    "id": "CMU_ALLIED_HEALTH",
+    "id": "RSU_NURSING",
+    "nameTh": "พยาบาลศาสตรบัณฑิต",
+    "facultyNameTh": "คณะพยาบาลศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "RSU",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 65000,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission; admission"
+  },
+  {
+    "id": "MU_MEDTECH",
     "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคนิคการแพทย์",
     "facultyNameTh": "คณะเทคนิคการแพทย์",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "universityId": "CMU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "สายเทคนิคการแพทย์/ตรวจวิเคราะห์ในห้องแล็บ"
-    }
-  },
-  {
-    "id": "PSU_PHYS_THERAPY",
-    "nameTh": "กายภาพบำบัดบัณฑิต",
-    "facultyNameTh": "คณะสหเวชศาสตร์ (หรือเทียบเท่า)",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "universityId": "PSU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
-    "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "กายภาพบำบัด สายช่วยเหลือและฟื้นฟูผู้ป่วย"
-    }
-  },
-
-  {
-    "id": "MU_MED",
-    "nameTh": "แพทยศาสตรบัณฑิต",
-    "facultyNameTh": "คณะแพทยศาสตร์",
-    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
     "universityId": "MU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 25000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["quota", "admission"],
-      "notes": "ตัวแทนสายแพทย์ระดับประเทศ"
-    }
+    "tcasInfo.rounds": "portfolio; admission"
   },
   {
     "id": "CU_MED",
@@ -351,60 +173,143 @@
     "facultyNameTh": "คณะแพทยศาสตร์",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
     "universityId": "CU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 21000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["quota", "admission"],
-      "notes": "แพทย์รัฐชื่อดังในกรุงเทพฯ"
-    }
+    "tcasInfo.rounds": "portfolio; admission"
   },
   {
-    "id": "KKU_MED",
+    "id": "MU_MED",
+    "nameTh": "แพทยศาสตรบัณฑิต",
+    "facultyNameTh": "คณะแพทยศาสตร์ศิริราชพยาบาล / รามาธิบดี",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "universityId": "MU",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 25000,
+    "hasScholarship": false,
+    "isPartner": false,
+    "tcasInfo.rounds": "portfolio; admission"
+  },
+  {
+    "id": "CMU_MED",
     "nameTh": "แพทยศาสตรบัณฑิต",
     "facultyNameTh": "คณะแพทยศาสตร์",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
-    "universityId": "KKU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "universityId": "CMU",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 20000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["quota", "admission"],
-      "notes": "แพทย์ตัวแทนภาคอีสาน"
-    }
+    "tcasInfo.rounds": "quota; admission"
   },
   {
-    "id": "CU_PHARM",
-    "nameTh": "เภสัชศาสตรบัณฑิต",
-    "facultyNameTh": "คณะเภสัชศาสตร์",
+    "id": "PSU_MED",
+    "nameTh": "แพทยศาสตรบัณฑิต",
+    "facultyNameTh": "คณะแพทยศาสตร์",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
-    "universityId": "CU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "universityId": "PSU",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 20000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "สายเภสัชศาสตรระดับประเทศ"
-    }
+    "tcasInfo.rounds": "quota; admission"
   },
-
+  {
+    "id": "RSU_MED",
+    "nameTh": "แพทยศาสตรบัณฑิต",
+    "facultyNameTh": "วิทยาลัยแพทยศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "universityId": "RSU",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 300000,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission"
+  },
+  {
+    "id": "CU_ENG_COMP",
+    "nameTh": "วิศวกรรมศาสตรบัณฑิต สาขาวิศวกรรมคอมพิวเตอร์",
+    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "CU",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 21000,
+    "hasScholarship": false,
+    "isPartner": false,
+    "tcasInfo.rounds": "portfolio; admission"
+  },
+  {
+    "id": "KMITL_ENG",
+    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "KMITL",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 25000,
+    "hasScholarship": false,
+    "isPartner": false,
+    "tcasInfo.rounds": "portfolio; quota; admission"
+  },
+  {
+    "id": "KMUTNB_ENG",
+    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "KMUTNB",
+    "studyTrackRequired": "sci_math; vocational",
+    "tuitionFeePerSemester": 22000,
+    "hasScholarship": false,
+    "isPartner": false,
+    "tcasInfo.rounds": "portfolio; quota; admission"
+  },
+  {
+    "id": "KMUTT_ENG",
+    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "KMUTT",
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 25000,
+    "hasScholarship": false,
+    "isPartner": false,
+    "tcasInfo.rounds": "portfolio; quota; admission"
+  },
+  {
+    "id": "SPU_IT",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศ",
+    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศ",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "SPU",
+    "studyTrackRequired": "sci_math; arts_math; vocational",
+    "tuitionFeePerSemester": 35000,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission"
+  },
+  {
+    "id": "BU_IT",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาวิทยาการคอมพิวเตอร์",
+    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศ",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "BU",
+    "studyTrackRequired": "sci_math; arts_math; vocational",
+    "tuitionFeePerSemester": 40000,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission"
+  },
   {
     "id": "CU_SCI",
     "nameTh": "วิทยาศาสตรบัณฑิต",
     "facultyNameTh": "คณะวิทยาศาสตร์",
     "clusterId": "CLUSTER_SCIENCE_RESEARCH",
     "universityId": "CU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 21000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "ตัวแทนสายวิทยาศาสตร์พื้นฐาน/วิจัย"
-    }
+    "tcasInfo.rounds": "admission"
   },
   {
     "id": "KU_SCI",
@@ -412,14 +317,11 @@
     "facultyNameTh": "คณะวิทยาศาสตร์",
     "clusterId": "CLUSTER_SCIENCE_RESEARCH",
     "universityId": "KU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 16000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "วิทยาศาสตร์ในมหาวิทยาลัยวิทย์-เกษตรขนาดใหญ่"
-    }
+    "tcasInfo.rounds": "admission"
   },
   {
     "id": "CMU_SCI",
@@ -427,28 +329,94 @@
     "facultyNameTh": "คณะวิทยาศาสตร์",
     "clusterId": "CLUSTER_SCIENCE_RESEARCH",
     "universityId": "CMU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
-    "hasScholarship": true,
+    "studyTrackRequired": "sci_math",
+    "tuitionFeePerSemester": 16000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "วิทยาศาสตร์ในเชียงใหม่ ตัวแทนภาคเหนือ"
-    }
+    "tcasInfo.rounds": "admission"
   },
   {
-    "id": "KKU_SCI",
-    "nameTh": "วิทยาศาสตรบัณฑิต",
-    "facultyNameTh": "คณะวิทยาศาสตร์",
-    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
-    "universityId": "KKU",
-    "studyTrackRequired": ["sci_math"],
-    "tuitionFeePerSemester": 0,
+    "id": "BU_BUS",
+    "nameTh": "บริหารธุรกิจบัณฑิต",
+    "facultyNameTh": "คณะบริหารธุรกิจ",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "BU",
+    "studyTrackRequired": "sci_math; arts_math; arts_lang; vocational",
+    "tuitionFeePerSemester": 42000,
     "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission; admission"
+  },
+  {
+    "id": "DPU_BUS",
+    "nameTh": "บริหารธุรกิจบัณฑิต",
+    "facultyNameTh": "คณะบริหารธุรกิจ",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "DPU",
+    "studyTrackRequired": "sci_math; arts_math; arts_lang; vocational",
+    "tuitionFeePerSemester": 35000,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission; admission"
+  },
+  {
+    "id": "SPU_ACC",
+    "nameTh": "บัญชีบัณฑิต",
+    "facultyNameTh": "คณะบัญชี",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "SPU",
+    "studyTrackRequired": "sci_math; arts_math; vocational",
+    "tuitionFeePerSemester": 38000,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission; admission"
+  },
+  {
+    "id": "CU_BUS",
+    "nameTh": "บริหารธุรกิจบัณฑิต",
+    "facultyNameTh": "คณะพาณิชยศาสตร์และการบัญชี",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "CU",
+    "studyTrackRequired": "sci_math; arts_math",
+    "tuitionFeePerSemester": 21000,
+    "hasScholarship": false,
     "isPartner": false,
-    "tcasInfo": {
-      "rounds": ["admission"],
-      "notes": "วิทยาศาสตร์ตัวแทนภาคอีสาน"
-    }
+    "tcasInfo.rounds": "quota; admission"
+  },
+  {
+    "id": "TU_ACC",
+    "nameTh": "บัญชีบัณฑิต",
+    "facultyNameTh": "คณะพาณิชยศาสตร์และการบัญชี",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "universityId": "TU",
+    "studyTrackRequired": "sci_math; arts_math",
+    "tuitionFeePerSemester": 21000,
+    "hasScholarship": false,
+    "isPartner": false,
+    "tcasInfo.rounds": "quota; admission"
+  },
+  {
+    "id": "BU_TOURISM",
+    "nameTh": "การจัดการการท่องเที่ยวและนิทรรศการ",
+    "facultyNameTh": "คณะมนุษยศาสตร์และการจัดการการท่องเที่ยว",
+    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "universityId": "BU",
+    "studyTrackRequired": "sci_math; arts_math; arts_lang; vocational",
+    "tuitionFeePerSemester": 40000,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission; admission"
+  },
+  {
+    "id": "DPU_TOURISM",
+    "nameTh": "การท่องเที่ยวและธุรกิจอีเวนต์",
+    "facultyNameTh": "คณะการท่องเที่ยวและการโรงแรม",
+    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "universityId": "DPU",
+    "studyTrackRequired": "sci_math; arts_math; arts_lang; vocational",
+    "tuitionFeePerSemester": 35000,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo.rounds": "direct_admission; admission"
   }
 ]

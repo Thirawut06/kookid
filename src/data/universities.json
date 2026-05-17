@@ -1,5 +1,5 @@
-[ 
-{
+[
+  {
     "id": "CU",
     "nameTh": "จุฬาลงกรณ์มหาวิทยาลัย",
     "nameEn": "Chulalongkorn University",
@@ -79,5 +79,77 @@
     "type": "public",
     "region": "bangkok",
     "websiteUrl": "https://www.ru.ac.th"
+  },
+  {
+    "id": "TU",
+    "nameTh": "มหาวิทยาลัยธรรมศาสตร์",
+    "nameEn": "Thammasat University",
+    "shortName": "มธ.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.tu.ac.th"
+  },
+  {
+    "id": "CMU",
+    "nameTh": "มหาวิทยาลัยเชียงใหม่",
+    "nameEn": "Chiang Mai University",
+    "shortName": "มช.",
+    "type": "public",
+    "region": "north",
+    "websiteUrl": "https://www.cmu.ac.th"
+  },
+  {
+    "id": "SPU",
+    "nameTh": "มหาวิทยาลัยศรีปทุม",
+    "nameEn": "Sripatum University",
+    "shortName": "SPU",
+    "type": "private",
+    "region": "bangkok",
+    "websiteUrl": "https://www.spu.ac.th"
+  },
+  {
+    "id": "KU",
+    "nameTh": "มหาวิทยาลัยเกษตรศาสตร์",
+    "nameEn": "Kasetsart University",
+    "shortName": "มก.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.ku.ac.th"
+  },
+  {
+    "id": "KMITL",
+    "nameTh": "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง",
+    "nameEn": "KMITL",
+    "shortName": "สจล.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.kmitl.ac.th"
+  },
+  {
+    "id": "KMUTNB",
+    "nameTh": "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ",
+    "nameEn": "KMUTNB",
+    "shortName": "มจพ.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.kmutnb.ac.th"
+  },
+  {
+    "id": "KKU",
+    "nameTh": "มหาวิทยาลัยขอนแก่น",
+    "nameEn": "Khon Kaen University",
+    "shortName": "มข.",
+    "type": "public",
+    "region": "northeast",
+    "websiteUrl": "https://www.kku.ac.th"
+  },
+  {
+    "id": "KMUTT",
+    "nameTh": "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี",
+    "nameEn": "KMUTT",
+    "shortName": "มจธ.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.kmutt.ac.th"
   }
 ]
