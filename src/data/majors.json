@@ -1,122 +1,465 @@
 [
   {
-    "id": "MAJ_NURSING_CHULA",
-    "nameTh": "พยาบาลศาสตร์",
-    "facultyNameTh": "คณะพยาบาลศาสตร์",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "universityId": "CHULA",
-    "studyTrackRequired": ["sci_math"],
+    "id": "CU_COMM",
+    "nameTh": "นิเทศศาสตรบัณฑิต",
+    "facultyNameTh": "คณะนิเทศศาสตร์",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "CU",
+    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang"],
+      "tuitionFeePerSemester": 0,
+      "hasScholarship": true,
+    "isPartner": false,
     "tcasInfo": {
       "rounds": ["portfolio", "quota", "admission"],
-      "notes": "รับนักเรียนสายวิทย์-คณิตเป็นหลัก รายละเอียดเกณฑ์คะแนนดูจาก MyTCAS ประจำปี"
+      "notes": "สายสื่อสาร/สื่อมวลชนชั้นนำของประเทศ นิยมสูงมากในกลุ่มนิเทศฯ"
     }
   },
   {
-    "id": "MAJ_NURSING_MAHIDOL",
-    "nameTh": "พยาบาลศาสตร์",
-    "facultyNameTh": "คณะพยาบาลศาสตร์",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "universityId": "MAHIDOL",
-    "studyTrackRequired": ["sci_math"],
+    "id": "TU_JOURN_MASSCOMM",
+    "nameTh": "วารสารศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวารสารศาสตร์และสื่อสารมวลชน",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "TU",
+    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "quota", "admission"],
-      "notes": "เป็นสาขาที่มีการแข่งขันสูงในกลุ่มสุขภาพ"
+      "rounds": ["portfolio", "admission"],
+      "notes": "เด่นด้านวารสาร/สื่อมวลชน สื่อสารสังคม การเมือง การพัฒนา"
     }
   },
   {
-    "id": "MAJ_MEDTECH_MAHIDOL",
-    "nameTh": "เทคนิคการแพทย์",
-    "facultyNameTh": "คณะเทคนิคการแพทย์",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "universityId": "MAHIDOL",
-    "studyTrackRequired": ["sci_math"],
+    "id": "BU_COMM_NEW_MEDIA",
+    "nameTh": "นิเทศศาสตรบัณฑิต สาขาการสื่อสารและสื่อใหม่",
+    "facultyNameTh": "คณะนิเทศศาสตร์",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "BU",
+    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang", "vocational"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": true,
     "tcasInfo": {
-      "rounds": ["portfolio", "quota", "admission"],
-      "notes": "ต้องใช้พื้นฐานชีววิทยาและเคมีค่อนข้างมาก"
+      "rounds": ["direct_admission", "admission"],
+      "notes": "เอกชนยอดนิยมด้านสื่อใหม่/ครีเอทีฟ เน้นลงมือทำและผลงานจริง"
     }
   },
   {
-    "id": "MAJ_PUBLIC_HEALTH_KKU",
-    "nameTh": "สาธารณสุขศาสตร์",
-    "facultyNameTh": "คณะสาธารณสุขศาสตร์",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "id": "RSU_COMM",
+    "nameTh": "นิเทศศาสตรบัณฑิต",
+    "facultyNameTh": "คณะนิเทศศาสตร์",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "RSU",
+    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang", "vocational"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo": {
+      "rounds": ["direct_admission"],
+      "notes": "เด่นด้านสื่อดิจิทัล การตลาดดิจิทัล และเชื่อมอุตสาหกรรมจริง"
+    }
+  },
+  {
+    "id": "CMU_MASSCOMM",
+    "nameTh": "ศิลปศาสตรบัณฑิต สาขาการสื่อสารมวลชน",
+    "facultyNameTh": "คณะการสื่อสารมวลชน",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "CMU",
+    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],
+      "notes": "ตัวตึงสายสื่อในภาคเหนือ เน้นคอนเทนต์เข้าถึงท้องถิ่นและสื่อครอสแพลตฟอร์ม"
+    }
+  },
+  {
+    "id": "SPU_COMM",
+    "nameTh": "นิเทศศาสตรบัณฑิต",
+    "facultyNameTh": "คณะนิเทศศาสตร์",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "SPU",
+    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang", "vocational"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo": {
+      "rounds": ["direct_admission"],
+      "notes": "เอกชนที่เน้นสื่อดิจิทัล โฆษณา ประชาสัมพันธ์ และการผลิตสื่อจริง"
+    }
+  },
+  {
+    "id": "RU_MASSCOMM",
+    "nameTh": "นิเทศศาสตรบัณฑิต สาขานิเทศศาสตร์และสื่อดิจิทัล",
+    "facultyNameTh": "คณะสื่อสารมวลชน",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "RU",
+    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang", "vocational"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": false,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],
+      "notes": "ม.เปิดที่เข้าถึงได้กว้าง เน้นสื่อดิจิทัล/ภาพยนตร์/สื่อสร้างสรรค์"
+    }
+  },
+  {
+    "id": "KU_HUMAN_COMM",
+    "nameTh": "ศิลปศาสตรบัณฑิต สาขาการสื่อสารมวลชน",
+    "facultyNameTh": "คณะมนุษยศาสตร์",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "universityId": "KU",
+    "studyTrackRequired": ["sci_math", "arts_math", "arts_lang"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],
+      "notes": "สายสื่อสารมวลชนในมหาวิทยาลัยสายวิทย์–เกษตรใหญ่ของประเทศ"
+    }
+  },
+  {
+    "id": "CU_ENG",
+    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "CU",
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["portfolio", "quota", "admission"],
+      "notes": "สายวิศวะชั้นนำของไทย แข่งขันสูง เหมาะกับเด็ก I+R+C สูง"
+    }
+  },
+  {
+    "id": "KMITL_ENG",
+    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "KMITL",
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["portfolio", "admission"],
+      "notes": "เด่นด้านวิศวกรรมและเทคโนโลยี/เซมิคอนดักเตอร์ ติดอันดับโลกด้าน Engineering"
+    }
+  },
+  {
+    "id": "KMUTNB_ENG",
+    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "KMUTNB",
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],
+      "notes": "วิศวะสายเทคโนโลยีอุตสาหกรรม โครงสร้างพื้นฐานและเครื่องกล/ไฟฟ้า"
+    }
+  },
+  {
+    "id": "KKU_ENG",
+    "nameTh": "วิศวกรรมศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิศวกรรมศาสตร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
     "universityId": "KKU",
     "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "quota", "admission"],
-      "notes": "เน้นงานด้านส่งเสริมสุขภาพและงานเชิงระบบสาธารณสุข"
+      "rounds": ["admission"],
+      "notes": "วิศวะตัวตึงภาคอีสาน ติด TOP10 วิศวะรัฐที่นักเรียนอยากเข้า"
     }
   },
   {
-    "id": "MAJ_SPORT_SCIENCE_CMU",
-    "nameTh": "วิทยาศาสตร์การกีฬา",
-    "facultyNameTh": "คณะวิทยาศาสตร์การกีฬา",
+    "id": "KMUTT_IT",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาวิทยาการคอมพิวเตอร์ / เทคโนโลยีสารสนเทศ",
+    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศ (หรือเทียบเท่า)",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "KMUTT",
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["portfolio", "admission"],
+      "notes": "เน้น Computer Science / IT / Data ติดอันดับโลกด้านเทคโนโลยี"
+    }
+  },
+  {
+    "id": "MFU_IT",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศ",
+    "facultyNameTh": "สำนักวิชาเทคโนโลยีสารสนเทศ",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "MFU",
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],
+      "notes": "เด่นสาย IT/เทคโนโลยีภาคเหนือ มีบรรยากาศนานาชาติ"
+    }
+  },
+  {
+    "id": "MSU_INFO_SCI",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาวิทยาการสารสนเทศ",
+    "facultyNameTh": "คณะวิทยาการสารสนเทศ",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "MSU",
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],
+      "notes": "สาย IT/สารสนเทศตัวแทนภาคอีสาน"
+    }
+  },
+  {
+    "id": "BU_IT",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศและนวัตกรรม",
+    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศและนวัตกรรม",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "BU",
+    "studyTrackRequired": ["sci_math", "arts_math", "vocational"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo": {
+      "rounds": ["direct_admission", "admission"],
+      "notes": "เอกชนยอดนิยมสาย IT/Dev/UX/สตาร์ตอัป"
+    }
+  },
+  {
+    "id": "SPU_IT",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศ",
+    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศ",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "SPU",
+    "studyTrackRequired": ["sci_math", "arts_math", "vocational"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo": {
+      "rounds": ["direct_admission"],
+      "notes": "เอกชนด้าน IT ที่เปิดโอกาสเด็กสายอาชีพ/แผนอื่น"
+    }
+  },
+  {
+    "id": "DPU_IT",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคโนโลยีสารสนเทศ",
+    "facultyNameTh": "คณะเทคโนโลยีสารสนเทศ (หรือวิทยาลัยที่เกี่ยวข้อง)",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "universityId": "DPU",
+    "studyTrackRequired": ["sci_math", "arts_math", "vocational"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
+    "isPartner": true,
+    "tcasInfo": {
+      "rounds": ["direct_admission"],
+      "notes": "สาย IT/ธุรกิจดิจิทัลของมหาวิทยาลัยธุรกิจบัณฑิตย์"
+    }
+  },
+  /* ===========================
+     CLUSTER_HEALTH_NURSING_ALLIED
+     พยาบาล / สหสาขาสุขภาพ
+     =========================== */
+  {
+    "id": "MU_NURSING",
+    "nameTh": "พยาบาลศาสตรบัณฑิต",
+    "facultyNameTh": "คณะพยาบาลศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "MU",
+    "studyTrackRequired": ["sci_math"],     // TODO: เช็กแผนการเรียนที่รับจริง
+    "tuitionFeePerSemester": 0,             // TODO: ใส่ค่าเทอมจริง
+    "hasScholarship": true,                 // TODO: เช็กทุน/กยศ./ทุนคณะ
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["portfolio", "admission"], // TODO: เช็กรอบ TCAS จริงจาก myTCAS/ระเบียบการ
+      "notes": "พยาบาลสายสุขภาพดูแลคน (ตัวแทนสายพยาบาล/สุขภาพ Allied)"
+    }
+  },
+  {
+    "id": "KKU_NURSING",
+    "nameTh": "พยาบาลศาสตรบัณฑิต",
+    "facultyNameTh": "คณะพยาบาลศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "KKU",
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],              // TODO
+      "notes": "ตัวแทนสายพยาบาลในภาคอีสาน"
+    }
+  },
+  {
+    "id": "CMU_ALLIED_HEALTH",
+    "nameTh": "วิทยาศาสตรบัณฑิต สาขาเทคนิคการแพทย์",
+    "facultyNameTh": "คณะเทคนิคการแพทย์",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
     "universityId": "CMU",
-    "studyTrackRequired": ["sci_math"],
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "quota"],
-      "notes": "เหมาะกับผู้ที่สนใจกีฬา ฟิตเนส และการออกกำลังกายเพื่อสุขภาพ"
+      "rounds": ["admission"],              // TODO
+      "notes": "สายเทคนิคการแพทย์/ตรวจวิเคราะห์ในห้องแล็บ"
     }
   },
   {
-    "id": "MAJ_BBA_CHULA",
-    "nameTh": "บริหารธุรกิจบัณฑิต (หลักสูตรนานาชาติ)",
-    "facultyNameTh": "คณะพาณิชยศาสตร์และการบัญชี",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "universityId": "CHULA",
-    "studyTrackRequired": ["sci_math", "arts_math"],
+    "id": "PSU_PHYS_THERAPY",
+    "nameTh": "กายภาพบำบัดบัณฑิต",
+    "facultyNameTh": "คณะสหเวชศาสตร์ (หรือเทียบเท่า)",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "universityId": "PSU",
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "admission"],
-      "notes": "สาขา BBA จุฬาฯ เป็นที่นิยมสูง ต้องใช้คะแนนภาษาอังกฤษและคะแนนสอบวัดความถนัดธุรกิจ"
+      "rounds": ["admission"],              // TODO
+      "notes": "กายภาพบำบัด สายช่วยเหลือและฟื้นฟูผู้ป่วย"
+    }
+  },
+
+  /* ===========================
+     CLUSTER_HEALTH_MEDICINE_PHARMA
+     แพทย์ / ทันตะ / เภสัช / สัตวแพทย์
+     =========================== */
+  {
+    "id": "MU_MED",
+    "nameTh": "แพทยศาสตรบัณฑิต",
+    "facultyNameTh": "คณะแพทยศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "universityId": "MU",
+    "studyTrackRequired": ["sci_math"],     // TODO: เช็คข้อกำหนดแผนการเรียน
+    "tuitionFeePerSemester": 0,             // TODO: ค่าเทอม/ค่าใช้จ่ายจริง
+    "hasScholarship": true,                 // TODO: ทุนผลิตแพทย์/ทุนเฉพาะอื่น
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["quota", "admission"],     // TODO: เช็กรอบจริงในปีล่าสุด
+      "notes": "ตัวแทนสายแพทย์ระดับประเทศ"
     }
   },
   {
-    "id": "MAJ_ACCOUNTING_CHULA",
-    "nameTh": "การบัญชี",
-    "facultyNameTh": "คณะพาณิชยศาสตร์และการบัญชี",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "universityId": "CHULA",
-    "studyTrackRequired": ["sci_math", "arts_math"],
+    "id": "CU_MED",
+    "nameTh": "แพทยศาสตรบัณฑิต",
+    "facultyNameTh": "คณะแพทยศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "universityId": "CU",
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "quota", "admission"],
-      "notes": "การบัญชีเป็นหนึ่งในสาขาที่มีผู้สมัครสูงสุด และต้องการพื้นฐานคณิตศาสตร์ดี"
+      "rounds": ["quota", "admission"],     // TODO
+      "notes": "แพทย์รัฐชื่อดังในกรุงเทพฯ"
     }
   },
   {
-    "id": "MAJ_BUS_ADMIN_KU",
-    "nameTh": "บริหารธุรกิจ",
-    "facultyNameTh": "คณะบริหารธุรกิจ",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "id": "KKU_MED",
+    "nameTh": "แพทยศาสตรบัณฑิต",
+    "facultyNameTh": "คณะแพทยศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "universityId": "KKU",
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["quota", "admission"],     // TODO
+      "notes": "แพทย์ตัวแทนภาคอีสาน"
+    }
+  },
+  {
+    "id": "CU_PHARM",
+    "nameTh": "เภสัชศาสตรบัณฑิต",
+    "facultyNameTh": "คณะเภสัชศาสตร์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "universityId": "CU",
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],              // TODO
+      "notes": "สายเภสัชศาสตรระดับประเทศ"
+    }
+  },
+
+  /* ===========================
+     CLUSTER_SCIENCE_RESEARCH
+     วิทยาศาสตร์พื้นฐาน/ประยุกต์ เน้นวิจัย
+     =========================== */
+  {
+    "id": "CU_SCI",
+    "nameTh": "วิทยาศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิทยาศาสตร์",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "universityId": "CU",
+    "studyTrackRequired": ["sci_math"],     // TODO: เช็กว่าสาขาใดบ้าง/ใช้เงื่อนไขไหนจริง
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
+    "tcasInfo": {
+      "rounds": ["admission"],              // TODO
+      "notes": "ตัวแทนสายวิทยาศาสตร์พื้นฐาน/วิจัย"
+    }
+  },
+  {
+    "id": "KU_SCI",
+    "nameTh": "วิทยาศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิทยาศาสตร์",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
     "universityId": "KU",
-    "studyTrackRequired": ["sci_math", "arts"],
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "quota", "admission"],
-      "notes": "เหมาะกับผู้ที่สนใจการจัดการ การตลาด และการเป็นผู้ประกอบการ"
+      "rounds": ["admission"],              // TODO
+      "notes": "วิทยาศาสตร์ในมหาวิทยาลัยวิทย์-เกษตรขนาดใหญ่"
     }
   },
   {
-    "id": "MAJ_ECON_TU",
-    "nameTh": "เศรษฐศาสตร์",
-    "facultyNameTh": "คณะเศรษฐศาสตร์",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "universityId": "TU",
-    "studyTrackRequired": ["sci_math", "arts_math"],
+    "id": "CMU_SCI",
+    "nameTh": "วิทยาศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิทยาศาสตร์",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "universityId": "CMU",
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "quota", "admission"],
-      "notes": "ต้องการพื้นฐานคณิตศาสตร์และการคิดวิเคราะห์ด้านเศรษฐกิจ"
+      "rounds": ["admission"],              // TODO
+      "notes": "วิทยาศาสตร์ในเชียงใหม่ ตัวแทนภาคเหนือ"
     }
   },
   {
-    "id": "MAJ_MARKETING_SPU",
-    "nameTh": "การตลาด",
-    "facultyNameTh": "คณะบริหารธุรกิจ",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "universityId": "SPU",
-    "studyTrackRequired": ["arts", "arts_math"],
+    "id": "KKU_SCI",
+    "nameTh": "วิทยาศาสตรบัณฑิต",
+    "facultyNameTh": "คณะวิทยาศาสตร์",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "universityId": "KKU",
+    "studyTrackRequired": ["sci_math"],     // TODO
+    "tuitionFeePerSemester": 0,             // TODO
+    "hasScholarship": true,                 // TODO
+    "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "admission"],
-      "notes": "เหมาะกับผู้ที่สนใจการตลาดดิจิทัล แบรนด์ดิ้ง และการสื่อสารการตลาด"
+      "rounds": ["admission"],              // TODO
+      "notes": "วิทยาศาสตร์ตัวแทนภาคอีสาน"
     }
   }
-]

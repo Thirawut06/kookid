@@ -1,98 +1,364 @@
 [
   {
-    "id": "CLUSTER_SOCIAL_LAW_MEDIA",
-    "nameTh": "นิเทศศาสตร์ กฎหมาย และสังคมศาสตร์",
-    "descriptionTh": "กลุ่มสาขาที่เน้นการใช้ภาษา การสื่อสาร การวิเคราะห์สังคม และความเข้าใจระบบกฎหมาย เช่น นิเทศศาสตร์ วารสารศาสตร์ อักษรศาสตร์ รัฐศาสตร์ และนิติศาสตร์",
-    "tcasGroupRank_TCAS67": 1,
-    "examplesFromTCAS67_68": ["นิติศาสตร์", "วารสารศาสตร์และสื่อสารมวลชน", "ภาษาอังกฤษ", "รัฐศาสตร์"],
-    "exampleCareers": ["ทนายความ / ที่ปรึกษากฎหมาย", "นักข่าว / Content Creator", "นักรัฐศาสตร์ / เจ้าหน้าที่รัฐ"],
-    "marketNotes": [
-      "ที่ปรึกษากฎหมาย/ทนายความยังเป็นอาชีพต้องการในตลาดแรงงานไทย",
-      "สายสื่อสารมวลชน/ดิจิทัลคอนเทนต์เชื่อมกับงานด้านสื่อออนไลน์ การตลาด และอินฟลูเอนเซอร์"
-    ]
+    "id": "CAREER_CONTENT_CREATOR",
+    "nameTh": "คอนเทนต์ครีเอเตอร์ / Creator",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "hollandCode": ["A", "S", "E"],
+    "description": "ผลิตคอนเทนต์ลงโซเชียล เช่น TikTok, YouTube, IG ทำวิดีโอ รูป และข้อความให้ดึงดูดกลุ่มเป้าหมาย", // TODO: ขยายรายละเอียดทีหลัง
+    "exampleEmployers": ["เอเจนซี่โฆษณา", "สื่อออนไลน์", "อินฟลูเอนเซอร์/แบรนด์ส่วนตัว"], // TODO: ปรับให้ตรง use case
+    "relatedMajors": ["CU_COMM", "BU_COMM_NEW_MEDIA", "RSU_COMM", "SPU_COMM", "RU_MASSCOMM"] // ใช้ id จาก majors-2.json
   },
   {
-    "id": "CLUSTER_HEALTH_NURSING_ALLIED",
-    "nameTh": "สุขภาพ พยาบาล และสหเวชศาสตร์",
-    "descriptionTh": "กลุ่มสาขาที่เกี่ยวข้องกับการดูแลสุขภาพ การรักษา การฟื้นฟู และการส่งเสริมสุขภาพ เช่น พยาบาลศาสตร์ เทคนิคการแพทย์ สาธารณสุข วิทยาศาสตร์การกีฬา และกายภาพบำบัด",
-    "tcasGroupRank_TCAS67": 2,
-    "examplesFromTCAS67_68": ["พยาบาลศาสตร์", "เทคนิคการแพทย์", "สาธารณสุขศาสตร์", "กายภาพบำบัด"],
-    "exampleCareers": ["พยาบาลวิชาชีพ", "นักกายภาพบำบัด", "นักเทคนิคการแพทย์"],
-    "marketNotes": [
-      "พยาบาลศาสตร์เป็นสาขาที่มีผู้สมัครสูงสุดใน TCAS67–68",
-      "อาชีพนักกายภาพบำบัดและสายสุขภาพยังถูกจัดเป็นอาชีพเด่น/ขาดแคลนในหลายรายงานตลาดแรงงาน"
-    ]
+    "id": "CAREER_SOCIAL_MEDIA_MANAGER",
+    "nameTh": "ผู้ดูแลโซเชียลมีเดีย (Social Media Manager)",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "hollandCode": ["E", "A", "S"],
+    "description": "วางแผนและดูแลเพจ/โซเชียลของแบรนด์ ทำคอนเทนต์ปฏิทิน โฆษณา และวัดผลแคมเปญ", // TODO
+    "exampleEmployers": ["เอเจนซี่", "แบรนด์สินค้า", "สตาร์ตอัปอีคอมเมิร์ซ"], // TODO
+    "relatedMajors": ["CU_COMM", "TU_JOURN_MASSCOMM", "BU_COMM_NEW_MEDIA", "KU_HUMAN_COMM"]
   },
   {
-    "id": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
-    "nameTh": "บริหารธุรกิจ การบัญชี และเศรษฐศาสตร์",
-    "descriptionTh": "กลุ่มสาขาที่เกี่ยวข้องกับการจัดการธุรกิจ การเงิน การตลาด การวิเคราะห์เศรษฐกิจ และการวางแผนกลยุทธ์องค์กร เช่น บริหารธุรกิจ การบัญชี และเศรษฐศาสตร์",
-    "tcasGroupRank_TCAS67": 3,
-    "examplesFromTCAS67_68": ["บริหารธุรกิจ", "การบัญชี", "เศรษฐศาสตร์"],
-    "exampleCareers": ["นักบัญชี / ผู้สอบบัญชี", "นักวิเคราะห์การเงิน", "ผู้จัดการธุรกิจ / Entrepreneur"],
-    "marketNotes": [
-      "บริหารธุรกิจและการบัญชีเป็น Top 5 สาขาที่มีผู้สมัครสูงสุดใน TCAS67–68",
-      "อาชีพนักวิเคราะห์การเงิน นักวางแผนการเงิน และผู้ประกอบการยังเป็นอาชีพเด่นสำหรับคนรุ่นใหม่"
-    ]
+    "id": "CAREER_JOURNALIST",
+    "nameTh": "นักข่าว / ผู้สื่อข่าว",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "hollandCode": ["S", "A", "E"],
+    "description": "ติดตามประเด็นสังคม การเมือง เศรษฐกิจ ลงพื้นที่ สัมภาษณ์ และเขียน/ตัดต่อข่าวเผยแพร่ในสื่อ", // TODO
+    "exampleEmployers": ["สถานีโทรทัศน์", "สำนักข่าวออนไลน์", "หนังสือพิมพ์"], // TODO
+    "relatedMajors": ["TU_JOURN_MASSCOMM", "CMU_MASSCOMM", "RU_MASSCOMM", "KU_HUMAN_COMM"]
   },
   {
-    "id": "CLUSTER_ENGINEERING_IT_DATA",
-    "nameTh": "วิศวกรรม เทคโนโลยี และข้อมูล",
-    "descriptionTh": "กลุ่มสาขาที่เน้นการออกแบบระบบ การสร้างนวัตกรรม การพัฒนาซอฟต์แวร์ และการวิเคราะห์ข้อมูล เช่น วิศวกรรมคอมพิวเตอร์ วิศวกรรมไฟฟ้า เทคโนโลยีสารสนเทศ และวิทยาการข้อมูล",
-    "tcasGroupRank_TCAS67": 4,
-    "examplesFromTCAS67_68": ["วิศวกรรมศาสตร์", "วิศวกรรมคอมพิวเตอร์", "เทคโนโลยีสารสนเทศ"],
-    "exampleCareers": ["Software Developer / Engineer", "Data Analyst / Data Scientist", "วิศวกรไฟฟ้า / วิศวกรโยธา"],
-    "marketNotes": [
-      "สายงานดิจิทัลเทคโนโลยี เช่น Software Developer, Data Analyst, Cybersecurity เป็นอาชีพมาแรงในปี 2567–2568",
-      "หลายรายงานตลาดแรงงานจัดให้สาย IT/วิศวะเป็นกลุ่มขาดแคลนกำลังคน"
-    ]
+    "id": "CAREER_PR_OFFICER",
+    "nameTh": "นักประชาสัมพันธ์ / PR",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "hollandCode": ["S", "E", "A"],
+    "description": "สร้างภาพลักษณ์และความสัมพันธ์ที่ดีกับสาธารณะ เขียนข่าวประชาสัมพันธ์ จัดงาน และประสานสื่อ", // TODO
+    "exampleEmployers": ["องค์กรรัฐ", "บริษัทเอกชน", "เอเจนซี่ PR"], // TODO
+    "relatedMajors": ["CU_COMM", "SPU_COMM", "BU_COMM_NEW_MEDIA", "RSU_COMM"]
   },
   {
-    "id": "CLUSTER_HEALTH_MEDICINE_PHARMA",
-    "nameTh": "แพทยศาสตร์ เภสัชศาสตร์ และสุขภาพขั้นสูง",
-    "descriptionTh": "กลุ่มสาขาที่เน้นการรักษาโรค การใช้ยา การดูแลรักษาระดับแพทย์และเภสัชกร เช่น แพทยศาสตร์ ทันตแพทยศาสตร์ และเภสัชศาสตร์",
-    "tcasGroupRank_TCAS67": 8,
-    "examplesFromTCAS67_68": ["แพทยศาสตร์", "ทันตแพทยศาสตร์", "เภสัชศาสตร์"],
-    "exampleCareers": ["แพทย์ / แพทย์เฉพาะทาง", "ทันตแพทย์", "เภสัชกร"],
-    "marketNotes": [
-      "แพทย์เฉพาะทางและเภสัชกรยังเป็นอาชีพขาดแคลนในระบบสาธารณสุขไทย",
-      "คะแนนเข้าแพทย์และเภสัชยังสูงและแข่งขันดุเดือดในระบบ TCAS68"
-    ]
+    "id": "CAREER_MEDIA_PRODUCER",
+    "nameTh": "โปรดิวเซอร์ / ผู้ผลิตรายการและวิดีโอ",
+    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "hollandCode": ["A", "E", "S"],
+    "description": "คิดคอนเซปต์รายการ คุมทีมถ่ายทำ ตัดต่อ และดูแลงานวิดีโอให้เสร็จตามเวลาและงบประมาณ", // TODO
+    "exampleEmployers": ["ช่องทีวี", "บริษัทโปรดักชันเฮาส์", "ทีมคอนเทนต์แบรนด์"], // TODO
+    "relatedMajors": ["CU_COMM", "BU_COMM_NEW_MEDIA", "RSU_COMM", "CMU_MASSCOMM"]
+  },
+
+  {
+    "id": "CAREER_SOFTWARE_ENGINEER",
+    "nameTh": "วิศวกรซอฟต์แวร์ / โปรแกรมเมอร์",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": ["I", "R", "C"],
+    "description": "ออกแบบและพัฒนาซอฟต์แวร์/แอป ทำงานกับโค้ด ทดสอบ และแก้บั๊กให้ระบบทำงานได้จริง", // TODO
+    "exampleEmployers": ["บริษัทซอฟต์แวร์", "สตาร์ตอัป", "ทีมพัฒนาในองค์กรใหญ่"], // TODO
+    "relatedMajors": ["KMUTT_IT", "BU_IT", "SPU_IT", "DPU_IT", "MFU_IT", "MSU_INFO_SCI"]
   },
   {
-    "id": "CLUSTER_SCIENCE_RESEARCH",
-    "nameTh": "วิทยาศาสตร์และการวิจัย",
-    "descriptionTh": "กลุ่มสาขาที่เน้นการทำความเข้าใจธรรมชาติ การทดลอง การวิจัย และการพัฒนาเทคโนโลยีพื้นฐาน เช่น วิทยาศาสตร์ทั่วไป ชีววิทยา เคมี ฟิสิกส์ และวิทยาศาสตร์ประยุกต์",
-    "tcasGroupRank_TCAS67": 5,
-    "examplesFromTCAS67_68": ["วิทยาศาสตร์", "เทคโนโลยีทางอาหาร", "สถิติ"],
-    "exampleCareers": ["นักวิจัย / นักวิทยาศาสตร์", "นักสถิติ / นักวิเคราะห์ข้อมูล", "นักเทคโนโลยีอาหาร"],
-    "marketNotes": [
-      "สายวิทยาศาสตร์พื้นฐานเป็นฐานสำคัญสำหรับต่อยอดไปสู่งานวิจัยและงานเทคโนโลยีระดับสูง",
-      "ความต้องการบุคลากรด้านวิทยาศาสตร์ข้อมูลและงาน R&D เพิ่มขึ้นในหลายอุตสาหกรรม"
-    ]
+    "id": "CAREER_DATA_SCIENTIST",
+    "nameTh": "นักวิทยาศาสตร์ข้อมูล (Data Scientist)",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": ["I", "C", "R"],
+    "description": "ใช้สถิติ การเขียนโปรแกรม และแมชชีนเลิร์นนิง วิเคราะห์ข้อมูลเพื่อช่วยตัดสินใจเชิงธุรกิจ", // TODO
+    "exampleEmployers": ["ธนาคาร", "อีคอมเมิร์ซ", "บริษัทเทค", "สายงาน Data ในองค์กรใหญ่"], // TODO
+    "relatedMajors": ["KMUTT_IT", "CU_ENG", "KMITL_ENG", "BU_IT"]
   },
   {
-    "id": "CLUSTER_EDUCATION_TEACHING",
-    "nameTh": "ครุศาสตร์ ศึกษาศาสตร์ และการสอน",
-    "descriptionTh": "กลุ่มสาขาที่มุ่งผลิตครู อาจารย์ และผู้เชี่ยวชาญด้านการเรียนรู้ เช่น ครุศาสตร์ ศึกษาศาสตร์ การสอนวิชาเฉพาะทาง และการแนะแนวการศึกษา",
-    "tcasGroupRank_TCAS67": 6,
-    "examplesFromTCAS67_68": ["ครุศาสตร์", "ศึกษาศาสตร์", "การสอนภาษา"],
-    "exampleCareers": ["ครู / อาจารย์", "นักแนะแนวการศึกษา", "นักออกแบบหลักสูตร / ติวเตอร์"],
-    "marketNotes": [
-      "งานวิจัยบางส่วนชี้ว่าอาชีพครู/ติวเตอร์เป็นอาชีพในฝันของ Gen Z จำนวนมาก",
-      "ตลาดยังต้องการครูเฉพาะทาง โดยเฉพาะด้านภาษา วิทยาศาสตร์ และเทคโนโลยี"
-    ]
+    "id": "CAREER_SYSTEMS_ENGINEER",
+    "nameTh": "วิศวกรระบบ / System Engineer",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": ["R", "I", "C"],
+    "description": "ดูแลโครงสร้างพื้นฐานไอที เซิร์ฟเวอร์ ระบบเครือข่าย ให้ระบบองค์กรเสถียรและปลอดภัย", // TODO
+    "exampleEmployers": ["บริษัทไอที", "องค์กรใหญ่ที่มีระบบภายใน", "ผู้ให้บริการ Cloud/ISP"], // TODO
+    "relatedMajors": ["CU_ENG", "KMITL_ENG", "KMUTNB_ENG", "KKU_ENG", "BU_IT"]
   },
   {
-    "id": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
-    "nameTh": "ท่องเที่ยว การบริการ และเกษตรสมัยใหม่",
-    "descriptionTh": "กลุ่มสาขาที่เกี่ยวข้องกับการท่องเที่ยว การโรงแรม การบริการ และการผลิตอาหาร/เกษตร เช่น การท่องเที่ยว การโรงแรม เกษตรศาสตร์ และอุตสาหกรรมเกษตร",
-    "tcasGroupRank_TCAS67": 7,
-    "examplesFromTCAS67_68": ["การท่องเที่ยวและการโรงแรม", "เกษตรศาสตร์", "เทคโนโลยีการเกษตร"],
-    "exampleCareers": ["มัคคุเทศก์ / ผู้จัดการโรงแรม", "นักเกษตรสมัยใหม่ / Smart Farmer", "นักพัฒนาผลิตภัณฑ์อาหาร"],
-    "marketNotes": [
-      "ไทยยังพึ่งพาเศรษฐกิจท่องเที่ยวและอาหารเป็นหลัก จึงต้องการบุคลากรด้านบริการและเกษตรสมัยใหม่",
-      "แนวโน้มเกษตรเทคโนโลยีและอาหารฟังก์ชันเป็นพื้นที่เติบโตในอนาคต"
-    ]
+    "id": "CAREER_NETWORK_ENGINEER",
+    "nameTh": "วิศวกรเครือข่าย (Network Engineer)",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": ["R", "I", "C"],
+    "description": "ออกแบบ ติดตั้ง ดูแลเครือข่ายคอมพิวเตอร์ในองค์กร เช่น Router, Switch, Firewall", // TODO
+    "exampleEmployers": ["ผู้ให้บริการอินเทอร์เน็ต", "บริษัทมือถือ", "องค์กรใหญ่ที่มีสาขาเยอะ"], // TODO
+    "relatedMajors": ["CU_ENG", "KMITL_ENG", "KMUTNB_ENG", "MFU_IT", "MSU_INFO_SCI"]
+  },
+  {
+    "id": "CAREER_UX_UI_DESIGNER",
+    "nameTh": "นักออกแบบ UX/UI",
+    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "hollandCode": ["A", "I", "S"],
+    "description": "ออกแบบประสบการณ์ผู้ใช้และหน้าตาเว็บ/แอปให้ใช้งานง่ายและสวยงาม ผสมดีไซน์กับการวิเคราะห์ผู้ใช้", // TODO
+    "exampleEmployers": ["บริษัทเทค", "สตูดิโอออกแบบดิจิทัล", "ทีม Product ในองค์กร"], // TODO
+    "relatedMajors": ["BU_IT", "SPU_IT", "DPU_IT", "KMUTT_IT"]
+  }  ,
+  {
+    "id": "CAREER_REGISTERED_NURSE",
+    "nameTh": "พยาบาลวิชาชีพ",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "hollandCode": ["S", "I", "C"],
+    "description": "ดูแลผู้ป่วยในโรงพยาบาล/คลินิก ประเมินอาการ ให้ยา ทำหัตถการพื้นฐาน และสื่อสารกับทีมแพทย์และครอบครัวผู้ป่วย", // TODO: ขยายรายละเอียด
+    "exampleEmployers": ["โรงพยาบาลรัฐ", "โรงพยาบาลเอกชน", "คลินิกเฉพาะทาง"], // TODO
+    "relatedMajors": ["MU_NURSING", "KKU_NURSING"]
+  },
+  {
+    "id": "CAREER_PUBLIC_HEALTH_OFFICER",
+    "nameTh": "นักวิชาการสาธารณสุข",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "hollandCode": ["S", "I", "C"],
+    "description": "ทำงานด้านส่งเสริมสุขภาพ วิเคราะห์ปัญหาสุขภาพชุมชน วางแผนรณรงค์และประเมินผลโครงการสาธารณสุข", // TODO
+    "exampleEmployers": ["สำนักงานสาธารณสุขจังหวัด", "โรงพยาบาลชุมชน", "องค์กรพัฒนาเอกชนด้านสุขภาพ"], // TODO
+    "relatedMajors": ["MU_NURSING", "CMU_ALLIED_HEALTH"]
+  },
+  {
+    "id": "CAREER_MEDICAL_TECHNOLOGIST",
+    "nameTh": "นักเทคนิคการแพทย์",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "hollandCode": ["I", "S", "C"],
+    "description": "ตรวจวิเคราะห์เลือด ปัสสาวะ และตัวอย่างอื่น ๆ ในห้องปฏิบัติการเพื่อช่วยแพทย์วินิจฉัยโรค", // TODO
+    "exampleEmployers": ["ห้องแล็บโรงพยาบาล", "ศูนย์ตรวจวิเคราะห์เอกชน"], // TODO
+    "relatedMajors": ["CMU_ALLIED_HEALTH"]
+  },
+  {
+    "id": "CAREER_PHYSIOTHERAPIST",
+    "nameTh": "นักกายภาพบำบัด",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "hollandCode": ["S", "I", "R"],
+    "description": "ประเมินและฟื้นฟูการเคลื่อนไหวของผู้ป่วยด้วยการออกกำลังบำบัด เครื่องมือ และเทคนิคเฉพาะทาง", // TODO
+    "exampleEmployers": ["โรงพยาบาล", "คลินิกกายภาพบำบัด", "ศูนย์ฟื้นฟูสมรรถภาพ"], // TODO
+    "relatedMajors": ["PSU_PHYS_THERAPY"]
+  },
+  {
+    "id": "CAREER_OCCUPATIONAL_THERAPIST",
+    "nameTh": "นักกิจกรรมบำบัด",
+    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "hollandCode": ["S", "I", "A"],
+    "description": "ช่วยผู้ป่วยฝึกทำกิจวัตรประจำวันและปรับตัวให้กลับมาใช้ชีวิตหรือทำงานได้ใกล้เคียงเดิมมากที่สุด", // TODO
+    "exampleEmployers": ["โรงพยาบาล", "ศูนย์ฟื้นฟู", "หน่วยงานด้านคนพิการ"], // TODO
+    "relatedMajors": ["MU_NURSING", "CMU_ALLIED_HEALTH"]
+  }  ,
+  {
+    "id": "CAREER_PHYSICIAN",
+    "nameTh": "แพทย์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "hollandCode": ["I", "S", "C"],
+    "description": "ตรวจ วินิจฉัย รักษา และติดตามอาการผู้ป่วย รวมถึงให้คำปรึกษาด้านสุขภาพ", // TODO
+    "exampleEmployers": ["โรงพยาบาลรัฐ", "โรงพยาบาลเอกชน", "คลินิก"], // TODO
+    "relatedMajors": ["MU_MED", "CU_MED", "KKU_MED"]
+  },
+  {
+    "id": "CAREER_DENTIST",
+    "nameTh": "ทันตแพทย์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "hollandCode": ["I", "R", "S"],
+    "description": "ตรวจและรักษาสุขภาพช่องปาก อุดฟัน ถอนฟัน จัดฟัน ทำฟันปลอม และให้คำแนะนำการดูแลฟัน", // TODO
+    "exampleEmployers": ["คลินิกทันตกรรม", "โรงพยาบาล", "คลินิกของตนเอง"], // TODO
+    "relatedMajors": ["MU_MED", "CU_MED"]  // TODO: เปลี่ยนเป็นรหัสทันตะจริงเมื่อมี
+  },
+  {
+    "id": "CAREER_PHARMACIST",
+    "nameTh": "เภสัชกร",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "hollandCode": ["I", "C", "S"],
+    "description": "จ่ายยา ตรวจสอบความถูกต้องของยา ให้คำแนะนำการใช้ยา และดูแลคลังยา", // TODO
+    "exampleEmployers": ["โรงพยาบาล", "ร้านขายยา", "บริษัทยา"], // TODO
+    "relatedMajors": ["CU_PHARM"]
+  },
+  {
+    "id": "CAREER_VETERINARIAN",
+    "nameTh": "สัตวแพทย์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "hollandCode": ["I", "S", "R"],
+    "description": "ตรวจรักษาสุขภาพสัตว์ ฉีดวัคซีน ทำหัตถการ และให้คำแนะนำเจ้าของสัตว์เลี้ยง", // TODO
+    "exampleEmployers": ["โรงพยาบาลสัตว์", "คลินิกสัตวแพทย์", "ฟาร์ม/หน่วยงานรัฐ"], // TODO
+    "relatedMajors": ["MU_MED"]  // TODO: เปลี่ยนเป็นคณะสัตวแพทย์จริงเมื่อเพิ่ม majors
+  },
+  {
+    "id": "CAREER_MEDICAL_RESEARCHER",
+    "nameTh": "นักวิจัยด้านการแพทย์/ชีวการแพทย์",
+    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "hollandCode": ["I", "R", "C"],
+    "description": "ทำวิจัยด้านยารักษาโรค วิธีรักษาใหม่ หรือนวัตกรรมทางการแพทย์ในห้องแล็บและสถาบันวิจัย", // TODO
+    "exampleEmployers": ["คณะแพทยศาสตร์", "สถาบันวิจัย", "บริษัทยา"], // TODO
+    "relatedMajors": ["MU_MED", "CU_PHARM", "CU_SCI"]
+  }  ,
+  {
+    "id": "CAREER_RESEARCH_SCIENTIST",
+    "nameTh": "นักวิทยาศาสตร์วิจัย",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "hollandCode": ["I", "R", "C"],
+    "description": "วางแผนและทำการทดลอง วิเคราะห์ผล และตีความข้อมูลทางวิทยาศาสตร์ในห้องปฏิบัติการ", // TODO
+    "exampleEmployers": ["สถาบันวิจัย", "คณะวิทยาศาสตร์", "บริษัทเทคโนโลยี/อุตสาหกรรม"], // TODO
+    "relatedMajors": ["CU_SCI", "KU_SCI", "CMU_SCI", "KKU_SCI"]
+  },
+  {
+    "id": "CAREER_CHEMIST",
+    "nameTh": "นักเคมี",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "hollandCode": ["I", "R", "C"],
+    "description": "ศึกษาสารเคมี ปฏิกิริยา และสมบัติของวัตถุต่าง ๆ เพื่อพัฒนาผลิตภัณฑ์หรือควบคุมคุณภาพ", // TODO
+    "exampleEmployers": ["โรงงานอุตสาหกรรม", "ห้องแล็บ", "บริษัทเครื่องสำอาง/อาหาร"], // TODO
+    "relatedMajors": ["CU_SCI", "KU_SCI"]
+  },
+  {
+    "id": "CAREER_ENVIRONMENTAL_SCIENTIST",
+    "nameTh": "นักวิทยาศาสตร์สิ่งแวดล้อม",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "hollandCode": ["I", "S", "R"],
+    "description": "ศึกษาและติดตามปัญหาสิ่งแวดล้อม เช่น น้ำ อากาศ ขยะ เพื่อเสนอแนวทางแก้ไขและป้องกัน", // TODO
+    "exampleEmployers": ["หน่วยงานรัฐด้านสิ่งแวดล้อม", "บริษัทที่ปรึกษา", "องค์กรสิ่งแวดล้อม"], // TODO
+    "relatedMajors": ["KU_SCI", "CMU_SCI"]
+  },
+  {
+    "id": "CAREER_STATISTICIAN",
+    "nameTh": "นักสถิติ",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "hollandCode": ["I", "C", "R"],
+    "description": "ออกแบบการเก็บข้อมูล วิเคราะห์ข้อมูล และสรุปผลทางสถิติ เพื่อสนับสนุนการตัดสินใจ", // TODO
+    "exampleEmployers": ["หน่วยงานวิจัย", "บริษัทที่มี Data เยอะ", "ธนาคาร/ประกัน"], // TODO
+    "relatedMajors": ["CU_SCI"]
+  },
+  {
+    "id": "CAREER_LAB_TECHNICIAN",
+    "nameTh": "เจ้าหน้าที่ห้องปฏิบัติการ (Lab Technician)",
+    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "hollandCode": ["R", "I", "C"],
+    "description": "ดูแลอุปกรณ์ เตรียมสาร และช่วยนักวิจัยทำการทดลองในห้องแล็บ", // TODO
+    "exampleEmployers": ["คณะวิทยาศาสตร์", "โรงงานอุตสาหกรรม", "บริษัทตรวจวิเคราะห์"], // TODO
+    "relatedMajors": ["CU_SCI", "KU_SCI", "CMU_SCI", "KKU_SCI"]
+  }  ,
+  {
+    "id": "CAREER_ACCOUNTANT",
+    "nameTh": "นักบัญชี",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "hollandCode": ["C", "E", "S"],
+    "description": "จัดทำงบการเงิน บันทึกบัญชี ตรวจสอบความถูกต้องของรายรับรายจ่าย และทำงานด้านภาษี", // TODO
+    "exampleEmployers": ["สำนักงานบัญชี", "บริษัทเอกชนทุกขนาด", "สำนักงานสอบบัญชี"], // TODO
+    "relatedMajors": ["CU_COMM" /* TODO: เปลี่ยนเป็นสาขาบัญชีจริงเมื่อเพิ่ม majors */]
+  },
+  {
+    "id": "CAREER_FINANCIAL_ANALYST",
+    "nameTh": "นักวิเคราะห์การเงิน",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "hollandCode": ["E", "C", "I"],
+    "description": "วิเคราะห์งบการเงิน ติดตามภาวะตลาด และประเมินโครงการลงทุนเพื่อช่วยผู้บริหารตัดสินใจ", // TODO
+    "exampleEmployers": ["ธนาคาร", "บริษัทหลักทรัพย์", "บริษัทเอกชนขนาดใหญ่"], // TODO
+    "relatedMajors": ["CU_COMM" /* TODO: เปลี่ยนเป็นสาขาการเงิน/เศรษฐศาสตร์เมื่อมี */]
+  },
+  {
+    "id": "CAREER_MARKETER",
+    "nameTh": "นักการตลาด / Marketing Executive",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "hollandCode": ["E", "S", "A"],
+    "description": "วางแผนแคมเปญการตลาด วิเคราะห์พฤติกรรมลูกค้า และทำงานร่วมกับทีมครีเอทีฟและเซลส์", // TODO
+    "exampleEmployers": ["แบรนด์สินค้า", "เอเจนซี่โฆษณา", "สตาร์ตอัป"], // TODO
+    "relatedMajors": ["BU_COMM_NEW_MEDIA", "SPU_COMM"]
+  },
+  {
+    "id": "CAREER_BUSINESS_ANALYST",
+    "nameTh": "นักวิเคราะห์ธุรกิจ (Business Analyst)",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "hollandCode": ["E", "I", "C"],
+    "description": "เก็บและวิเคราะห์ข้อมูลกระบวนการทำงาน เสนอแนวทางปรับปรุงระบบและกระบวนการธุรกิจ", // TODO
+    "exampleEmployers": ["องค์กรใหญ่", "บริษัทที่ปรึกษา", "บริษัทเทค"], // TODO
+    "relatedMajors": ["BU_IT", "DPU_IT"]
+  },
+  {
+    "id": "CAREER_ENTREPRENEUR",
+    "nameTh": "ผู้ประกอบการ / เจ้าของธุรกิจ",
+    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "hollandCode": ["E", "S", "C"],
+    "description": "สร้างและบริหารธุรกิจของตนเอง ตั้งแต่คิดไอเดีย วางแผนการเงิน การตลาด ไปจนถึงบริหารทีม", // TODO
+    "exampleEmployers": ["ธุรกิจส่วนตัวทุกประเภท", "สตาร์ตอัป"], // TODO
+    "relatedMajors": ["BU_COMM_NEW_MEDIA", "SPU_IT", "DPU_IT"]
+  }  ,
+  {
+    "id": "CAREER_SCHOOL_TEACHER",
+    "nameTh": "ครูโรงเรียน (ประถม/มัธยม)",
+    "clusterId": "CLUSTER_EDUCATION_TEACHING",
+    "hollandCode": ["S", "I", "A"],
+    "description": "สอนหนังสือ วางแผนการสอน ดูแลนักเรียน และประเมินผลการเรียนรู้ในโรงเรียน", // TODO
+    "exampleEmployers": ["โรงเรียนรัฐ", "โรงเรียนเอกชน", "โรงเรียนนานาชาติ"], // TODO
+    "relatedMajors": [] // TODO: เติมรหัสสาขาครุศาสตร์/ศึกษาศาสตร์เมื่อเพิ่ม majors
+  },
+  {
+    "id": "CAREER_TUTOR",
+    "nameTh": "ติวเตอร์ / ครูสอนพิเศษ",
+    "clusterId": "CLUSTER_EDUCATION_TEACHING",
+    "hollandCode": ["S", "A", "I"],
+    "description": "สอนเสริมเนื้อหา เช่น คณิต วิทย์ ภาษา หรือวิชาเฉพาะ ให้เด็กหรือผู้ใหญ่ในรูปแบบกลุ่ม/ตัวต่อตัว", // TODO
+    "exampleEmployers": ["สถาบันกวดวิชา", "ธุรกิจติวเตอร์ส่วนตัว", "เรียนออนไลน์"], // TODO
+    "relatedMajors": []
+  },
+  {
+    "id": "CAREER_EDU_COUNSELOR",
+    "nameTh": "ครูแนะแนว / ที่ปรึกษาทางการศึกษา",
+    "clusterId": "CLUSTER_EDUCATION_TEACHING",
+    "hollandCode": ["S", "I", "E"],
+    "description": "ให้คำปรึกษาเด็กเรื่องการเรียน ชีวิตในโรงเรียน และเส้นทางการศึกษาต่อ", // TODO
+    "exampleEmployers": ["โรงเรียน", "ศูนย์ให้คำปรึกษา", "แพลตฟอร์มแนะแนวออนไลน์"], // TODO
+    "relatedMajors": []
+  },
+  {
+    "id": "CAREER_INSTRUCTIONAL_DESIGNER",
+    "nameTh": "นักออกแบบการเรียนการสอน (Instructional Designer)",
+    "clusterId": "CLUSTER_EDUCATION_TEACHING",
+    "hollandCode": ["I", "A", "S"],
+    "description": "ออกแบบหลักสูตร สื่อการสอน และระบบการเรียนรู้ทั้งออนไลน์และออฟไลน์", // TODO
+    "exampleEmployers": ["บริษัท EdTech", "องค์กรใหญ่ที่มีอบรมภายใน", "สถาบันการศึกษา"], // TODO
+    "relatedMajors": []
+  },
+  {
+    "id": "CAREER_CORPORATE_TRAINER",
+    "nameTh": "วิทยากรอบรม / Trainer องค์กร",
+    "clusterId": "CLUSTER_EDUCATION_TEACHING",
+    "hollandCode": ["S", "E", "A"],
+    "description": "จัดอบรม พัฒนาทักษะให้พนักงานองค์กร เช่น Soft Skills, การขาย, ภาวะผู้นำ", // TODO
+    "exampleEmployers": ["HRD ขององค์กรใหญ่", "บริษัทเทรนนิง", "ที่ปรึกษาอิสระ"], // TODO
+    "relatedMajors": []
+  }  ,
+  {
+    "id": "CAREER_TOUR_GUIDE",
+    "nameTh": "มัคคุเทศก์ / ไกด์ทัวร์",
+    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "hollandCode": ["S", "E", "R"],
+    "description": "พานักท่องเที่ยวเที่ยวสถานที่ต่าง ๆ ให้ข้อมูล ดูแลความปลอดภัยและประสบการณ์โดยรวม", // TODO
+    "exampleEmployers": ["บริษัททัวร์", "ไกด์อิสระ", "รีสอร์ต/โรงแรม"], // TODO
+    "relatedMajors": []
+  },
+  {
+    "id": "CAREER_HOTEL_MANAGER",
+    "nameTh": "ผู้จัดการโรงแรม / Hotel Manager",
+    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "hollandCode": ["E", "S", "C"],
+    "description": "บริหารงานโรงแรมหรือรีสอร์ต ดูแลทีมหน้า-หลังบ้าน และบริการลูกค้าให้ได้มาตรฐาน", // TODO
+    "exampleEmployers": ["โรงแรม", "รีสอร์ต", "เชนโรงแรมข้ามชาติ"], // TODO
+    "relatedMajors": []
+  },
+  {
+    "id": "CAREER_EVENT_PLANNER",
+    "nameTh": "นักวางแผนงานอีเวนต์ / Organizer",
+    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "hollandCode": ["E", "A", "S"],
+    "description": "วางแผนและประสานงานจัดอีเวนต์ เช่น งานคอนเสิร์ต งานสัมมนา งานเปิดตัวสินค้า", // TODO
+    "exampleEmployers": ["บริษัทออแกไนซ์", "ฝ่ายการตลาดขององค์กร", "ฟรีแลนซ์"], // TODO
+    "relatedMajors": ["BU_COMM_NEW_MEDIA", "SPU_COMM"]
+  },
+  {
+    "id": "CAREER_AGRICULTURE_OFFICER",
+    "nameTh": "เจ้าหน้าที่ส่งเสริมการเกษตร",
+    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "hollandCode": ["S", "R", "I"],
+    "description": "ลงพื้นที่พบเกษตรกร ถ่ายทอดความรู้และเทคโนโลยีการเกษตรสมัยใหม่", // TODO
+    "exampleEmployers": ["กรมส่งเสริมการเกษตร", "หน่วยงานท้องถิ่น", "บริษัทเกษตร"], // TODO
+    "relatedMajors": []
+  },
+  {
+    "id": "CAREER_TRAVEL_CONTENT_CREATOR",
+    "nameTh": "คอนเทนต์ครีเอเตอร์สายท่องเที่ยว",
+    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "hollandCode": ["A", "S", "E"],
+    "description": "ทำคอนเทนต์รีวิวที่พัก ร้านอาหาร และสถานที่ท่องเที่ยว ผ่านโซเชียลต่าง ๆ", // TODO
+    "exampleEmployers": ["ทำช่องส่วนตัว", "สื่อท่องเที่ยว", "ฝ่ายการตลาดโรงแรม/ทัวร์"], // TODO
+    "relatedMajors": ["CMU_MASSCOMM", "BU_COMM_NEW_MEDIA"]
   }
-]
+ ]
+ 

@@ -1,92 +1,82 @@
-[
-  {
-    "id": "CHULA",
-    "nameTh": "จุฬาลงกรณ์มหาวิทยาลัย",
+  
+{
+    "id": "CU",
+    "nameTh": "จุฬาลงกรณ์มหาวิทยาลัย",              // TODO: แก้ encoding ให้ถูกใน editor
     "nameEn": "Chulalongkorn University",
     "shortName": "จุฬาฯ",
     "type": "public",
     "region": "bangkok",
-    "websiteUrl": "https://www.chula.ac.th/"
+    "websiteUrl": "https://www.chula.ac.th"
   },
   {
-    "id": "TU",
-    "nameTh": "มหาวิทยาลัยธรรมศาสตร์",
-    "nameEn": "Thammasat University",
-    "shortName": "มธ.",
-    "type": "public",
-    "region": "bangkok",
-    "websiteUrl": "https://www.tu.ac.th/"
-  },
-  {
-    "id": "KU",
-    "nameTh": "มหาวิทยาลัยเกษตรศาสตร์",
-    "nameEn": "Kasetsart University",
-    "shortName": "มก.",
-    "type": "public",
-    "region": "bangkok",
-    "websiteUrl": "https://www.ku.ac.th/"
-  },
-  {
-    "id": "MAHIDOL",
-    "nameTh": "มหาวิทยาลัยมหิดล",
+    "id": "MU",
+    "nameTh": "มหาวิทยาลัยมหิดล",                   // TODO
     "nameEn": "Mahidol University",
     "shortName": "ม.มหิดล",
     "type": "public",
     "region": "central",
-    "websiteUrl": "https://www.mahidol.ac.th/"
+    "websiteUrl": "https://www.mahidol.ac.th"
   },
   {
-    "id": "CMU",
-    "nameTh": "มหาวิทยาลัยเชียงใหม่",
-    "nameEn": "Chiang Mai University",
-    "shortName": "มช.",
-    "type": "public",
-    "region": "north",
-    "websiteUrl": "https://www.cmu.ac.th/"
-  },
-  {
-    "id": "KMITL",
-    "nameTh": "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง",
-    "nameEn": "King Mongkut's Institute of Technology Ladkrabang",
-    "shortName": "สจล.",
-    "type": "public",
-    "region": "bangkok",
-    "websiteUrl": "https://www.kmitl.ac.th/"
-  },
-  {
-    "id": "KMUTNB",
-    "nameTh": "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ",
-    "nameEn": "King Mongkut's University of Technology North Bangkok",
-    "shortName": "มจพ.",
-    "type": "public",
-    "region": "bangkok",
-    "websiteUrl": "https://www.kmutnb.ac.th/"
-  },
-  {
-    "id": "KKU",
-    "nameTh": "มหาวิทยาลัยขอนแก่น",
-    "nameEn": "Khon Kaen University",
-    "shortName": "มข.",
-    "type": "public",
-    "region": "northeast",
-    "websiteUrl": "https://www.kku.ac.th/"
-  },
-  {
-    "id": "SU",
-    "nameTh": "มหาวิทยาลัยศิลปากร",
-    "nameEn": "Silpakorn University",
-    "shortName": "มศก.",
-    "type": "public",
-    "region": "central",
-    "websiteUrl": "https://www.su.ac.th/"
-  },
-  {
-    "id": "SPU",
-    "nameTh": "มหาวิทยาลัยศรีปทุม",
-    "nameEn": "Sripatum University",
-    "shortName": "มศป.",
+    "id": "BU",
+    "nameTh": "มหาวิทยาลัยกรุงเทพ",                 // TODO
+    "nameEn": "Bangkok University",
+    "shortName": "ม.กรุงเทพ",
     "type": "private",
     "region": "bangkok",
-    "websiteUrl": "https://www.spu.ac.th/"
+    "websiteUrl": "https://www.bu.ac.th"
+  },
+  {
+    "id": "RSU",
+    "nameTh": "มหาวิทยาลัยรังสิต",                  // TODO
+    "nameEn": "Rangsit University",
+    "shortName": "ม.รังสิต",
+    "type": "private",
+    "region": "central",
+    "websiteUrl": "https://www.rsu.ac.th"
+  },
+  {
+    "id": "MFU",
+    "nameTh": "มหาวิทยาลัยแม่ฟ้าหลวง",              // TODO
+    "nameEn": "Mae Fah Luang University",
+    "shortName": "มฟล.",
+    "type": "public",
+    "region": "north",
+    "websiteUrl": "https://www.mfu.ac.th"
+  },
+  {
+    "id": "MSU",
+    "nameTh": "มหาวิทยาลัยมหาสารคาม",               // TODO
+    "nameEn": "Mahasarakham University",
+    "shortName": "มมส.",
+    "type": "public",
+    "region": "northeast",
+    "websiteUrl": "https://www.msu.ac.th"
+  },
+  {
+    "id": "PSU",
+    "nameTh": "มหาวิทยาลัยสงขลานครินทร์",          // TODO
+    "nameEn": "Prince of Songkla University",
+    "shortName": "ม.อ.",
+    "type": "public",
+    "region": "south",
+    "websiteUrl": "https://www.psu.ac.th"
+  },
+  {
+    "id": "DPU",
+    "nameTh": "มหาวิทยาลัยธุรกิจบัณฑิตย์",          // TODO
+    "nameEn": "Dhurakij Pundit University",
+    "shortName": "DPU",
+    "type": "private",
+    "region": "bangkok",
+    "websiteUrl": "https://www.dpu.ac.th"
+  },
+  {
+    "id": "RU",
+    "nameTh": "มหาวิทยาลัยรามคำแหง",                // TODO
+    "nameEn": "Ramkhamhaeng University",
+    "shortName": "มร.",
+    "type": "public",
+    "region": "bangkok",
+    "websiteUrl": "https://www.ru.ac.th"
   }
-]
