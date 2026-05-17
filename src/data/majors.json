@@ -269,22 +269,18 @@
       "notes": "สาย IT/ธุรกิจดิจิทัลของมหาวิทยาลัยธุรกิจบัณฑิตย์"
     }
   },
-  /* ===========================
-     CLUSTER_HEALTH_NURSING_ALLIED
-     พยาบาล / สหสาขาสุขภาพ
-     =========================== */
   {
     "id": "MU_NURSING",
     "nameTh": "พยาบาลศาสตรบัณฑิต",
     "facultyNameTh": "คณะพยาบาลศาสตร์",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
     "universityId": "MU",
-    "studyTrackRequired": ["sci_math"],     // TODO: เช็กแผนการเรียนที่รับจริง
-    "tuitionFeePerSemester": 0,             // TODO: ใส่ค่าเทอมจริง
-    "hasScholarship": true,                 // TODO: เช็กทุน/กยศ./ทุนคณะ
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["portfolio", "admission"], // TODO: เช็กรอบ TCAS จริงจาก myTCAS/ระเบียบการ
+      "rounds": ["portfolio", "admission"],
       "notes": "พยาบาลสายสุขภาพดูแลคน (ตัวแทนสายพยาบาล/สุขภาพ Allied)"
     }
   },
@@ -294,12 +290,12 @@
     "facultyNameTh": "คณะพยาบาลศาสตร์",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
     "universityId": "KKU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["admission"],              // TODO
+      "rounds": ["admission"],
       "notes": "ตัวแทนสายพยาบาลในภาคอีสาน"
     }
   },
@@ -309,12 +305,12 @@
     "facultyNameTh": "คณะเทคนิคการแพทย์",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
     "universityId": "CMU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["admission"],              // TODO
+      "rounds": ["admission"],
       "notes": "สายเทคนิคการแพทย์/ตรวจวิเคราะห์ในห้องแล็บ"
     }
   },
@@ -324,32 +320,28 @@
     "facultyNameTh": "คณะสหเวชศาสตร์ (หรือเทียบเท่า)",
     "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
     "universityId": "PSU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["admission"],              // TODO
+      "rounds": ["admission"],
       "notes": "กายภาพบำบัด สายช่วยเหลือและฟื้นฟูผู้ป่วย"
     }
   },
 
-  /* ===========================
-     CLUSTER_HEALTH_MEDICINE_PHARMA
-     แพทย์ / ทันตะ / เภสัช / สัตวแพทย์
-     =========================== */
   {
     "id": "MU_MED",
     "nameTh": "แพทยศาสตรบัณฑิต",
     "facultyNameTh": "คณะแพทยศาสตร์",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
     "universityId": "MU",
-    "studyTrackRequired": ["sci_math"],     // TODO: เช็คข้อกำหนดแผนการเรียน
-    "tuitionFeePerSemester": 0,             // TODO: ค่าเทอม/ค่าใช้จ่ายจริง
-    "hasScholarship": true,                 // TODO: ทุนผลิตแพทย์/ทุนเฉพาะอื่น
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["quota", "admission"],     // TODO: เช็กรอบจริงในปีล่าสุด
+      "rounds": ["quota", "admission"],
       "notes": "ตัวแทนสายแพทย์ระดับประเทศ"
     }
   },
@@ -359,12 +351,12 @@
     "facultyNameTh": "คณะแพทยศาสตร์",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
     "universityId": "CU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["quota", "admission"],     // TODO
+      "rounds": ["quota", "admission"],
       "notes": "แพทย์รัฐชื่อดังในกรุงเทพฯ"
     }
   },
@@ -374,12 +366,12 @@
     "facultyNameTh": "คณะแพทยศาสตร์",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
     "universityId": "KKU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["quota", "admission"],     // TODO
+      "rounds": ["quota", "admission"],
       "notes": "แพทย์ตัวแทนภาคอีสาน"
     }
   },
@@ -389,32 +381,28 @@
     "facultyNameTh": "คณะเภสัชศาสตร์",
     "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
     "universityId": "CU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["admission"],              // TODO
+      "rounds": ["admission"],
       "notes": "สายเภสัชศาสตรระดับประเทศ"
     }
   },
 
-  /* ===========================
-     CLUSTER_SCIENCE_RESEARCH
-     วิทยาศาสตร์พื้นฐาน/ประยุกต์ เน้นวิจัย
-     =========================== */
   {
     "id": "CU_SCI",
     "nameTh": "วิทยาศาสตรบัณฑิต",
     "facultyNameTh": "คณะวิทยาศาสตร์",
     "clusterId": "CLUSTER_SCIENCE_RESEARCH",
     "universityId": "CU",
-    "studyTrackRequired": ["sci_math"],     // TODO: เช็กว่าสาขาใดบ้าง/ใช้เงื่อนไขไหนจริง
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["admission"],              // TODO
+      "rounds": ["admission"],
       "notes": "ตัวแทนสายวิทยาศาสตร์พื้นฐาน/วิจัย"
     }
   },
@@ -424,12 +412,12 @@
     "facultyNameTh": "คณะวิทยาศาสตร์",
     "clusterId": "CLUSTER_SCIENCE_RESEARCH",
     "universityId": "KU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["admission"],              // TODO
+      "rounds": ["admission"],
       "notes": "วิทยาศาสตร์ในมหาวิทยาลัยวิทย์-เกษตรขนาดใหญ่"
     }
   },
@@ -439,12 +427,12 @@
     "facultyNameTh": "คณะวิทยาศาสตร์",
     "clusterId": "CLUSTER_SCIENCE_RESEARCH",
     "universityId": "CMU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["admission"],              // TODO
+      "rounds": ["admission"],
       "notes": "วิทยาศาสตร์ในเชียงใหม่ ตัวแทนภาคเหนือ"
     }
   },
@@ -454,12 +442,13 @@
     "facultyNameTh": "คณะวิทยาศาสตร์",
     "clusterId": "CLUSTER_SCIENCE_RESEARCH",
     "universityId": "KKU",
-    "studyTrackRequired": ["sci_math"],     // TODO
-    "tuitionFeePerSemester": 0,             // TODO
-    "hasScholarship": true,                 // TODO
+    "studyTrackRequired": ["sci_math"],
+    "tuitionFeePerSemester": 0,
+    "hasScholarship": true,
     "isPartner": false,
     "tcasInfo": {
-      "rounds": ["admission"],              // TODO
+      "rounds": ["admission"],
       "notes": "วิทยาศาสตร์ตัวแทนภาคอีสาน"
     }
   }
+]
