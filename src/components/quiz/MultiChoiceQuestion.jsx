@@ -31,6 +31,20 @@ export default function MultiChoiceQuestion({ question, value, onChange, index, 
     return selected === optId;
   };
 
+  const [otherText, setOtherText] = React.useState(() => {
+    // support prefilling from answers map where developer may have stored `${question.id}_other`
+    try {
+      return (typeof value === 'object' && value && value.other) ? value.other : "";
+    } catch {
+      return "";
+    }
+  });
+
+  React.useEffect(() => {
+    // if question-specific other text exists in answers map, read it (answers passed via value may be string; parent stores other under separate key)
+    // nothing to do here in general — otherText is controlled by its input below
+  }, [question.id]);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -75,6 +89,22 @@ export default function MultiChoiceQuestion({ question, value, onChange, index, 
             </button>
           );
         })}
+        {question.options.some(o => o.id === 'other') && isSelected('other') && (
+          <div className="mt-3">
+            <input
+              type="text"
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:text-sm"
+              placeholder="ถ้ามี โปรดระบุสายการเรียนอื่น ๆ เช่น 'วิทย์-คอมพิวเตอร์'"
+              value={otherText}
+              onChange={(e) => {
+                const v = e.target.value;
+                setOtherText(v);
+                // store under a derived key so parent can access it if needed
+                onChange(`${question.id}_other`, v);
+              }}
+            />
+          </div>
+        )}
       </div>
     </motion.div>
   );

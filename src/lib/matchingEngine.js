@@ -68,10 +68,15 @@ export function computeMatches(profile, topN = 5) {
 
   // Score each cluster using weighted cosine similarity
   const scored = clusters.map(cluster => {
-    const clusterVector = buildClusterVector(cluster.id);
+    // career data items use `clusterId` to point to the canonical cluster profile
+    const profileKey = cluster.clusterId || cluster.id;
+    const clusterVector = buildClusterVector(profileKey);
     const similarity = weightedCosineSimilarity(userVector, clusterVector);
     return {
-      clusterId: cluster.id,
+      // expose the canonical cluster key so callers can look up majors by that id
+      clusterId: profileKey,
+      // keep the original career item id for reference when needed
+      careerId: cluster.id,
       nameTh: cluster.nameTh,
       descriptionTh: cluster.descriptionTh,
       marketNotes: cluster.marketNotes ?? [],

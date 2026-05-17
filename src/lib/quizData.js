@@ -101,6 +101,7 @@ const constraintQuestions = [
       { id: "arts_lang", label: "ศิลป์-ภาษา" },
       { id: "arts_soc", label: "ศิลป์-สังคม" },
       { id: "vocational", label: "สายอาชีพ / ปวช." },
+      { id: "other", label: "อื่นๆ" },
     ],
     tags: ["study_track"],
     weight: 1.0,

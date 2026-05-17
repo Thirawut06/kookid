@@ -38,10 +38,12 @@ export default function Quiz() {
     const stored = getStoredLeadProfile(profileId);
     return {
       nickname: stored?.nickname || "",
+      gradeLevel: stored?.gradeLevel || "",
+      studyTrack: stored?.schoolName || "",
       gradeAndSchool: stored?.gradeAndSchool || "",
     };
   });
-  const [preQuizSubmitted, setPreQuizSubmitted] = useState(() => Boolean(profileInfo.nickname && profileInfo.gradeAndSchool));
+  const [preQuizSubmitted, setPreQuizSubmitted] = useState(() => Boolean(profileInfo.nickname && ((profileInfo.gradeLevel && profileInfo.studyTrack) || profileInfo.gradeAndSchool)));
   const [preQuizError, setPreQuizError] = useState("");
   const [sectionIndex, setSectionIndex] = useState(0);
   const [interestPage, setInterestPage] = useState(0);
@@ -84,6 +86,15 @@ export default function Quiz() {
     const a = answers[q.id];
     if (a === undefined || a === null) return false;
     if (Array.isArray(a) && a.length === 0) return false;
+    // If answer is 'other' (single-select) or includes 'other' (multi-select), require the extra text field
+    if (a === 'other') {
+      const otherText = answers[`${q.id}_other`];
+      if (!otherText || !String(otherText).trim()) return false;
+    }
+    if (Array.isArray(a) && a.includes('other')) {
+      const otherText = answers[`${q.id}_other`];
+      if (!otherText || !String(otherText).trim()) return false;
+    }
     return true;
   });
 
@@ -159,14 +170,15 @@ export default function Quiz() {
     event.preventDefault();
 
     const nickname = profileInfo.nickname.trim();
-    const gradeAndSchool = profileInfo.gradeAndSchool.trim();
+    const gradeLevel = profileInfo.gradeLevel.trim();
+    const studyTrack = profileInfo.studyTrack.trim();
 
-    if (!nickname || !gradeAndSchool) {
-      setPreQuizError("กรุณากรอกชื่อเล่นและระดับชั้น / สายการเรียนให้ครบก่อนเริ่มทำแบบทดสอบ");
+    if (!nickname || !gradeLevel || !studyTrack) {
+      setPreQuizError("กรุณากรอกชื่อเล่น ระดับชั้น และสายการเรียนให้ครบก่อนเริ่มทำแบบทดสอบ");
       return;
     }
 
-    savePreQuizInfo({ nickname, gradeAndSchool });
+    savePreQuizInfo({ nickname, gradeLevel, studyTrack });
     setPreQuizSubmitted(true);
     setPreQuizError("");
 
@@ -199,15 +211,30 @@ export default function Quiz() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="preGradeAndSchool">ระดับชั้น / สายการเรียน <span className="text-destructive">*</span></Label>
-                <Input
-                  id="preGradeAndSchool"
-                  value={profileInfo.gradeAndSchool}
-                  onChange={(e) => setProfileInfo(prev => ({ ...prev, gradeAndSchool: e.target.value }))}
-                  placeholder="เช่น ม.5 วิทย์-คณิต"
-                  autoComplete="organization"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="preGradeLevel">ระดับชั้น <span className="text-destructive">*</span></Label>
+                  <Input
+                    id="preGradeLevel"
+                    value={profileInfo.gradeLevel}
+                    onChange={(e) => setProfileInfo(prev => ({ ...prev, gradeLevel: e.target.value }))}
+                    placeholder="เช่น ม.5 / ปวช.2"
+                    autoComplete="education-level"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="preStudyTrack">สายการเรียน <span className="text-destructive">*</span></Label>
+                  <Input
+                    id="preStudyTrack"
+                    value={profileInfo.studyTrack}
+                    onChange={(e) => setProfileInfo(prev => ({ ...prev, studyTrack: e.target.value }))}
+                    placeholder="เช่น วิทย์-คณิต / ศิลป์-ภาษา"
+                    autoComplete="organization"
+                    aria-required="true"
+                    required
+                  />
+                </div>
               </div>
 
               {preQuizError && <p className="text-sm text-destructive">{preQuizError}</p>}
@@ -224,10 +251,10 @@ export default function Quiz() {
           <>
             <Card className="mb-6 p-4 sm:p-5 border border-primary/20 bg-primary/5">
               <p className="text-sm font-medium text-foreground">
-                สวัสดี {profileInfo.nickname} จาก {profileInfo.gradeAndSchool}
+                สวัสดี {profileInfo.nickname} จาก {profileInfo.gradeLevel}{profileInfo.studyTrack ? ` ${profileInfo.studyTrack}` : profileInfo.gradeAndSchool ? ` ${profileInfo.gradeAndSchool}` : ""}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                พร้อมแล้ว มาดูว่าคู่คิด KooKid จะพาคุณไปเจอสายเรียนและอาชีพแบบไหนที่ใช่ที่สุด
+                พร้อมแล้ว มาดูว่าคู่คิด KooKid จะพาคุณไปเจอตัวตนของคุณกัน
               </p>
             </Card>
 

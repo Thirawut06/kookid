@@ -20,8 +20,9 @@
     --secondary-foreground: 240 20% 20%;
     --muted: 240 12% 92%;
     --muted-foreground: 240 10% 46%;
-    --accent: 36 95% 56%;
-    --accent-foreground: 36 95% 16%;
+    /* Use primary as the accent by default for consistent hover styling */
+    --accent: var(--primary);
+    --accent-foreground: var(--primary-foreground);
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 12% 90%;
@@ -56,8 +57,8 @@
     --secondary-foreground: 240 10% 90%;
     --muted: 240 12% 15%;
     --muted-foreground: 240 10% 55%;
-    --accent: 36 95% 56%;
-    --accent-foreground: 36 95% 95%;
+    --accent: var(--primary);
+    --accent-foreground: var(--primary-foreground);
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 12% 18%;

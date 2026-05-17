@@ -48,6 +48,17 @@ function getStoredProfile(profileId) {
   return store.profiles?.[profileId] || null;
 }
 
+function buildGradeAndSchool(gradeLevel, schoolName) {
+  const cleanGradeLevel = (gradeLevel || "").trim();
+  const cleanSchoolName = (schoolName || "").trim();
+
+  if (cleanGradeLevel && cleanSchoolName) {
+    return `${cleanGradeLevel} / ${cleanSchoolName}`;
+  }
+
+  return cleanGradeLevel || cleanSchoolName || "";
+}
+
 export async function ensureRemoteLeadProfile(userProfileId) {
   if (!supabase || !userProfileId) return false;
 
@@ -98,7 +109,7 @@ export function getStoredLeadProfile(userProfileId) {
   return store.profiles?.[userProfileId] ?? null;
 }
 
-export function savePreQuizInfo({ nickname, gradeAndSchool }) {
+export function savePreQuizInfo({ nickname, gradeLevel, schoolName, studyTrack, gradeAndSchool }) {
   if (typeof window === "undefined") return null;
 
   const profileId = getOrCreateActiveProfileId();
@@ -106,11 +117,19 @@ export function savePreQuizInfo({ nickname, gradeAndSchool }) {
   const now = new Date().toISOString();
   const existing = store.profiles?.[profileId] ?? {};
 
+  const resolvedGradeLevel = (gradeLevel ?? existing.gradeLevel ?? gradeAndSchool ?? "").trim();
+  const resolvedSchoolName = (schoolName ?? existing.schoolName ?? "").trim();
+  const resolvedStudyTrack = (studyTrack ?? existing.studyTrack ?? "").trim();
+  const resolvedGradeAndSchool = buildGradeAndSchool(resolvedGradeLevel, resolvedSchoolName) || (gradeAndSchool || "").trim();
+
   store.profiles[profileId] = {
     ...existing,
     userProfileId: profileId,
     nickname,
-    gradeAndSchool,
+    gradeLevel: resolvedGradeLevel,
+    schoolName: resolvedSchoolName,
+    studyTrack: resolvedStudyTrack,
+    gradeAndSchool: resolvedGradeAndSchool,
     contact: existing.contact || "",
     email: existing.email || "",
     schoolProvince: existing.schoolProvince || "",
@@ -160,6 +179,9 @@ export async function upsertLeadCapture({
   result,
   nickname,
   gradeAndSchool,
+  gradeLevel,
+  schoolName,
+  studyTrack,
   contact,
   email,
   schoolProvince,
@@ -168,12 +190,19 @@ export async function upsertLeadCapture({
   const profileId = userProfileId || getOrCreateActiveProfileId();
   const now = new Date().toISOString();
   const existing = store.profiles?.[profileId] ?? {};
+  const resolvedGradeLevel = (gradeLevel ?? existing.gradeLevel ?? gradeAndSchool ?? "").trim();
+  const resolvedSchoolName = (schoolName ?? existing.schoolName ?? "").trim();
+  const resolvedStudyTrack = (studyTrack ?? existing.studyTrack ?? "").trim();
+  const resolvedGradeAndSchool = buildGradeAndSchool(resolvedGradeLevel, resolvedSchoolName) || (gradeAndSchool || "").trim();
 
   store.profiles[profileId] = {
     ...existing,
     userProfileId: profileId,
     nickname,
-    gradeAndSchool,
+    gradeLevel: resolvedGradeLevel,
+    schoolName: resolvedSchoolName,
+    studyTrack: resolvedStudyTrack,
+    gradeAndSchool: resolvedGradeAndSchool,
     contact,
     email: email || "",
     schoolProvince: schoolProvince || "",
@@ -204,7 +233,7 @@ export async function upsertLeadCapture({
       {
         id: profileId,
         nickname,
-        grade_and_school: gradeAndSchool,
+        grade_and_school: resolvedGradeAndSchool,
         contact,
         email: email || null,
         school_province: schoolProvince || null,

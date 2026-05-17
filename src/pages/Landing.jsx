@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { ArrowRight, GraduationCap, Target, Sparkles, Clock, CheckCircle } from "lucide-react";
+import { ArrowRight, Clock, CheckCircle, GraduationCap, PencilLine, Sparkles, Target } from "lucide-react";
+import { toast } from "sonner";
+
+import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
+import { getStoredLeadProfile, getStoredUserProfileId, upsertLeadCapture } from "@/lib/leadCaptureApi";
 
 const features = [
   { icon: Target, title: "ค้นหาตัวตน", desc: "วิเคราะห์ความสนใจและจุดแข็งของคุณผ่านแบบทดสอบ RIASEC" },
@@ -16,6 +21,27 @@ const stats = [
 ];
 
 export default function Landing() {
+  const [profileId, setProfileId] = useState(() => getStoredUserProfileId());
+  const [profile, setProfile] = useState(() => (profileId ? getStoredLeadProfile(profileId) : null));
+  const [profileEditorOpen, setProfileEditorOpen] = useState(false);
+
+  const openProfileEditor = () => {
+    setProfileEditorOpen(true);
+  };
+
+  const handleProfileSubmit = async (leadData) => {
+    const nextProfileId = await upsertLeadCapture({
+      userProfileId: profileId,
+      ...leadData,
+    });
+
+    const nextProfile = getStoredLeadProfile(nextProfileId);
+    setProfileId(nextProfileId);
+    setProfile(nextProfile);
+    setProfileEditorOpen(false);
+    toast.success(profile ? "อัปเดตข้อมูลผู้ใช้เรียบร้อย" : "บันทึกข้อมูลผู้ใช้เรียบร้อย");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
@@ -59,6 +85,18 @@ export default function Landing() {
                 </Button>
               </Link>
             </div>
+
+            <div className="mt-3 flex justify-center">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={openProfileEditor}
+                className="rounded-xl px-4 text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+              >
+                <PencilLine className="w-4 h-4 mr-2" />
+                ข้อมูลผู้ใช้
+              </Button>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -88,6 +126,24 @@ export default function Landing() {
       <footer className="border-t border-border/50 py-8 text-center text-sm text-muted-foreground">
         <div>คู่คิด KooKid · เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6</div>
       </footer>
+
+      <Dialog open={profileEditorOpen} onOpenChange={setProfileEditorOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{profile ? "แก้ไขข้อมูลผู้ใช้" : "กรอกข้อมูลผู้ใช้"}</DialogTitle>
+            <DialogDescription>
+              ข้อมูลชุดนี้จะถูกใช้กับการแนะนำสาขา รายงาน และการติดต่อกลับจากระบบ
+            </DialogDescription>
+          </DialogHeader>
+          <LeadCaptureForm
+            onSubmit={handleProfileSubmit}
+            onCancel={() => setProfileEditorOpen(false)}
+            submitLabel={profile ? "บันทึกการแก้ไข" : "บันทึกข้อมูล"}
+            prefill={profile || undefined}
+            className="pt-2"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

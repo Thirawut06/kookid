@@ -8,7 +8,9 @@ import { cn } from "@/lib/utils";
 
 const initialForm = {
   nickname: "",
-  gradeAndSchool: "",
+  gradeLevel: "",
+  schoolName: "",
+  studyTrack: "",
   contact: "",
   email: "",
   schoolProvince: "",
@@ -30,9 +32,16 @@ export default function LeadCaptureForm({
   useEffect(() => {
     if (!prefill) return;
 
+    const derivedGradeLevel = prefill.gradeLevel || prefill.gradeAndSchool || "";
+    const derivedSchoolName = prefill.schoolName || "";
+    const derivedStudyTrack = prefill.studyTrack || prefill.schoolName || "";
+
     setForm(prev => ({
       ...prev,
       ...prefill,
+      gradeLevel: derivedGradeLevel,
+      schoolName: derivedSchoolName,
+      studyTrack: derivedStudyTrack,
       consentAccepted: Boolean(prefill.consentAccepted),
     }));
   }, [prefill]);
@@ -47,7 +56,9 @@ export default function LeadCaptureForm({
 
     const nextErrors = {};
     if (!form.nickname.trim()) nextErrors.nickname = "กรุณากรอกชื่อเล่น";
-    if (!form.gradeAndSchool.trim()) nextErrors.gradeAndSchool = "กรุณากรอกระดับชั้น / โรงเรียน";
+    if (!form.gradeLevel.trim()) nextErrors.gradeLevel = "กรุณากรอกระดับชั้นของคุณ";
+    if (!form.schoolName.trim()) nextErrors.schoolName = "กรุณากรอกชื่อโรงเรียน";
+    if (!form.studyTrack.trim()) nextErrors.studyTrack = "กรุณากรอกสายการเรียน";
     if (!form.contact.trim()) nextErrors.contact = "กรุณากรอกเบอร์โทรศัพท์หรือ Line ID อย่างน้อย 1 ช่องทาง";
     if (!form.consentAccepted) nextErrors.consentAccepted = "กรุณายินยอมก่อนดำเนินการต่อ";
 
@@ -60,7 +71,9 @@ export default function LeadCaptureForm({
     try {
       await onSubmit({
         nickname: form.nickname.trim(),
-        gradeAndSchool: form.gradeAndSchool.trim(),
+        gradeLevel: form.gradeLevel.trim(),
+        schoolName: form.schoolName.trim(),
+        studyTrack: form.studyTrack.trim(),
         contact: form.contact.trim(),
         email: form.email.trim(),
         schoolProvince: form.schoolProvince.trim(),
@@ -90,15 +103,43 @@ export default function LeadCaptureForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="gradeAndSchool">ระดับชั้น / โรงเรียน <span className="text-destructive">*</span></Label>
+          <Label htmlFor="gradeLevel">ระดับชั้น <span className="text-destructive">*</span></Label>
           <Input
-            id="gradeAndSchool"
-            value={form.gradeAndSchool}
-            onChange={(e) => updateField("gradeAndSchool", e.target.value)}
-            placeholder="ม.6 / โรงเรียน..."
-            autoComplete="organization"
+            id="gradeLevel"
+            value={form.gradeLevel}
+            onChange={(e) => updateField("gradeLevel", e.target.value)}
+            placeholder="เช่น ม.6 / ปวช.3"
+            autoComplete="organization-title"
           />
-          {errors.gradeAndSchool && <p className="text-xs text-destructive">{errors.gradeAndSchool}</p>}
+          {errors.gradeLevel && <p className="text-xs text-destructive">{errors.gradeLevel}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="schoolName">โรงเรียน <span className="text-destructive">*</span></Label>
+          <Input
+            id="schoolName"
+            value={form.schoolName}
+            onChange={(e) => updateField("schoolName", e.target.value)}
+            placeholder="เช่น โรงเรียนสวนกุหลาบวิทยาลัย"
+            autoComplete="organization"
+            aria-required="true"
+            required
+          />
+          {errors.schoolName && <p className="text-xs text-destructive">{errors.schoolName}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="studyTrack">สายการเรียน <span className="text-destructive">*</span></Label>
+          <Input
+            id="studyTrack"
+            value={form.studyTrack}
+            onChange={(e) => updateField("studyTrack", e.target.value)}
+            placeholder="เช่น วิทย์-คณิต / ศิลป์-ภาษา"
+            autoComplete="organization"
+            aria-required="true"
+            required
+          />
+          {errors.studyTrack && <p className="text-xs text-destructive">{errors.studyTrack}</p>}
         </div>
 
         <div className="space-y-2 md:col-span-2">
@@ -126,12 +167,12 @@ export default function LeadCaptureForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="schoolProvince">จังหวัดของโรงเรียน <span className="text-muted-foreground">(ถ้ามี)</span></Label>
+          <Label htmlFor="schoolProvince">จังหวัดของโรงเรียน <span className="text-muted-foreground">(ถ้าทราบ)</span></Label>
           <Input
             id="schoolProvince"
             value={form.schoolProvince}
             onChange={(e) => updateField("schoolProvince", e.target.value)}
-            placeholder="เช่น กรุงเทพฯ"
+            placeholder="เช่น กรุงเทพมหานคร"
             autoComplete="address-level1"
           />
         </div>
@@ -164,7 +205,7 @@ export default function LeadCaptureForm({
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} className="w-full sm:w-auto rounded-xl">
+          <Button type="button" variant="secondary" onClick={onCancel} className="w-full sm:w-auto rounded-xl shadow-none">
             ย้อนกลับ
           </Button>
         )}

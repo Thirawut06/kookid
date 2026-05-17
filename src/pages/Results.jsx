@@ -410,6 +410,7 @@ export default function Results() {
           <LeadCaptureForm
             onSubmit={handleLeadSubmit}
             submitLabel="ยืนยัน"
+            prefill={leadProfile || undefined}
           />
         </DialogContent>
       </Dialog>

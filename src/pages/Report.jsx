@@ -94,6 +94,7 @@ export default function Report() {
           <LeadCaptureForm
             onSubmit={handleLeadSubmit}
             submitLabel="ยืนยันและดูรายงาน"
+            prefill={leadProfile || undefined}
             compact
             className="space-y-5"
           />
