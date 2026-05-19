@@ -107,25 +107,28 @@ export function generatePersonalitySummary(traitScores) {
 // topTraits[0] and topTraits[1] are used to personalize the sentence.
 // ---------------------------------------------------------------------------
 const CLUSTER_WHY_TEMPLATES = {
-  CLUSTER_HEALTH_NURSING_ALLIED: (traitA, traitB) =>
+  CLUSTER_HEALTH: (traitA, traitB) =>
     `เพราะคุณมีแนวโน้มด้าน ${traitA} และ ${traitB} สูง และชอบช่วยเหลือดูแลผู้อื่น จึงเหมาะกับสายสุขภาพที่ต้องการความเอาใจใส่และความอดทนสูง`,
 
-  CLUSTER_BUSINESS_ACCOUNTING_ECON: (traitA, traitB) =>
+  CLUSTER_BUSINESS: (traitA, traitB) =>
     `เพราะคุณมีแนวโน้มด้าน ${traitA} และ ${traitB} สูง และสนใจการวิเคราะห์ตัวเลขและการจัดการ จึงเหมาะกับกลุ่มสายบริหารธุรกิจ การบัญชี และเศรษฐศาสตร์`,
 
-  CLUSTER_ENGINEERING_IT_DATA: (traitA, traitB) =>
+  CLUSTER_IT_ENGINEERING: (traitA, traitB) =>
     `เพราะคุณมีแนวโน้มด้าน ${traitA} และ ${traitB} สูง และชอบแก้ปัญหาและสร้างระบบ จึงเหมาะกับสายวิศวกรรม เทคโนโลยี และการวิเคราะห์ข้อมูล`,
 
-  CLUSTER_SCIENCE_RESEARCH: (traitA, traitB) =>
+  CLUSTER_SCIENCE: (traitA, traitB) =>
     `เพราะคุณมีแนวโน้มด้าน ${traitA} และ ${traitB} สูง และชอบตั้งคำถาม ทดลอง และค้นคว้า จึงเหมาะกับสายวิทยาศาสตร์และงานวิจัย`,
 
-  CLUSTER_EDUCATION_TEACHING: (traitA, traitB) =>
+  CLUSTER_EDUCATION: (traitA, traitB) =>
     `เพราะคุณมีแนวโน้มด้าน ${traitA} และ ${traitB} สูง และชอบอธิบาย สอน และเป็นที่พึ่งของคนอื่น จึงเหมาะกับสายครุศาสตร์และการศึกษา`,
 
-  CLUSTER_SOCIAL_LAW_MEDIA: (traitA, traitB) =>
+  CLUSTER_MEDIA: (traitA, traitB) =>
     `เพราะคุณมีแนวโน้มด้าน ${traitA} และ ${traitB} สูง และชอบสื่อสาร วิเคราะห์สังคม และใช้ภาษาอย่างคล่องแคล่ว จึงเหมาะกับสายนิเทศศาสตร์ กฎหมาย และสังคมศาสตร์`,
 
-  CLUSTER_TOURISM_HOSPITALITY_AGRI: (traitA, traitB) =>
+  CLUSTER_LAW: (traitA, traitB) =>
+    `เพราะคุณมีแนวโน้มด้าน ${traitA} และ ${traitB} สูง และมีเหตุผล ชอบวิเคราะห์ข้อเท็จจริงและประเด็นสังคม จึงเหมาะกับสายกฎหมาย`,
+
+  CLUSTER_HOSPITALITY: (traitA, traitB) =>
     `เพราะคุณมีแนวโน้มด้าน ${traitA} และ ${traitB} สูง และชอบงานบริการและการลงมือปฏิบัติ จึงเหมาะกับสายท่องเที่ยว การโรงแรม และเกษตรสมัยใหม่`,
 
   CLUSTER_HEALTH_MEDICINE_PHARMA: (traitA, traitB) =>

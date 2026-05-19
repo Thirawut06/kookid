@@ -218,7 +218,7 @@ export default function Report() {
               const clusterData = CLUSTER_MAP[c.clusterId];
               const examples = clusterData?.exampleCareers?.slice(0, 3) ?? [];
               return (
-                <div key={c.clusterId} className="border border-gray-200 rounded-lg p-2.5 bg-gray-50">
+                <div key={c.careerId || `${c.clusterId}-${i}`} className="border border-gray-200 rounded-lg p-2.5 bg-gray-50">
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="text-xs font-bold" style={{color:"#1a4fba"}}>#{i + 1}</span>
                     <span className="text-xs font-semibold text-gray-800 leading-tight">{c.nameTh}</span>

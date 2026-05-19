@@ -17,39 +17,39 @@ const ACTION_RULES = [
   // Engineering / IT / Data + Math
   {
     check: (clusterIds, acadMath, _acadSci, _topDims) =>
-      clusterIds.includes("CLUSTER_ENGINEERING_IT_DATA") && acadMath >= 50,
+      clusterIds.includes("CLUSTER_IT_ENGINEERING") && acadMath >= 50,
     text: "ฝึกทักษะคณิตศาสตร์และตรรกะเพิ่มเติม เช่น ลองเรียน Coding เบื้องต้น หรือทำโจทย์ PAT1 เก่า ๆ",
   },
   // Business / Accounting / Econ + Math
   {
     check: (clusterIds, acadMath, _acadSci, _topDims) =>
-      clusterIds.includes("CLUSTER_BUSINESS_ACCOUNTING_ECON") && acadMath >= 50,
+      clusterIds.includes("CLUSTER_BUSINESS") && acadMath >= 50,
     text: "ลองศึกษาเรื่อง การเงินพื้นฐาน หรือเล่น Business Simulation เช่น Investory เพื่อฝึกความคิดเชิงธุรกิจ",
   },
   // Health clusters
   {
     check: (clusterIds, _acadMath, _acadSci, _topDims) =>
-      clusterIds.some(id => ["CLUSTER_HEALTH_NURSING_ALLIED", "CLUSTER_HEALTH_MEDICINE_PHARMA"].includes(id)),
+      clusterIds.includes("CLUSTER_HEALTH"),
     text: "ลองอาสาสมัครงานด้านสุขภาพ หรือคุยกับพยาบาล/แพทย์ในครอบครัวหรือชุมชน เพื่อเข้าใจงานจริง",
   },
   // Science / Research
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_SCIENCE_RESEARCH"),
+    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_SCIENCE"),
     text: "ฝึกทักษะการคิดแบบวิทยาศาสตร์ เช่น ทำ Project ทดลองง่าย ๆ หรืออ่านบทความวิทย์ภาษาไทย",
   },
   // Social / Law / Media
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_SOCIAL_LAW_MEDIA"),
+    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_MEDIA") || clusterIds.includes("CLUSTER_LAW"),
     text: "ลองฝึกทักษะการพูดและการเขียน เช่น เข้าร่วมชมรมโต้วาที ทำ Content บน Social Media หรืออาสาสมัครในชุมชน",
   },
   // Education / Teaching
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_EDUCATION_TEACHING"),
+    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_EDUCATION"),
     text: "ลองสอนพิเศษน้อง ๆ หรือเป็นผู้ช่วยสอนในโรงเรียน เพื่อทดสอบว่าชอบงานสอนจริงหรือเปล่า",
   },
   // Tourism / Agri
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_TOURISM_HOSPITALITY_AGRI"),
+    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_HOSPITALITY"),
     text: "ลองฝึกงานในโรงแรม ร้านอาหาร หรือฟาร์ม/สวนเกษตรช่วงปิดเทอม เพื่อสัมผัสบรรยากาศงานจริง",
   },
   // High Academic_Math generic

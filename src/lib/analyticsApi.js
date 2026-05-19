@@ -39,11 +39,11 @@ export async function trackEvent(eventName, payload = {}) {
   const userProfileId = payload.userProfileId || null;
 
   if (userProfileId) {
-    try {
-      await ensureRemoteLeadProfile(userProfileId);
-    } catch (error) {
+    // Fire-and-forget profile sync to avoid blocking UI renders or analytics calls.
+    // Errors are logged but won't reject the main flow.
+    ensureRemoteLeadProfile(userProfileId).catch((error) => {
       console.warn("trackEvent profile sync skipped:", error);
-    }
+    });
   }
 
   const localRecord = {
@@ -62,18 +62,21 @@ export async function trackEvent(eventName, payload = {}) {
 
   if (!supabase) return;
 
-  const { error } = await supabase.from("event_logs").insert([
-    {
-      event_name: eventName,
-      user_profile_id: userProfileId || null,
-      session_id: sessionId,
-      page,
-      payload,
-      created_at: now,
-    },
-  ]);
-
-  if (error) {
-    console.error("Supabase trackEvent error:", error);
-  }
+  // Send analytics to Supabase without awaiting to keep UI snappy and avoid
+  // duplicated blocking calls during frequent state updates (e.g. clicks).
+  supabase
+    .from("event_logs")
+    .insert([
+      {
+        event_name: eventName,
+        user_profile_id: userProfileId || null,
+        session_id: sessionId,
+        page,
+        payload,
+        created_at: now,
+      },
+    ])
+    .then(({ error }) => {
+      if (error) console.error("Supabase trackEvent error:", error);
+    });
 }

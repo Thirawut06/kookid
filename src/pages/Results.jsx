@@ -9,12 +9,11 @@ import { toast } from "sonner";
 import { trackEvent } from "@/lib/analyticsApi";
 
 import RIASECChart from "@/components/results/RIASECChart";
-import AcademicScores from "@/components/results/AcademicScores";
 import CareerCard from "@/components/results/CareerCard";
-import MajorList from "@/components/results/MajorList";
+import MajorList from "../components/results/MajorList.jsx";
 import OverallFeedbackPanel from "@/components/feedback/OverallFeedbackPanel";
 import ActionPlan from "@/components/results/ActionPlan";
-import { submitCareerFeedback, submitMajorFeedback, submitResultFeedback } from "@/lib/feedbackApi";
+import { submitCareerFeedback, submitResultFeedback } from "@/lib/feedbackApi";
 import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
 import { buildHollandCode } from "@/lib/scoringEngine";
 import {
@@ -26,6 +25,11 @@ import {
   getStoredLeadProfile,
 } from "@/lib/leadCaptureApi";
 
+const DialogContentAny = /** @type {any} */ (DialogContent);
+const DialogHeaderAny = /** @type {any} */ (DialogHeader);
+const DialogTitleAny = /** @type {any} */ (DialogTitle);
+const LeadCaptureFormAny = /** @type {any} */ (LeadCaptureForm);
+
 function getOrCreateSessionProfileId() {
   const key = "tcas_profile_id";
   let id = sessionStorage.getItem(key);
@@ -36,18 +40,25 @@ function getOrCreateSessionProfileId() {
   return id;
 }
 
+/** @typedef {{ dimension: string, label?: string, description?: string, score?: number }} TopTrait */
+/** @typedef {{ summaryText: string, bulletPoints: string[], topTraits: TopTrait[], acadMathScore?: number, acadSciScore?: number }} SummaryData */
+/** @typedef {{ traitScores: Array<{ dimension: string, normalizedScore: number, rawScore?: number }>, hollandCode?: string }} QuizProfile */
+/** @typedef {{ careerId: string, clusterId: string, nameTh: string, descriptionTh?: string, whyMatch?: string }} TopCareer */
+/** @typedef {{ id: string, nameTh: string, facultyNameTh?: string, clusterId: string, universityId?: string, universityNameTh?: string, universityShortName?: string }} MajorItem */
+/** @typedef {{ profile: QuizProfile, clusters: Array<TopCareer>, majors: Array<MajorItem>, summary: SummaryData, hollandCode?: string }} QuizResultData */
+/** @typedef {{ type: "report" } | { type: "program_interest", majorId: string, universityId: string }} PendingAction */
+
 export default function Results() {
   const navigate = useNavigate();
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(/** @type {QuizResultData | null} */ (null));
   const [leadProfileId, setLeadProfileId] = useState(() => getStoredUserProfileId());
   const [sessionProfileId] = useState(() => getOrCreateSessionProfileId());
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null);
-  const [requestedMajorIds, setRequestedMajorIds] = useState(() => readRequestedMajors());
+  const [pendingAction, setPendingAction] = useState(/** @type {PendingAction | null} */ (null));
+  const [requestedMajorIds, setRequestedMajorIds] = useState(/** @type {Record<string, boolean>} */ (readRequestedMajors()));
 
-  // Feedback state — keyed by clusterId / majorId → interestLevel
-  const [careerFeedback, setCareerFeedback] = useState({});
-  const [majorFeedback, setMajorFeedback] = useState({});
+  // Feedback state — keyed by careerId → interestLevel
+  const [careerFeedback, setCareerFeedback] = useState(/** @type {Record<string, number>} */ ({}));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
@@ -73,13 +84,14 @@ export default function Results() {
 
   if (!result) return null;
 
-  const { profile, clusters, majors, summary } = result;
+  const typedResult = /** @type {QuizResultData} */ (result);
+  const { profile, clusters, majors, summary } = typedResult;
   // Use clusters directly from computeMatches
   const topClusters = clusters ?? [];
   const userProfileId = leadProfileId;
   const hasCapturedLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
   const leadProfile = userProfileId ? getStoredLeadProfile(userProfileId) : null;
-  const hollandCode = result.hollandCode || profile.hollandCode || buildHollandCode(profile.traitScores || []);
+  const hollandCode = typedResult.hollandCode || profile.hollandCode || buildHollandCode(profile.traitScores || []);
 
   const openReport = () => {
     trackEvent("report_open_clicked", {
@@ -96,6 +108,7 @@ export default function Results() {
     window.open(`/report/${userProfileId}`, "_blank");
   };
 
+  /** @param {MajorItem} major */
   const handleProgramInterest = (major) => {
     trackEvent("program_interest_clicked", {
       page: "results",
@@ -106,7 +119,7 @@ export default function Results() {
     if (requestedMajorIds?.[major.id]) return;
 
     if (!userProfileId || !hasCapturedLead) {
-      setPendingAction({ type: "program_interest", majorId: major.id, universityId: major.universityId });
+      setPendingAction({ type: "program_interest", majorId: major.id, universityId: major.universityId || "" });
       setLeadDialogOpen(true);
       return;
     }
@@ -136,10 +149,22 @@ export default function Results() {
       });
   };
 
+  const handleUnlockMajors = () => {
+    trackEvent("lead_gate_clicked", {
+      page: "results",
+      source: "major_teaser",
+      userProfileId: userProfileId || null,
+    });
+    setPendingAction(null);
+    setLeadDialogOpen(true);
+  };
+
+  /** @param {{ nickname: string, gradeLevel: string, schoolName: string, studyTrack: string, contact: string, email: string, schoolProvince: string, consentAccepted: boolean }} leadData */
   const handleLeadSubmit = async (leadData) => {
     const nextProfileId = await upsertLeadCapture({
       userProfileId,
       result,
+      gradeAndSchool: `${leadData.gradeLevel} / ${leadData.schoolName}`,
       ...leadData,
     });
 
@@ -179,14 +204,12 @@ export default function Results() {
     setLeadDialogOpen(false);
   };
 
-  const handleCareerFeedback = (clusterId, level) => {
-    setCareerFeedback(prev => ({ ...prev, [clusterId]: level }));
+  /** @param {string} careerId @param {number} level */
+  const handleCareerFeedback = (careerId, level) => {
+    setCareerFeedback(prev => ({ ...prev, [careerId]: level }));
   };
 
-  const handleMajorFeedback = (majorId, level) => {
-    setMajorFeedback(prev => ({ ...prev, [majorId]: level }));
-  };
-
+  /** @param {{ careerId?: string, clusterId?: string, nameTh?: string }} career */
   const handleCareerViewed = (career) => {
     trackEvent("career_viewed", {
       page: "results",
@@ -201,19 +224,22 @@ export default function Results() {
    * Called by OverallFeedbackPanel when user clicks "บันทึก Feedback".
    * Batches all three API calls; errors are non-blocking.
    */
+  /** @param {number} overallFitScore @param {string | null} selectedIssue @param {string | null} comment */
   const handleFeedbackSubmit = async (overallFitScore, selectedIssue, comment) => {
     setIsSubmitting(true);
-    const careerItems = Object.entries(careerFeedback).map(([careerClusterId, interestLevel]) => ({
-      careerClusterId, interestLevel,
-    }));
-    const majorItems = Object.entries(majorFeedback).map(([majorId, interestLevel]) => ({
-      majorId, interestLevel,
-    }));
+    const careerItems = topClusters.reduce((items, career) => {
+      const interestLevel = careerFeedback[career.careerId];
+      if (!interestLevel) return items;
+      items.push({
+        careerClusterId: career.clusterId,
+        interestLevel,
+      });
+      return items;
+    }, /** @type {Array<{ careerClusterId: string, interestLevel: number }>} */ ([]));
 
     try {
       await Promise.all([
         careerItems.length > 0 ? submitCareerFeedback(sessionProfileId, careerItems) : Promise.resolve(),
-        majorItems.length > 0 ? submitMajorFeedback(sessionProfileId, majorItems) : Promise.resolve(),
         submitResultFeedback(sessionProfileId, overallFitScore, selectedIssue, comment),
       ]);
       setFeedbackSubmitted(true);
@@ -271,6 +297,12 @@ export default function Results() {
               <p className="text-sm text-muted-foreground">รหัสบุคลิกภาพ Holland Code ของคุณคือ</p>
               <p className="mt-1 text-2xl sm:text-3xl font-bold tracking-[0.2em] text-primary">{hollandCode}</p>
             </div>
+            <div className="mb-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-primary/70">Archetype</p>
+              <p className="mt-1 text-lg sm:text-xl font-bold text-foreground">
+                {getArchetypeLabel(hollandCode)}
+              </p>
+            </div>
             <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">{summary.summaryText}</p>
             {/* Bullet points from rule-based personality analysis */}
             {summary.bulletPoints?.length > 0 && (
@@ -286,7 +318,7 @@ export default function Results() {
             <div className="flex flex-wrap gap-2 mt-4">
               {summary.topTraits.map(t => (
                 <span key={t.dimension} className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                  {t.label} ({t.score})
+                  {t.label}
                 </span>
               ))}
             </div>
@@ -305,11 +337,6 @@ export default function Results() {
         </motion.div>
 
         {/* Academic Scores */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4">📊 คะแนนด้านวิชาการ</h2>
-          <AcademicScores traitScores={profile.traitScores} />
-        </motion.div>
-
         {/* Top Career Clusters — with per-career feedback */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-8">
           <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
@@ -319,10 +346,10 @@ export default function Results() {
           <div className="space-y-3">
             {topClusters.map((c, i) => (
               <CareerCard
-                key={c.clusterId}
+                key={c.careerId || `${c.clusterId}-${i}`}
                 career={c}
                 rank={i}
-                feedbackValue={careerFeedback[c.clusterId]}
+                feedbackValue={careerFeedback[c.careerId]}
                 onFeedback={handleCareerFeedback}
                 onCareerViewed={handleCareerViewed}
               />
@@ -343,10 +370,10 @@ export default function Results() {
             <MajorList
               majors={majors}
               topCareers={topClusters}
-              majorFeedback={majorFeedback}
-              onMajorFeedback={handleMajorFeedback}
               onProgramInterest={handleProgramInterest}
               requestedMajorIds={requestedMajorIds}
+                hasCapturedLead={hasCapturedLead}
+                onUnlockLead={handleUnlockMajors}
             />
           </Card>
         </motion.div>
@@ -416,25 +443,42 @@ export default function Results() {
       </div>
 
       <Dialog open={leadDialogOpen} onOpenChange={setLeadDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-xl">ยืนยันข้อมูลเพื่อปลดล็อกรายงานฉบับเต็ม</DialogTitle>
-          </DialogHeader>
+        <DialogContentAny className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeaderAny>
+            <DialogTitleAny className="text-xl">ยืนยันข้อมูลเพื่อปลดล็อกรายงานและโควต้ามหาวิทยาลัย</DialogTitleAny>
+          </DialogHeaderAny>
           <p className="text-sm text-muted-foreground">
-            กรอกข้อมูลสั้น ๆ เพื่อให้คู่คิด KooKid ส่งต่อข้อมูลโควต้า ทุนการศึกษา หรือรายงานที่เหมาะกับคุณได้ครบถ้วน
+            กรอกข้อมูลสั้น ๆ เพื่อปลดล็อกรายการคณะทั้งหมด รับข้อมูลโควต้า ทุนการศึกษา และรายงานที่เหมาะกับคุณได้ครบถ้วน
           </p>
           <p className="text-xs text-muted-foreground">
             เราจะไม่ส่งข้อมูลของคุณให้มหาวิทยาลัยแบบสุ่ม ข้อมูลจะถูกใช้กับมหาวิทยาลัยที่เกี่ยวข้องกับผลการประเมินของคุณเท่านั้น
           </p>
-          <LeadCaptureForm
+          <LeadCaptureFormAny
             onSubmit={handleLeadSubmit}
+            onCancel={undefined}
             submitLabel="ยืนยัน"
             prefill={leadProfile || undefined}
+            className="space-y-4"
           />
-        </DialogContent>
+        </DialogContentAny>
       </Dialog>
     </div>
   );
+}
+
+/** @param {string | undefined | null} hollandCode */
+function getArchetypeLabel(hollandCode) {
+  const leading = String(hollandCode || "").charAt(0).toUpperCase();
+  /** @type {Record<string, string>} */
+  const archetypes = {
+    E: "The Leader",
+    I: "The Thinker",
+    A: "The Creator",
+    S: "The Helper",
+    R: "The Builder",
+    C: "The Organizer",
+  };
+  return archetypes[leading] || "The Explorer";
 }
 
 function readRequestedMajors() {

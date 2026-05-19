@@ -2,55 +2,55 @@
   {
     "id": "CAREER_CONTENT_CREATOR",
     "nameTh": "คอนเทนต์ครีเอเตอร์ / Creator",
-    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "clusterId": "CLUSTER_MEDIA",
     "hollandCode": "A; S; E",
-    "description": "ผลิตคอนเทนต์ลงโซเชียล เช่น TikTok",
-    "exampleEmployers": "YouTuber"
+    "description": "ผลิตคอนเทนต์ลงโซเชียล เช่น TikTok YouTube รูป และข้อความ",
+    "exampleEmployers": "เอเจนซี่โฆษณา; สื่อออนไลน์; อินฟลูเอนเซอร์"
   },
   {
     "id": "CAREER_SOCIAL_MEDIA_MANAGER",
     "nameTh": "ผู้ดูแลโซเชียลมีเดีย (Social Media Manager)",
-    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "clusterId": "CLUSTER_MEDIA",
     "hollandCode": "E; A; S",
-    "description": "วางแผนและดูแลเพจ/โซเชียลของแบรนด์ ทำคอนเทนต์ปฏิทิน โฆษณา และวัดผลแคมเปญ",
+    "description": "วางแผนและดูแลเพจ/โซเชียลของแบรนด์ ทำคอนเทนต์ โฆษณา และวัดผล",
     "exampleEmployers": "เอเจนซี่; แบรนด์สินค้า; สตาร์ตอัปอีคอมเมิร์ซ"
   },
   {
     "id": "CAREER_JOURNALIST",
     "nameTh": "นักข่าว / ผู้สื่อข่าว",
-    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "clusterId": "CLUSTER_MEDIA",
     "hollandCode": "S; A; E",
-    "description": "ติดตามประเด็นสังคม การเมือง เศรษฐกิจ ลงพื้นที่ สัมภาษณ์ และเขียน/ตัดต่อข่าวเผยแพร่ในสื่อ",
+    "description": "ติดตามประเด็นสังคม การเมือง เศรษฐกิจ ลงพื้นที่สัมภาษณ์ และเขียนข่าว",
     "exampleEmployers": "สถานีโทรทัศน์; สำนักข่าวออนไลน์; หนังสือพิมพ์"
   },
   {
     "id": "CAREER_PR_OFFICER",
     "nameTh": "นักประชาสัมพันธ์ / PR",
-    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "clusterId": "CLUSTER_MEDIA",
     "hollandCode": "S; E; A",
-    "description": "สร้างภาพลักษณ์และความสัมพันธ์ที่ดีกับสาธารณะ เขียนข่าวประชาสัมพันธ์ จัดงาน และประสานสื่อ",
+    "description": "สร้างภาพลักษณ์และความสัมพันธ์ที่ดี เขียนข่าวประชาสัมพันธ์ จัดงาน",
     "exampleEmployers": "องค์กรรัฐ; บริษัทเอกชน; เอเจนซี่ PR"
   },
   {
     "id": "CAREER_MEDIA_PRODUCER",
     "nameTh": "โปรดิวเซอร์ / ผู้ผลิตรายการและวิดีโอ",
-    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "clusterId": "CLUSTER_MEDIA",
     "hollandCode": "A; E; S",
-    "description": "คิดคอนเซปต์ ควบคุมงบประมาณ และบริหารทีมงานถ่ายทำจนได้ผลงานออกมา",
+    "description": "คิดคอนเซปต์ ควบคุมงบประมาณ และบริหารทีมงานถ่ายทำจนได้ผลงาน",
     "exampleEmployers": "สถานีโทรทัศน์; โปรดักชันเฮาส์; สตูดิโอ"
   },
   {
     "id": "CAREER_LAWYER",
     "nameTh": "ทนายความ / ที่ปรึกษากฎหมาย",
-    "clusterId": "CLUSTER_SOCIAL_LAW_MEDIA",
+    "clusterId": "CLUSTER_LAW",
     "hollandCode": "E; I; S",
     "description": "ให้คำปรึกษาทางกฎหมาย ว่าความในศาล หรือร่างสัญญาให้บริษัท",
-    "exampleEmployers": "สำนักงานกฎหมาย; ฝ่ายกฎหมายองค์กร (In-house); ศาล"
+    "exampleEmployers": "สำนักงานกฎหมาย; ฝ่ายกฎหมายองค์กร; ศาล"
   },
   {
     "id": "CAREER_NURSE",
     "nameTh": "พยาบาลวิชาชีพ",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "clusterId": "CLUSTER_HEALTH",
     "hollandCode": "S; I; R",
     "description": "ดูแลและฟื้นฟูผู้ป่วย ทำงานใกล้ชิดกับแพทย์และญาติผู้ป่วย",
     "exampleEmployers": "โรงพยาบาลรัฐ/เอกชน; คลินิกเฉพาะทาง; ศูนย์ดูแลผู้สูงอายุ"
@@ -58,7 +58,7 @@
   {
     "id": "CAREER_PHYSICAL_THERAPIST",
     "nameTh": "นักกายภาพบำบัด",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "clusterId": "CLUSTER_HEALTH",
     "hollandCode": "S; R; I",
     "description": "บำบัดและฟื้นฟูผู้ป่วยที่มีปัญหาการเคลื่อนไหว กล้ามเนื้อ และกระดูก",
     "exampleEmployers": "โรงพยาบาล; คลินิกเวชศาสตร์ฟื้นฟู; สโมสรกีฬา"
@@ -66,23 +66,23 @@
   {
     "id": "CAREER_MEDICAL_TECH",
     "nameTh": "นักเทคนิคการแพทย์",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "clusterId": "CLUSTER_HEALTH",
     "hollandCode": "I; R; C",
-    "description": "ตรวจวิเคราะห์เลือด ปัสสาวะ หรือสารคัดหลั่งในห้องปฏิบัติการเพื่อช่วยแพทย์วินิจฉัยโรค",
+    "description": "ตรวจวิเคราะห์เลือด ปัสสาวะ หรือสารคัดหลั่งในห้องปฏิบัติการเพื่อช่วยแพทย์",
     "exampleEmployers": "ห้องแล็บโรงพยาบาล; ศูนย์ตรวจสุขภาพ; บริษัทเครื่องมือแพทย์"
   },
   {
     "id": "CAREER_PUBLIC_HEALTH",
     "nameTh": "นักวิชาการสาธารณสุข",
-    "clusterId": "CLUSTER_HEALTH_NURSING_ALLIED",
+    "clusterId": "CLUSTER_HEALTH",
     "hollandCode": "S; I; E",
     "description": "ส่งเสริมสุขภาพชุมชน ป้องกันโรคติดต่อ และดูแลอนามัยสิ่งแวดล้อม",
-    "exampleEmployers": "โรงพยาบาลส่งเสริมสุขภาพตำบล (รพ.สต.); กรมควบคุมโรค; องค์กร NGO"
+    "exampleEmployers": "รพ.สต.; กรมควบคุมโรค; องค์กร NGO"
   },
   {
     "id": "CAREER_DOCTOR",
     "nameTh": "แพทย์ / หมอ",
-    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "clusterId": "CLUSTER_HEALTH",
     "hollandCode": "I; S; R",
     "description": "ตรวจวินิจฉัย สั่งยา และรักษาโรคให้ผู้ป่วย",
     "exampleEmployers": "โรงพยาบาล; คลินิกส่วนตัว"
@@ -90,7 +90,7 @@
   {
     "id": "CAREER_PHARMACIST",
     "nameTh": "เภสัชกร",
-    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "clusterId": "CLUSTER_HEALTH",
     "hollandCode": "I; C; S",
     "description": "จ่ายยา ให้คำปรึกษาการใช้ยา หรือวิจัยและพัฒนายาใหม่",
     "exampleEmployers": "ร้านขายยา; โรงพยาบาล; บริษัทยา (R&D / QA)"
@@ -98,7 +98,7 @@
   {
     "id": "CAREER_DENTIST",
     "nameTh": "ทันตแพทย์",
-    "clusterId": "CLUSTER_HEALTH_MEDICINE_PHARMA",
+    "clusterId": "CLUSTER_HEALTH",
     "hollandCode": "I; R; S",
     "description": "ดูแลรักษาโรคในช่องปาก ฟัน และเหงือก รวมถึงงานความงามทางทันตกรรม",
     "exampleEmployers": "คลินิกทันตกรรม; โรงพยาบาล"
@@ -106,7 +106,7 @@
   {
     "id": "CAREER_SOFTWARE_ENGINEER",
     "nameTh": "นักพัฒนาซอฟต์แวร์ / Software Engineer",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "clusterId": "CLUSTER_IT_ENGINEERING",
     "hollandCode": "I; R; C",
     "description": "เขียนโค้ด พัฒนาแอปพลิเคชัน และดูแลระบบไอทีให้ทำงานได้เสถียร",
     "exampleEmployers": "บริษัท Tech; สตาร์ตอัป; แผนก IT ทุกอุตสาหกรรม"
@@ -114,7 +114,7 @@
   {
     "id": "CAREER_DATA_ANALYST",
     "nameTh": "นักวิเคราะห์ข้อมูล / Data Analyst",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "clusterId": "CLUSTER_IT_ENGINEERING",
     "hollandCode": "I; C; E",
     "description": "วิเคราะห์ข้อมูลตัวเลข หา Insight เพื่อช่วยให้ธุรกิจตัดสินใจได้ดีขึ้น",
     "exampleEmployers": "ธนาคาร; บริษัทอีคอมเมิร์ซ; เอเจนซี่โฆษณา"
@@ -122,7 +122,7 @@
   {
     "id": "CAREER_CIVIL_ENGINEER",
     "nameTh": "วิศวกรโยธา",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "clusterId": "CLUSTER_IT_ENGINEERING",
     "hollandCode": "R; I; E",
     "description": "ออกแบบและควบคุมการก่อสร้างอาคาร ถนน สะพาน ให้ปลอดภัยและตามแบบ",
     "exampleEmployers": "บริษัทรับเหมาก่อสร้าง; กรมทางหลวง; บริษัทอสังหาริมทรัพย์"
@@ -130,23 +130,23 @@
   {
     "id": "CAREER_UX_UI_DESIGNER",
     "nameTh": "นักออกแบบ UX/UI",
-    "clusterId": "CLUSTER_ENGINEERING_IT_DATA",
+    "clusterId": "CLUSTER_IT_ENGINEERING",
     "hollandCode": "A; I; E",
-    "description": "ออกแบบหน้าตาแอป/เว็บให้สวยงามและใช้งานง่าย (User-friendly)",
+    "description": "ออกแบบหน้าตาแอป/เว็บให้สวยงามและใช้งานง่าย",
     "exampleEmployers": "Tech Company; Digital Agency"
   },
   {
     "id": "CAREER_ACCOUNTANT",
     "nameTh": "นักบัญชี / ผู้สอบบัญชี",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "clusterId": "CLUSTER_BUSINESS",
     "hollandCode": "C; I; E",
     "description": "บันทึก ตรวจสอบ และสรุปรายงานทางการเงินของบริษัทให้ถูกต้องตามกฎหมาย",
-    "exampleEmployers": "บริษัทตรวจสอบบัญชี (Big4); ฝ่ายบัญชีทุกบริษัท"
+    "exampleEmployers": "บริษัทตรวจสอบบัญชี; ฝ่ายบัญชีทุกบริษัท"
   },
   {
     "id": "CAREER_FINANCIAL_ANALYST",
     "nameTh": "นักวิเคราะห์การเงิน",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "clusterId": "CLUSTER_BUSINESS",
     "hollandCode": "I; E; C",
     "description": "วิเคราะห์แนวโน้มเศรษฐกิจ หุ้น และให้คำแนะนำการลงทุน",
     "exampleEmployers": "หลักทรัพย์; กองทุนรวม; ธนาคาร"
@@ -154,7 +154,7 @@
   {
     "id": "CAREER_MARKETER",
     "nameTh": "นักการตลาด / Marketing",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "clusterId": "CLUSTER_BUSINESS",
     "hollandCode": "E; A; C",
     "description": "วางแผนกลยุทธ์โปรโมตสินค้า กระตุ้นยอดขาย และสร้างภาพลักษณ์แบรนด์",
     "exampleEmployers": "FMCG; บริษัทเอกชนทั่วไป; เอเจนซี่"
@@ -162,7 +162,7 @@
   {
     "id": "CAREER_HR",
     "nameTh": "ฝ่ายทรัพยากรบุคคล / HR",
-    "clusterId": "CLUSTER_BUSINESS_ACCOUNTING_ECON",
+    "clusterId": "CLUSTER_BUSINESS",
     "hollandCode": "S; E; C",
     "description": "สรรหาพนักงาน ดูแลสวัสดิการ และพัฒนาศักยภาพคนในองค์กร",
     "exampleEmployers": "องค์กรทุกขนาด"
@@ -170,15 +170,15 @@
   {
     "id": "CAREER_SCIENTIST",
     "nameTh": "นักวิทยาศาสตร์ / นักวิจัย",
-    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "clusterId": "CLUSTER_SCIENCE",
     "hollandCode": "I; R; C",
     "description": "ทดลอง ค้นคว้า และวิจัยเพื่อสร้างองค์ความรู้หรือผลิตภัณฑ์ใหม่",
-    "exampleEmployers": "สถาบันวิจัย (เช่น NSTDA); บริษัทยา/อาหาร (R&D)"
+    "exampleEmployers": "สถาบันวิจัย; บริษัทยา/อาหาร (R&D)"
   },
   {
     "id": "CAREER_FOOD_SCIENTIST",
     "nameTh": "นักวิทยาศาสตร์การอาหาร (Food Sci)",
-    "clusterId": "CLUSTER_SCIENCE_RESEARCH",
+    "clusterId": "CLUSTER_SCIENCE",
     "hollandCode": "I; R; E",
     "description": "พัฒนาสูตรอาหาร ควบคุมคุณภาพ และยืดอายุการเก็บรักษาผลิตภัณฑ์",
     "exampleEmployers": "โรงงานอุตสาหกรรมอาหาร; บริษัทเครื่องดื่ม"
@@ -186,7 +186,7 @@
   {
     "id": "CAREER_TEACHER",
     "nameTh": "ครู / อาจารย์ประถม-มัธยม",
-    "clusterId": "CLUSTER_EDUCATION_TEACHING",
+    "clusterId": "CLUSTER_EDUCATION",
     "hollandCode": "S; E; A",
     "description": "สอนหนังสือ ดูแลพฤติกรรม และประเมินผลนักเรียน",
     "exampleEmployers": "โรงเรียนรัฐและเอกชน; สถาบันกวดวิชา"
@@ -194,31 +194,31 @@
   {
     "id": "CAREER_INSTRUCTIONAL_DESIGNER",
     "nameTh": "นักออกแบบการเรียนการสอน (Instructional Designer)",
-    "clusterId": "CLUSTER_EDUCATION_TEACHING",
+    "clusterId": "CLUSTER_EDUCATION",
     "hollandCode": "I; A; S",
     "description": "ออกแบบหลักสูตร สื่อการสอน และระบบการเรียนรู้ทั้งออนไลน์และออฟไลน์",
-    "exampleEmployers": "บริษัท EdTech; องค์กรใหญ่ที่มีอบรมภายใน; สถาบันการศึกษา"
+    "exampleEmployers": "บริษัท EdTech; องค์กรใหญ่; สถาบันการศึกษา"
   },
   {
     "id": "CAREER_CORPORATE_TRAINER",
     "nameTh": "วิทยากรอบรม / Trainer องค์กร",
-    "clusterId": "CLUSTER_EDUCATION_TEACHING",
+    "clusterId": "CLUSTER_EDUCATION",
     "hollandCode": "S; E; A",
     "description": "จัดอบรม พัฒนาทักษะให้พนักงานองค์กร เช่น Soft Skills การขาย ภาวะผู้นำ",
-    "exampleEmployers": "HRD ขององค์กรใหญ่; บริษัทเทรนนิง; ที่ปรึกษาอิสระ"
+    "exampleEmployers": "HRD ขององค์กรใหญ่; บริษัทเทรนนิง"
   },
   {
     "id": "CAREER_TOUR_GUIDE",
     "nameTh": "มัคคุเทศก์ / ไกด์ทัวร์",
-    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "clusterId": "CLUSTER_HOSPITALITY",
     "hollandCode": "S; E; R",
-    "description": "พานักท่องเที่ยวเที่ยวสถานที่ต่าง ๆ ให้ข้อมูล ดูแลความปลอดภัยและประสบการณ์",
+    "description": "พานักท่องเที่ยวเที่ยวสถานที่ต่างๆ ให้ข้อมูล ดูแลความปลอดภัย",
     "exampleEmployers": "บริษัททัวร์; ไกด์อิสระ; รีสอร์ต/โรงแรม"
   },
   {
     "id": "CAREER_HOTEL_MANAGER",
     "nameTh": "ผู้จัดการโรงแรม / Hotel Manager",
-    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "clusterId": "CLUSTER_HOSPITALITY",
     "hollandCode": "E; S; C",
     "description": "บริหารงานโรงแรม ดูแลทีมหน้า-หลังบ้าน และบริการลูกค้าให้ได้มาตรฐาน",
     "exampleEmployers": "โรงแรม; รีสอร์ต; เชนโรงแรมข้ามชาติ"
@@ -226,7 +226,7 @@
   {
     "id": "CAREER_EVENT_PLANNER",
     "nameTh": "นักวางแผนงานอีเวนต์ / Organizer",
-    "clusterId": "CLUSTER_TOURISM_HOSPITALITY_AGRI",
+    "clusterId": "CLUSTER_HOSPITALITY",
     "hollandCode": "E; A; S",
     "description": "วางแผนและประสานงานจัดอีเวนต์ เช่น คอนเสิร์ต สัมมนา เปิดตัวสินค้า",
     "exampleEmployers": "บริษัทออแกไนซ์; ฝ่ายการตลาดองค์กร"

@@ -277,7 +277,7 @@ export default function Quiz() {
 
             {/* Questions */}
             <div className="mt-8 space-y-4">
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {visibleQuestions.map((q) => {
                   const globalIdx = allQuestions.findIndex(aq => aq.id === q.id);
                   if (q.type === "likert") {
@@ -292,7 +292,6 @@ export default function Quiz() {
                     );
                   }
                   if (q.type === "multiple_choice") {
-                    const isMulti = q.id === "Q_AC_1"; // Subject question is multi-select
                     return (
                       <MultiChoiceQuestion
                         key={q.id}
@@ -300,7 +299,7 @@ export default function Quiz() {
                         value={answers[q.id]}
                         onChange={handleAnswer}
                         index={globalIdx}
-                        multiSelect={isMulti}
+                        multiSelect={false}
                       />
                     );
                   }

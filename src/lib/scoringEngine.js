@@ -43,7 +43,7 @@ export function computeProfile(answers) {
 function computeRIASEC(answers) {
   return RIASEC_DIMS.map(dim => {
     const questions = riasecQuestions.filter(q =>
-      q.section === "riasec" && q.tags.includes(dim)
+      (q.section === "riasec" || q.section === "interests") && q.tags.includes(dim)
     );
 
     let rawScore = 0;
@@ -52,8 +52,9 @@ function computeRIASEC(answers) {
     questions.forEach(q => {
       const answer = answers[q.id];
       const val = typeof answer === "number" ? answer : 0;
-      rawScore += val * q.weight;
-      maxPossible += 5 * q.weight; // max Likert = 5
+      const weight = typeof q.weight === "number" ? q.weight : 1;
+      rawScore += val * weight;
+      maxPossible += 5 * weight; // max Likert = 5
     });
 
     const normalizedScore = maxPossible > 0
@@ -70,13 +71,29 @@ function computeRIASEC(answers) {
  * - Bonus from subject preferences
  */
 function computeAcademic(answers) {
-  return ACADEMIC_DIMS.map(dim => {
-    return {
-      dimension: dim,
-      rawScore: 0,
-      normalizedScore: 0,
-    };
-  });
+  const mathQuestions = riasecQuestions.filter(q => q.id === "Q_AC_2" || q.id === "Q_AC_3");
+  const sciQuestions = riasecQuestions.filter(q => q.id === "Q_AC_4" || q.id === "Q_AC_5");
+
+  const preferredSubject = answers.Q_AC_1;
+
+  const mathBase = averageLikert(answers, mathQuestions);
+  const sciBase = averageLikert(answers, sciQuestions);
+
+  const mathBonus = preferredSubject && MATH_BONUS_SUBJECTS.includes(String(preferredSubject)) ? BONUS_POINTS : 0;
+  const sciBonus = preferredSubject && SCI_BONUS_SUBJECTS.includes(String(preferredSubject)) ? BONUS_POINTS : 0;
+
+  return [
+    {
+      dimension: "Academic_Math",
+      rawScore: mathBase + mathBonus,
+      normalizedScore: Math.min(100, Math.round(mathBase + mathBonus)),
+    },
+    {
+      dimension: "Academic_Sci",
+      rawScore: sciBase + sciBonus,
+      normalizedScore: Math.min(100, Math.round(sciBase + sciBonus)),
+    },
+  ];
 }
 
 /**

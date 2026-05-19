@@ -59,7 +59,7 @@ export default function PrintableReport({ result }) {
         <h2 className="text-base font-semibold text-gray-700 mb-2">กลุ่มอาชีพที่เหมาะสม (Top 3)</h2>
         <div className="space-y-2">
           {top3Clusters.map((c, i) => (
-            <div key={c.clusterId} className="border border-gray-200 rounded p-2.5">
+            <div key={c.careerId || `${c.clusterId}-${i}`} className="border border-gray-200 rounded p-2.5">
               <div className="flex items-center justify-between">
                 <p className="font-medium text-gray-800 text-sm">{i + 1}. {c.nameTh}</p>
                 <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">{c.matchScore}%</span>

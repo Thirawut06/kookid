@@ -122,6 +122,12 @@ export default function Landing() {
       {/* Footer */}
       <footer className="border-t border-border/50 py-8 text-center text-sm text-muted-foreground">
         <div>คู่คิด KooKid · เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6</div>
+        <div className="mt-2 text-sm">
+          <span className="font-medium">ติดต่อผู้พัฒนา:</span> 
+          <a href="tel:0864062711" className="underline hover:text-primary ml-1" aria-label="โทร 086-406-2711">086-406-2711</a>
+          <span className="mx-2">·</span>
+          <a href="https://line.me/R/ti/p/@t12312121" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary" aria-label="Line t12312121">Line: t12312121</a>
+        </div>
       </footer>
 
       <Dialog open={profileEditorOpen} onOpenChange={setProfileEditorOpen}>

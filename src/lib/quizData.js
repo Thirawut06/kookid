@@ -42,33 +42,7 @@ export const riasecQuestions = [
   { id: "C5", section: "riasec", type: "likert", text: "คัดแยก จัดระเบียบ และแจกจ่ายเอกสารหรือพัสดุในองค์กร", tags: ["C"] }
 ];
 
-// ------ SECTION 2: Academic Profile (6 questions) ------
-const academicQuestions = [
-  {
-    id: "Q_AC_1", section: "academic", type: "multiple_choice",
-    text: "วิชาที่คุณชอบเรียนมากที่สุด (เลือกได้หลายข้อ)",
-    options: [
-      { id: "math", label: "คณิตศาสตร์" },
-      { id: "physics", label: "ฟิสิกส์" },
-      { id: "chemistry", label: "เคมี" },
-      { id: "biology", label: "ชีววิทยา" },
-      { id: "thai", label: "ภาษาไทย" },
-      { id: "english", label: "ภาษาอังกฤษ" },
-      { id: "social", label: "สังคมศึกษา" },
-      { id: "art", label: "ศิลปะ/ดนตรี" },
-      { id: "computer", label: "คอมพิวเตอร์/IT" },
-    ],
-    tags: ["academic_subjects"],
-    weight: 1.0,
-  },
-  { id: "Q_AC_2", section: "academic", type: "likert", text: "ฉันมีความมั่นใจในวิชาคณิตศาสตร์", tags: ["Academic_Math"], weight: 1.0 },
-  { id: "Q_AC_3", section: "academic", type: "likert", text: "ฉันเข้าใจและสนุกกับการคำนวณและตัวเลข", tags: ["Academic_Math"], weight: 1.0 },
-  { id: "Q_AC_4", section: "academic", type: "likert", text: "ฉันมีความมั่นใจในวิชาวิทยาศาสตร์ (ฟิสิกส์/เคมี/ชีววิทยา)", tags: ["Academic_Sci"], weight: 1.0 },
-  { id: "Q_AC_5", section: "academic", type: "likert", text: "ฉันชอบทดลองและสังเกตปรากฏการณ์ธรรมชาติ", tags: ["Academic_Sci"], weight: 1.0 },
-  { id: "Q_AC_6", section: "academic", type: "likert", text: "ฉันมีความมั่นใจในวิชาภาษาอังกฤษ", tags: ["Academic_Eng"], weight: 1.0 },
-];
-
-// ------ SECTION 3: Constraints / Preferences (4 questions) ------
+// ------ SECTION 2: Constraints / Preferences (4 questions) ------
 const constraintQuestions = [
   {
     id: "Q_CON_1", section: "constraints", type: "multiple_choice",
@@ -120,14 +94,20 @@ const constraintQuestions = [
 ];
 
 // ------ Combine all questions ------
-export const allQuestions = [...riasecQuestions, ...academicQuestions, ...constraintQuestions];
+export const allQuestions = [...riasecQuestions, ...constraintQuestions];
 
+/**
+ * @param {string} section
+ */
 export function getQuestionsBySection(section) {
-  return allQuestions.filter(q => q.section === section);
+  if (section === "interests" || section === "riasec") {
+    return riasecQuestions;
+  }
+
+  return constraintQuestions;
 }
 
 export const SECTIONS = [
   { id: "interests", label: "ความสนใจ (RIASEC)", icon: "Heart", questionCount: 30 },
-  { id: "academic", label: "ด้านวิชาการ", icon: "BookOpen", questionCount: 6 },
   { id: "constraints", label: "ข้อจำกัด/ความต้องการ", icon: "Settings", questionCount: 4 },
 ];
