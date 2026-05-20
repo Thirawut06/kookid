@@ -42,55 +42,52 @@ export const riasecQuestions = [
   { id: "C5", section: "riasec", type: "likert", text: "คัดแยก จัดระเบียบ และแจกจ่ายเอกสารหรือพัสดุในองค์กร", tags: ["C"] }
 ];
 
-// ------ SECTION 2: Constraints / Preferences (4 questions) ------
+// ------ SECTION 2: Constraints / Preferences (5 questions) ------
 const constraintQuestions = [
   {
-    id: "Q_CON_1", section: "constraints", type: "multiple_choice",
-    text: "คุณอยากเรียนมหาวิทยาลัยในพื้นที่ไหน?",
+    id: "Q_CON_GPAX", section: "constraints", type: "multiple_choice",
+    text: "เพื่อเช็กสิทธิ์ 'โควต้าและทุนเรียนดี' เกรดเฉลี่ยสะสม (GPAX) ของคุณอยู่ในช่วงไหน?",
     options: [
-      { id: "bkk", label: "กรุงเทพฯ / ปริมณฑล" },
-      { id: "province", label: "ต่างจังหวัด" },
-      { id: "any_loc", label: "ได้หมด ไม่จำกัด" },
+      { id: "gpax_high", label: "3.50 ขึ้นไป (ลุ้นทุน 100%)" },
+      { id: "gpax_mid_high", label: "3.00 - 3.49 (ลุ้นทุน 50%)" },
+      { id: "gpax_mid", label: "2.50 - 2.99" },
+      { id: "gpax_low", label: "ต่ำกว่า 2.50" },
+      { id: "not_sure", label: "จำไม่ได้ / ยังไม่อยากบอก" },
     ],
-    tags: ["location_pref"],
-    weight: 1.0,
+    tags: ["gpax_range"], weight: 1.0,
   },
   {
-    id: "Q_CON_2", section: "constraints", type: "multiple_choice",
-    text: "คุณสนใจมหาวิทยาลัยประเภทไหน?",
+    id: "Q_CON_FINANCE", section: "constraints", type: "multiple_choice",
+    text: "เพื่อให้เราแนะนำมหาลัยได้ตรงใจ คุณวางแผนเรื่อง 'ค่าเทอม' ไว้อย่างไร?",
     options: [
-      { id: "public", label: "มหาวิทยาลัยรัฐ" },
-      { id: "private", label: "มหาวิทยาลัยเอกชน" },
-      { id: "any_type", label: "ได้หมด" },
+      { id: "full_support", label: "ที่บ้านซัพพอร์ตเต็มที่ (ม.รัฐ หรือ เอกชน ก็ได้หมด)" },
+      { id: "state_only", label: "เน้น ม.รัฐ หรือที่ที่ค่าเทอมประหยัดไว้ก่อน" },
+      { id: "loan_needed", label: "วางแผนจะกู้ กยศ. / เพื่อส่งตัวเองเรียน" },
+      { id: "scholarship_hunter", label: "นักล่าทุน! ตามหาทุนการศึกษาเป็นหลัก" },
     ],
-    tags: ["uni_type_pref"],
-    weight: 1.0,
+    tags: ["financial_capacity"], weight: 1.0,
   },
   {
-    id: "Q_CON_3", section: "constraints", type: "multiple_choice",
-    text: "คุณเรียนสายอะไรในตอนนี้?",
+    id: "Q_CON_LOCATION", section: "constraints", type: "multiple_choice",
+    text: "ถ้าเลือกได้ คุณอยากใช้ชีวิตวัยรุ่นมหาลัยโซนไหน?",
     options: [
-      { id: "sci_math", label: "วิทย์-คณิต" },
-      { id: "arts_math", label: "ศิลป์-คำนวณ" },
-      { id: "arts_lang", label: "ศิลป์-ภาษา" },
-      { id: "arts_soc", label: "ศิลป์-สังคม" },
-      { id: "vocational", label: "สายอาชีพ / ปวช." },
-      { id: "other", label: "อื่นๆ" },
+      { id: "bkk_only", label: "ลุยเมืองกรุง (กรุงเทพฯ และปริมณฑลเท่านั้น)" },
+      { id: "hometown", label: "ขอใกล้บ้าน หรือในภูมิภาคของตัวเอง (อุ่นใจกว่า)" },
+      { id: "anywhere", label: "ที่ไหนก็ได้ในไทย ขอแค่คณะใช่ สังคมโดน!" },
     ],
-    tags: ["study_track"],
-    weight: 1.0,
+    tags: ["location_preference"], weight: 1.0,
   },
   {
-    id: "Q_CON_4", section: "constraints", type: "multiple_choice",
-    text: "คุณมีความต้องการด้านทุนการศึกษามากน้อยแค่ไหน?",
+    id: "Q_CON_PAINPOINT", section: "constraints", type: "multiple_choice",
+    text: "โค้งสุดท้ายนี้ คุณกังวลเรื่องไหนที่สุด? (เดี๋ยวเราหาตัวช่วยมาให้!)",
     options: [
-      { id: "need_full", label: "จำเป็นต้องได้ทุนเต็มจำนวน (100%) ถึงจะเรียนได้" },
-      { id: "need_partial", label: "ต้องการทุนบางส่วน หรือวางแผนกู้ กยศ." },
-      { id: "no_need", label: "ครอบครัวสนับสนุนได้เต็มที่ ไม่เน้นหาทุน" },
+      { id: "portfolio", label: "ไม่มีผลงานทำ Portfolio / ทำพอร์ตไม่เป็นเลย" },
+      { id: "interview", label: "กลัวสอบสัมภาษณ์ / พูดไม่เก่ง / ตื่นเต้นง่าย" },
+      { id: "exam_prep", label: "อ่านหนังสือสอบ TGAT/TPAT/A-Level ไม่ทันแล้ว!" },
+      { id: "finding_info", label: "งงระบบ TCAS / ไม่รู้จะเริ่มหาข้อมูลจากตรงไหน" },
     ],
-    tags: ["financial_pref"],
-    weight: 1.0,
-  },
+    tags: ["pain_point"], weight: 1.0,
+  }
 ];
 
 // ------ Combine all questions ------

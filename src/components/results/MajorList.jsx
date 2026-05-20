@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
  *   requestedMajorIds?: Record<string, boolean>,
  *   hasCapturedLead?: boolean,
  *   onUnlockLead?: () => void,
+ *   hideFeedback?: boolean,
  * }} props
  */
 export default function MajorList({
@@ -40,6 +41,7 @@ export default function MajorList({
   requestedMajorIds,
   hasCapturedLead = false,
   onUnlockLead,
+  hideFeedback = false,
 }) {
   /** @type {Record<string, MajorGroup>} */
   const clusterMap = {};
@@ -70,7 +72,7 @@ export default function MajorList({
             {group.nameTh}
           </h3>
 
-          <div className="grid gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {group.majors.map((major) => {
               const alreadyRequested = Boolean(requestedMajorIds?.[major.id]);
               const isUnlocked = hasCapturedLead || renderedCount < visibleSlots;
@@ -80,20 +82,20 @@ export default function MajorList({
                 <div key={major.id} className="relative">
                   <Card
                     className={cn(
-                      "p-3 sm:p-4 border border-border/50 transition-all",
-                      !isUnlocked && "opacity-40 blur-[2px] select-none"
+                      "flex flex-col h-full overflow-hidden p-3 sm:p-4 border border-border/50 transition-all",
+                      !isUnlocked && "blur-sm opacity-70 select-none"
                     )}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-start gap-2.5">
+                      <div className="flex items-start gap-2.5 min-w-0">
                         <GraduationCap className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{major.nameTh}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{major.facultyNameTh}</p>
-                          <p className="text-xs text-muted-foreground/70">{major.universityNameTh}</p>
+                        <div className="min-w-0 break-words whitespace-normal">
+                          <p className="text-sm font-medium text-foreground line-clamp-2">{major.nameTh}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{major.facultyNameTh}</p>
+                          <p className="text-xs text-muted-foreground/70 line-clamp-2">{major.universityNameTh}</p>
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1 justify-end">
+                      <div className="flex flex-wrap gap-1 justify-end shrink-0">
                         {major.universityShortName && (
                           <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                             {major.universityShortName}
@@ -103,7 +105,7 @@ export default function MajorList({
                     </div>
 
                     <div className={cn(!isUnlocked && "pointer-events-none") }>
-                      <div className="mt-3 pt-3 border-t border-border/50 space-y-2">
+                      <div className="mt-auto pt-3 border-t border-border/50 space-y-2">
                         <Button
                           type="button"
                           size="sm"
@@ -114,11 +116,13 @@ export default function MajorList({
                           <Gift className="w-4 h-4 mr-1.5 shrink-0" />
                           {alreadyRequested
                             ? "ส่งคำขอแล้ว"
-                            : "🔥 รับสิทธิ์โควต้า/ทุน (มหาลัยติดต่อกลับ)"}
+                            : "🔥 รับสิทธิ์โควต้า/ทุน"}
                         </Button>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed">
-                          กดปุ่มนี้ถ้าคุณอยากให้มหาวิทยาลัยส่งข้อมูลโควต้า/ทุนที่ตรงกับผลของคุณมาให้ (ไม่มีค่าใช้จ่าย)
-                        </p>
+                        {!hideFeedback && (
+                          <p className="text-[11px] text-muted-foreground leading-relaxed">
+                            กดปุ่มนี้ถ้าคุณอยากให้มหาวิทยาลัยส่งข้อมูลโควต้า/ทุนที่ตรงกับผลของคุณมาให้ (ไม่มีค่าใช้จ่าย)
+                          </p>
+                        )}
                       </div>
                     </div>
                   </Card>

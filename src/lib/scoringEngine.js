@@ -1,18 +1,12 @@
 // ============================================================
 // TCAS Career Quiz — Scoring Engine
-// Computes RIASEC + Academic scores from quiz answers.
+// Computes RIASEC scores from quiz answers.
 // ============================================================
 
 import { riasecQuestions } from './quizData';
 
 const RIASEC_DIMS = ["R", "I", "A", "S", "E", "C"];
-const ACADEMIC_DIMS = ["Academic_Math", "Academic_Sci"];
 const HOLLAND_ORDER = ["R", "I", "A", "S", "E", "C"];
-
-// Subjects that give bonuses to Academic dimensions
-const MATH_BONUS_SUBJECTS = ["math", "physics", "computer"];
-const SCI_BONUS_SUBJECTS = ["physics", "chemistry", "biology"];
-const BONUS_POINTS = 10;
 
 /**
  * Compute the full user profile from quiz answers.
@@ -24,15 +18,9 @@ const BONUS_POINTS = 10;
  */
 export function computeProfile(answers) {
   const riasecScores = computeRIASEC(answers);
-  const academicScores = computeAcademic(answers);
   const hollandCode = buildHollandCode(riasecScores);
 
-  const traitScores = [
-    ...riasecScores,
-    ...academicScores,
-  ];
-
-  return { traitScores, hollandCode };
+  return { traitScores: riasecScores, hollandCode };
 }
 
 /**
@@ -63,55 +51,6 @@ function computeRIASEC(answers) {
 
     return { dimension: dim, rawScore, normalizedScore };
   });
-}
-
-/**
- * Academic scoring (MVP):
- * - Likert self-rating maps to 0-100
- * - Bonus from subject preferences
- */
-function computeAcademic(answers) {
-  const mathQuestions = riasecQuestions.filter(q => q.id === "Q_AC_2" || q.id === "Q_AC_3");
-  const sciQuestions = riasecQuestions.filter(q => q.id === "Q_AC_4" || q.id === "Q_AC_5");
-
-  const preferredSubject = answers.Q_AC_1;
-
-  const mathBase = averageLikert(answers, mathQuestions);
-  const sciBase = averageLikert(answers, sciQuestions);
-
-  const mathBonus = preferredSubject && MATH_BONUS_SUBJECTS.includes(String(preferredSubject)) ? BONUS_POINTS : 0;
-  const sciBonus = preferredSubject && SCI_BONUS_SUBJECTS.includes(String(preferredSubject)) ? BONUS_POINTS : 0;
-
-  return [
-    {
-      dimension: "Academic_Math",
-      rawScore: mathBase + mathBonus,
-      normalizedScore: Math.min(100, Math.round(mathBase + mathBonus)),
-    },
-    {
-      dimension: "Academic_Sci",
-      rawScore: sciBase + sciBonus,
-      normalizedScore: Math.min(100, Math.round(sciBase + sciBonus)),
-    },
-  ];
-}
-
-/**
- * Average Likert answers for a set of questions, normalized to 0-100.
- */
-function averageLikert(answers, questions) {
-  if (questions.length === 0) return 0;
-  let sum = 0;
-  let count = 0;
-  questions.forEach(q => {
-    const val = answers[q.id];
-    if (typeof val === "number") {
-      sum += val;
-      count++;
-    }
-  });
-  if (count === 0) return 0;
-  return ((sum / count) / 5) * 100; // 5 = max likert
 }
 
 /**

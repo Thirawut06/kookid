@@ -31,6 +31,11 @@ function createProfileId() {
   return "prof_" + Math.random().toString(36).slice(2, 11) + "_" + Date.now();
 }
 
+function setActiveProfileId(profileId) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(ACTIVE_PROFILE_KEY, profileId);
+}
+
 export function getOrCreateActiveProfileId() {
   if (typeof window === "undefined") return createProfileId();
 
@@ -109,43 +114,68 @@ export function getStoredLeadProfile(userProfileId) {
   return store.profiles?.[userProfileId] ?? null;
 }
 
+export async function createInitialProfile({ nickname = "", userType = "" } = {}) {
+  if (typeof window === "undefined") return createProfileId();
+
+  const profileId = createProfileId();
+  const store = readStore();
+  const now = new Date().toISOString();
+
+  store.profiles[profileId] = {
+    userProfileId: profileId,
+    nickname,
+    userType,
+    contact: null,
+    gradeAndSchool: null,
+    email: null,
+    lineId: null,
+    educationLevel: null,
+    gradeLevel: "",
+    schoolName: "",
+    studyTrack: "",
+    gpax: "",
+    schoolProvince: "",
+    consentAccepted: false,
+    consentAt: null,
+    updatedAt: now,
+  };
+
+  writeStore(store);
+  setActiveProfileId(profileId);
+
+  if (supabase) {
+    const { error } = await supabase.from("user_profiles").insert([
+      {
+        id: profileId,
+        nickname,
+        user_type: userType,
+        contact: null,
+        grade_and_school: null,
+        email: null,
+        line_id: null,
+        education_level: null,
+        consent_accepted: false,
+        updated_at: now,
+      },
+    ]);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  return profileId;
+}
+
 export function savePreQuizInfo({
   nickname = "",
+  userType = "",
   gradeLevel = "",
   schoolName = "",
   studyTrack = "",
   gradeAndSchool = "",
 } = {}) {
-  if (typeof window === "undefined") return null;
-
-  const profileId = getOrCreateActiveProfileId();
-  const store = readStore();
-  const now = new Date().toISOString();
-  const existing = store.profiles?.[profileId] ?? {};
-
-  const resolvedGradeLevel = (gradeLevel ?? existing.gradeLevel ?? gradeAndSchool ?? "").trim();
-  const resolvedSchoolName = (schoolName ?? existing.schoolName ?? "").trim();
-  const resolvedStudyTrack = (studyTrack ?? existing.studyTrack ?? "").trim();
-  const resolvedGradeAndSchool = buildGradeAndSchool(resolvedGradeLevel, resolvedSchoolName) || (gradeAndSchool || "").trim();
-
-  store.profiles[profileId] = {
-    ...existing,
-    userProfileId: profileId,
-    nickname,
-    gradeLevel: resolvedGradeLevel,
-    schoolName: resolvedSchoolName,
-    studyTrack: resolvedStudyTrack,
-    gradeAndSchool: resolvedGradeAndSchool,
-    contact: existing.contact || "",
-    email: existing.email || "",
-    schoolProvince: existing.schoolProvince || "",
-    consentAccepted: Boolean(existing.consentAccepted),
-    consentAt: existing.consentAt || null,
-    updatedAt: now,
-  };
-
-  writeStore(store);
-  return profileId;
+  return createInitialProfile({ nickname, userType });
 }
 
 export async function upsertQuizResult(userProfileId, result) {
@@ -184,38 +214,51 @@ async function persistQuizResultToSupabase(userProfileId, result) {
   }
 }
 
-export async function upsertLeadCapture({
-  userProfileId,
-  result,
-  nickname,
-  gradeAndSchool,
-  gradeLevel,
-  schoolName,
-  studyTrack,
-  contact,
-  email,
-  schoolProvince,
-}) {
+export async function upsertLeadCapture(userProfileId, fullData = {}) {
+  const payload = typeof userProfileId === "object" && userProfileId !== null
+    ? userProfileId
+    : { userProfileId, ...fullData };
+
+  const {
+    result,
+    nickname = "",
+    userType = "",
+    gradeAndSchool = "",
+    gradeLevel = "",
+    schoolName = "",
+    studyTrack = "",
+    gpax = "",
+    contact = null,
+    email = null,
+    lineId = null,
+    educationLevel = null,
+    schoolProvince = null,
+  } = payload;
+
   const store = readStore();
-  const profileId = userProfileId || getOrCreateActiveProfileId();
+  const profileId = payload.userProfileId || getOrCreateActiveProfileId();
   const now = new Date().toISOString();
   const existing = store.profiles?.[profileId] ?? {};
-  const resolvedGradeLevel = (gradeLevel ?? existing.gradeLevel ?? gradeAndSchool ?? "").trim();
+  const resolvedGradeLevel = (gradeLevel ?? existing.gradeLevel ?? "").trim();
   const resolvedSchoolName = (schoolName ?? existing.schoolName ?? "").trim();
   const resolvedStudyTrack = (studyTrack ?? existing.studyTrack ?? "").trim();
-  const resolvedGradeAndSchool = buildGradeAndSchool(resolvedGradeLevel, resolvedSchoolName) || (gradeAndSchool || "").trim();
+  const resolvedGradeAndSchool = (gradeAndSchool || buildGradeAndSchool(resolvedGradeLevel, resolvedSchoolName)).trim();
 
   store.profiles[profileId] = {
     ...existing,
     userProfileId: profileId,
-    nickname,
+    nickname: nickname || existing.nickname || "",
+    userType: userType || existing.userType || "",
     gradeLevel: resolvedGradeLevel,
     schoolName: resolvedSchoolName,
     studyTrack: resolvedStudyTrack,
-    gradeAndSchool: resolvedGradeAndSchool,
-    contact,
-    email: email || "",
-    schoolProvince: schoolProvince || "",
+    gpax: gpax || existing.gpax || "",
+    gradeAndSchool: resolvedGradeAndSchool || existing.gradeAndSchool || "",
+    contact: contact ?? existing.contact ?? null,
+    email: email ?? existing.email ?? null,
+    lineId: lineId ?? existing.lineId ?? null,
+    educationLevel: educationLevel ?? existing.educationLevel ?? null,
+    schoolProvince: schoolProvince ?? existing.schoolProvince ?? null,
     consentAccepted: true,
     consentAt: now,
     updatedAt: now,
@@ -237,20 +280,22 @@ export async function upsertLeadCapture({
 
   // Persist to Supabase and let callers await failures.
   if (supabase) {
-    await ensureRemoteLeadProfile(profileId);
-
-    const { error } = await supabase.from("user_profiles").upsert([
-      {
-        id: profileId,
-        nickname,
-        grade_and_school: resolvedGradeAndSchool,
-        contact,
-        email: email || null,
-        school_province: schoolProvince || null,
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({
+        nickname: nickname || existing.nickname || null,
+        user_type: userType || existing.userType || null,
+        grade_and_school: resolvedGradeAndSchool || null,
+        contact: contact ?? existing.contact ?? null,
+        email: email ?? existing.email ?? null,
+        line_id: lineId ?? existing.lineId ?? null,
+        education_level: educationLevel ?? existing.educationLevel ?? null,
+        school_province: schoolProvince ?? existing.schoolProvince ?? null,
         consent_accepted: true,
         consent_at: now,
-      },
-    ]);
+        updated_at: now,
+      })
+      .eq("id", profileId);
 
     if (error) {
       throw error;

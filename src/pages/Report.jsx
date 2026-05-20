@@ -9,13 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getCareerClusters } from "@/lib/dataLoader";
 import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
-import { hasLeadCapture, getStoredQuizResult, upsertLeadCapture, getStoredLeadProfile } from "@/lib/leadCaptureApi";
+import { hasLeadCapture, getStoredQuizResult, getStoredLeadProfile } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
 import { buildHollandCode } from "@/lib/scoringEngine";
 
 const RIASEC_LABELS = { R: "Realistic", I: "Investigative", A: "Artistic", S: "Social", E: "Enterprising", C: "Conventional" };
 const RIASEC_COLORS = { R: "#6366f1", I: "#0ea5e9", A: "#f59e0b", S: "#22c55e", E: "#ef4444", C: "#8b5cf6" };
-const ACAD_LABELS = { Academic_Math: "คณิตศาสตร์", Academic_Sci: "วิทยาศาสตร์" };
 
 // Build a lookup map from careerClusters.json by id → cluster data
 const CLUSTER_MAP = Object.fromEntries(getCareerClusters().map(c => [c.id, c]));
@@ -61,24 +60,6 @@ export default function Report() {
     return () => clearTimeout(timer);
   }, [result, leadUnlocked]);
 
-  const handleLeadSubmit = async (leadData) => {
-    const nextProfileId = await upsertLeadCapture({
-      userProfileId: profileId,
-      result,
-      ...leadData,
-    });
-
-    trackEvent("lead_submitted", {
-      page: "report",
-      userProfileId: nextProfileId,
-    });
-
-    const nextResult = { ...result, userProfileId: nextProfileId };
-    sessionStorage.setItem("tcas_quiz_result", JSON.stringify(nextResult));
-    setResult(nextResult);
-    setLeadUnlocked(true);
-  };
-
   if (!isReady || !result) return null;
 
   if (!leadUnlocked) {
@@ -93,7 +74,13 @@ export default function Report() {
             </p>
           </div>
           <LeadCaptureForm
-            onSubmit={handleLeadSubmit}
+            onSubmitSuccess={() => {
+              setLeadUnlocked(true);
+              trackEvent("lead_submitted", {
+                page: "report",
+                userProfileId: profileId || null,
+              });
+            }}
             submitLabel="ยืนยันและดูรายงาน"
             prefill={leadProfile || undefined}
             compact
@@ -117,12 +104,7 @@ export default function Report() {
     .filter(ts => ["R", "I", "A", "S", "E", "C"].includes(ts.dimension))
     .sort((a, b) => b.normalizedScore - a.normalizedScore);
 
-  const acadScores = profile.traitScores
-    .filter(ts => ["Academic_Math", "Academic_Sci"].includes(ts.dimension));
-
   const topDims = summary.topTraits?.map(t => t.dimension) ?? [];
-  const acadMath = acadScores.find(t => t.dimension === "Academic_Math")?.normalizedScore ?? 0;
-  const acadSci  = acadScores.find(t => t.dimension === "Academic_Sci")?.normalizedScore ?? 0;
 
   return (
     <>
@@ -171,42 +153,19 @@ export default function Report() {
           )}
         </section>
 
-        {/* Section 2 — Scores table */}
+        {/* Section 2 — RIASEC scores */}
         <section className="mb-5">
-          <h2 className="report-section-title">คะแนน RIASEC และวิชาการ</h2>
-          <div className="grid grid-cols-2 gap-x-6">
-            {/* RIASEC bars */}
-            <div className="space-y-1.5">
-              {riasecScores.map(ts => (
-                <div key={ts.dimension} className="flex items-center gap-2">
-                  <span className="w-28 text-xs text-gray-600 shrink-0">{ts.dimension} — {RIASEC_LABELS[ts.dimension]}</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                    <div className="h-2.5 rounded-full" style={{ width: `${ts.normalizedScore}%`, backgroundColor: RIASEC_COLORS[ts.dimension] ?? "#6366f1" }} />
-                  </div>
-                  <span className="w-7 text-right text-xs font-semibold text-gray-700">{ts.normalizedScore}</span>
+          <h2 className="report-section-title">คะแนนมิติบุคลิกภาพ (RIASEC)</h2>
+          <div className="space-y-1.5">
+            {riasecScores.map(ts => (
+              <div key={ts.dimension} className="flex items-center gap-2">
+                <span className="w-28 text-xs text-gray-600 shrink-0">{ts.dimension} — {RIASEC_LABELS[ts.dimension]}</span>
+                <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                  <div className="h-2.5 rounded-full" style={{ width: `${ts.normalizedScore}%`, backgroundColor: RIASEC_COLORS[ts.dimension] ?? "#6366f1" }} />
                 </div>
-              ))}
-            </div>
-            {/* Academic table */}
-            <div>
-              <table className="w-full text-xs border-collapse">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="text-left px-2 py-1 border border-gray-200 text-gray-600">วิชา</th>
-                    <th className="text-center px-2 py-1 border border-gray-200 text-gray-600">คะแนน (self-assess)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {acadScores.map(ts => (
-                    <tr key={ts.dimension}>
-                      <td className="px-2 py-1 border border-gray-200">{ACAD_LABELS[ts.dimension] ?? ts.dimension}</td>
-                      <td className="px-2 py-1 border border-gray-200 text-center font-semibold">{ts.normalizedScore}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <p className="text-[10px] text-gray-400 mt-1">* คะแนนวิชาการมาจากการประเมินตนเอง ไม่ใช่คะแนนสอบจริง</p>
-            </div>
+                <span className="w-7 text-right text-xs font-semibold text-gray-700">{ts.normalizedScore}</span>
+              </div>
+            ))}
           </div>
         </section>
 

@@ -1,51 +1,40 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
-import { SECTIONS, getQuestionsBySection, allQuestions } from "@/lib/quizData";
-import { computeProfile } from "@/lib/scoringEngine";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { SECTIONS, allQuestions, getQuestionsBySection } from "@/lib/quizData";
 import { computeMatches } from "@/lib/matchingEngine";
+import { computeProfile } from "@/lib/scoringEngine";
 import { generatePersonalitySummary, generateWhyMatch } from "@/lib/summaryGenerator";
 import { trackEvent } from "@/lib/analyticsApi";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  getOrCreateActiveProfileId,
-  getStoredLeadProfile,
-  savePreQuizInfo,
-  upsertQuizResult,
-} from "@/lib/leadCaptureApi";
+import { getOrCreateActiveProfileId, getStoredLeadProfile, upsertQuizResult } from "@/lib/leadCaptureApi";
 
 import SectionStepper from "@/components/quiz/SectionStepper";
 import ProgressBar from "@/components/quiz/ProgressBar";
 import LikertQuestion from "@/components/quiz/LikertQuestion";
 import MultiChoiceQuestion from "@/components/quiz/MultiChoiceQuestion";
 
-// How many questions to show per page in the interests section
 const INTEREST_PAGE_SIZE = 6;
 
 /**
  * @typedef {string | number | Array<string | number> | null | undefined} QuizAnswer
  * @typedef {Record<string, QuizAnswer>} QuizAnswerMap
+ * @typedef {{ dimension: string, normalizedScore: number, rawScore?: number }} TraitScore
+ * @typedef {{ traitScores: TraitScore[], hollandCode?: string }} QuizProfile
+ * @typedef {{ careerId: string, clusterId: string, nameTh: string, whyMatch?: string }} QuizCareer
+ * @typedef {{ summaryText: string, bulletPoints: string[], topTraits: Array<{ dimension: string, label: string, description: string, score: number }>, acadMathScore?: number, acadSciScore?: number }} QuizSummary
+ * @typedef {{ profile: QuizProfile, hollandCode?: string, clusters: QuizCareer[], majors: Array<any>, summary: QuizSummary, answers: QuizAnswerMap, userProfileId: string }} QuizResult
  */
 
 export default function Quiz() {
   const navigate = useNavigate();
   const [profileId] = useState(() => getOrCreateActiveProfileId());
-  const [profileInfo, setProfileInfo] = useState(() => {
-    const stored = getStoredLeadProfile(profileId);
-    return {
-      nickname: stored?.nickname || "",
-      gradeLevel: stored?.gradeLevel || "",
-      studyTrack: stored?.schoolName || "",
-      gradeAndSchool: stored?.gradeAndSchool || "",
-    };
-  });
-  const [preQuizSubmitted, setPreQuizSubmitted] = useState(() => Boolean(profileInfo.nickname && ((profileInfo.gradeLevel && profileInfo.studyTrack) || profileInfo.gradeAndSchool)));
-  const [preQuizError, setPreQuizError] = useState("");
+  const leadProfile = getStoredLeadProfile(profileId);
+  const nickname = leadProfile?.nickname || "";
+
   const [sectionIndex, setSectionIndex] = useState(0);
   const [interestPage, setInterestPage] = useState(0);
   const [answers, setAnswers] = useState(/** @type {QuizAnswerMap} */ ({}));
@@ -58,42 +47,32 @@ export default function Quiz() {
   }, []);
 
   const currentSection = SECTIONS[sectionIndex];
-  const sectionQuestions = useMemo(
-    () => getQuestionsBySection(currentSection.id),
-    [currentSection.id]
-  );
+  const sectionQuestions = useMemo(() => getQuestionsBySection(currentSection.id), [currentSection.id]);
 
-  // For interests section, paginate in chunks
   const isInterests = currentSection.id === "interests";
   const totalInterestPages = isInterests ? Math.ceil(sectionQuestions.length / INTEREST_PAGE_SIZE) : 1;
   const visibleQuestions = isInterests
     ? sectionQuestions.slice(interestPage * INTEREST_PAGE_SIZE, (interestPage + 1) * INTEREST_PAGE_SIZE)
     : sectionQuestions;
 
-  // Global progress
-  const answeredCount = allQuestions.filter(q => answers[q.id] !== undefined).length;
+  const answeredCount = allQuestions.filter(question => answers[question.id] !== undefined).length;
   const totalCount = allQuestions.length;
 
-  /**
-   * @param {string} questionId
-   * @param {QuizAnswer} value
-   */
+  /** @param {string} questionId @param {QuizAnswer} value */
   const handleAnswer = (questionId, value) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
-  // Check if current page is fully answered
-  const currentPageComplete = visibleQuestions.every(q => {
-    const a = answers[q.id];
-    if (a === undefined || a === null) return false;
-    if (Array.isArray(a) && a.length === 0) return false;
-    // If answer is 'other' (single-select) or includes 'other' (multi-select), require the extra text field
-    if (a === 'other') {
-      const otherText = answers[`${q.id}_other`];
+  const currentPageComplete = visibleQuestions.every(question => {
+    const answer = answers[question.id];
+    if (answer === undefined || answer === null) return false;
+    if (Array.isArray(answer) && answer.length === 0) return false;
+    if (answer === "other") {
+      const otherText = answers[`${question.id}_other`];
       if (!otherText || !String(otherText).trim()) return false;
     }
-    if (Array.isArray(a) && a.includes('other')) {
-      const otherText = answers[`${q.id}_other`];
+    if (Array.isArray(answer) && answer.includes("other")) {
+      const otherText = answers[`${question.id}_other`];
       if (!otherText || !String(otherText).trim()) return false;
     }
     return true;
@@ -101,31 +80,34 @@ export default function Quiz() {
 
   const handleNext = () => {
     if (isInterests && interestPage < totalInterestPages - 1) {
-      setInterestPage(p => p + 1);
+      setInterestPage(page => page + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+
     if (sectionIndex < SECTIONS.length - 1) {
-      setSectionIndex(i => i + 1);
+      setSectionIndex(index => index + 1);
       setInterestPage(0);
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      handleSubmit();
+      return;
     }
+
+    handleSubmit();
   };
 
   const handleBack = () => {
     if (isInterests && interestPage > 0) {
-      setInterestPage(p => p - 1);
+      setInterestPage(page => page - 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+
     if (sectionIndex > 0) {
-      const prevSectionId = SECTIONS[sectionIndex - 1].id;
-      setSectionIndex(i => i - 1);
-      if (prevSectionId === "interests") {
-        const prevQuestions = getQuestionsBySection("interests");
-        setInterestPage(Math.ceil(prevQuestions.length / INTEREST_PAGE_SIZE) - 1);
+      const previousSectionId = SECTIONS[sectionIndex - 1].id;
+      setSectionIndex(index => index - 1);
+      if (previousSectionId === "interests") {
+        const previousQuestions = getQuestionsBySection("interests");
+        setInterestPage(Math.ceil(previousQuestions.length / INTEREST_PAGE_SIZE) - 1);
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -133,16 +115,19 @@ export default function Quiz() {
 
   const handleSubmit = () => {
     setComputing(true);
-    // Small delay for UX feel
+
     setTimeout(() => {
-      const profile = computeProfile(answers);
+      const profile = /** @type {QuizProfile & { hollandCode: string }} */ (computeProfile(answers));
       const { clusters, majors } = computeMatches(profile);
       const summary = generatePersonalitySummary(profile.traitScores);
-      const clustersWithWhy = clusters.map(c => ({
-        ...c,
-        whyMatch: generateWhyMatch(c, summary.topTraits),
-      }));
+      const clustersWithWhy = /** @type {Array<QuizCareer & { whyMatch: string }>} */ (
+        clusters.map(cluster => ({
+          ...cluster,
+          whyMatch: generateWhyMatch(cluster, summary.topTraits),
+        }))
+      );
 
+      /** @type {QuizResult} */
       const result = {
         profile,
         hollandCode: profile.hollandCode,
@@ -156,10 +141,9 @@ export default function Quiz() {
       trackEvent("quiz_completed", {
         page: "quiz",
         userProfileId: profileId,
-        topClusterIds: clustersWithWhy.slice(0, 3).map(c => c.clusterId),
+        topClusterIds: clustersWithWhy.slice(0, 3).map(cluster => cluster.clusterId),
       });
 
-      // Store in sessionStorage so Results page can read it
       sessionStorage.setItem("tcas_quiz_result", JSON.stringify(result));
       upsertQuizResult(profileId, result).catch((error) => {
         console.error("Quiz result persistence skipped:", error);
@@ -171,173 +155,73 @@ export default function Quiz() {
   const isLastStep = sectionIndex === SECTIONS.length - 1 && (!isInterests || interestPage === totalInterestPages - 1);
   const canGoBack = sectionIndex > 0 || (isInterests && interestPage > 0);
 
-  const handlePreQuizSubmit = (event) => {
-    event.preventDefault();
-
-    const nickname = profileInfo.nickname.trim();
-    const gradeLevel = profileInfo.gradeLevel.trim();
-    const studyTrack = profileInfo.studyTrack.trim();
-
-    if (!nickname || !gradeLevel || !studyTrack) {
-      setPreQuizError("กรุณากรอกชื่อเล่น ระดับชั้น และสายการเรียนให้ครบก่อนเริ่มทำแบบทดสอบ");
-      return;
-    }
-
-    savePreQuizInfo({ nickname, gradeLevel, studyTrack });
-    setPreQuizSubmitted(true);
-    setPreQuizError("");
-
-    trackEvent("quiz_prequest_info_submitted", {
-      page: "quiz",
-      userProfileId: profileId,
-    });
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto px-4 py-6 sm:py-10">
-        {!preQuizSubmitted ? (
-          <Card className="p-5 sm:p-6 border border-border/60 bg-card shadow-sm">
-            <div className="mb-4">
-              <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-1">คู่คิด KooKid</div>
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground">เริ่มต้นด้วยข้อมูลสั้น ๆ ก่อนทำแบบทดสอบ</h1>
-              <p className="mt-2 text-sm text-muted-foreground">ใช้เพื่อปรับเนื้อหาผลลัพธ์ให้ตรงกับคุณมากขึ้น (ยังไม่บันทึกข้อมูลติดต่อ)</p>
-            </div>
+        <Card className="mb-6 p-4 sm:p-5 border border-primary/20 bg-primary/5">
+          <p className="text-sm font-medium text-foreground">
+            ลุยเลย{nickname ? ` น้อง ${nickname}` : ""}!
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            พร้อมแล้ว มาดูว่าคู่คิด KooKid จะพาคุณไปเจอตัวตนของคุณกัน
+          </p>
+        </Card>
 
-            <form onSubmit={handlePreQuizSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="preNickname">ชื่อเล่น <span className="text-destructive">*</span></Label>
-                <Input
-                  id="preNickname"
-                  value={profileInfo.nickname}
-                  onChange={(e) => setProfileInfo(prev => ({ ...prev, nickname: e.target.value }))}
-                  placeholder="เช่น ใบเตย"
-                  autoComplete="nickname"
-                />
-              </div>
+        <SectionStepper sections={SECTIONS} activeIndex={sectionIndex} />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="preGradeLevel">ระดับชั้น <span className="text-destructive">*</span></Label>
-                  <Input
-                    id="preGradeLevel"
-                    value={profileInfo.gradeLevel}
-                    onChange={(e) => setProfileInfo(prev => ({ ...prev, gradeLevel: e.target.value }))}
-                    placeholder="เช่น ม.5 / ปวช.2"
-                    autoComplete="education-level"
-                  />
+        <div className="mt-6">
+          <ProgressBar current={answeredCount} total={totalCount} sectionLabel={currentSection.label} />
+        </div>
+
+        <div className="mt-8 space-y-4">
+          <AnimatePresence>
+            {visibleQuestions.map((question, visibleIndex) => {
+              const globalIndex = allQuestions.findIndex(allQuestion => allQuestion.id === question.id);
+              const questionIndex = isInterests ? globalIndex - (interestPage * INTEREST_PAGE_SIZE) : visibleIndex;
+              const answer = answers[question.id];
+
+              return (
+                <div key={`${question.id}-${sectionIndex}-${interestPage}`}>
+                  {question.type === "likert" ? (
+                    <LikertQuestion
+                      question={question}
+                      value={/** @type {number | undefined} */ (answer)}
+                      onChange={handleAnswer}
+                      index={questionIndex}
+                    />
+                  ) : (
+                    <MultiChoiceQuestion
+                      question={question}
+                      value={answer}
+                      onChange={handleAnswer}
+                      index={questionIndex}
+                    />
+                  )}
                 </div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="preStudyTrack">สายการเรียน <span className="text-destructive">*</span></Label>
-                  <Input
-                    id="preStudyTrack"
-                    value={profileInfo.studyTrack}
-                    onChange={(e) => setProfileInfo(prev => ({ ...prev, studyTrack: e.target.value }))}
-                    placeholder="เช่น วิทย์-คณิต / ศิลป์-ภาษา"
-                    autoComplete="organization"
-                    aria-required="true"
-                    required
-                  />
-                </div>
-              </div>
-
-              {preQuizError && <p className="text-sm text-destructive">{preQuizError}</p>}
-
-              <div className="flex justify-end">
-                <Button type="submit" className="rounded-xl">
-                  เริ่มทำแบบทดสอบ
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              </div>
-            </form>
-          </Card>
-        ) : (
-          <>
-            <Card className="mb-6 p-4 sm:p-5 border border-primary/20 bg-primary/5">
-              <p className="text-sm font-medium text-foreground">
-                สวัสดี {profileInfo.nickname} จาก {profileInfo.gradeLevel}{profileInfo.studyTrack ? ` ${profileInfo.studyTrack}` : profileInfo.gradeAndSchool ? ` ${profileInfo.gradeAndSchool}` : ""}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                พร้อมแล้ว มาดูว่าคู่คิด KooKid จะพาคุณไปเจอตัวตนของคุณกัน
-              </p>
-            </Card>
-
-            {/* Stepper */}
-            <SectionStepper sections={SECTIONS} activeIndex={sectionIndex} />
-
-            {/* Progress */}
-            <div className="mt-6">
-              <ProgressBar
-                current={answeredCount}
-                total={totalCount}
-                sectionLabel={currentSection.label}
-              />
-            </div>
-
-            {/* Questions */}
-            <div className="mt-8 space-y-4">
-              <AnimatePresence>
-                {visibleQuestions.map((q) => {
-                  const globalIdx = allQuestions.findIndex(aq => aq.id === q.id);
-                  if (q.type === "likert") {
-                    return (
-                      <LikertQuestion
-                        key={q.id}
-                        question={q}
-                        value={answers[q.id]}
-                        onChange={handleAnswer}
-                        index={globalIdx}
-                      />
-                    );
-                  }
-                  if (q.type === "multiple_choice") {
-                    return (
-                      <MultiChoiceQuestion
-                        key={q.id}
-                        question={q}
-                        value={answers[q.id]}
-                        onChange={handleAnswer}
-                        index={globalIdx}
-                        multiSelect={false}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </AnimatePresence>
-            </div>
-
-            {/* Navigation */}
-            <div className="flex items-center justify-between mt-8 pb-10">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={!canGoBack}
-                className="rounded-xl"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                ย้อนกลับ
-              </Button>
-
-              {computing ? (
-                <Button disabled className="rounded-xl">
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  กำลังวิเคราะห์...
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleNext}
-                  disabled={!currentPageComplete}
-                  className="rounded-xl"
-                >
-                  {isLastStep ? "ดูผลลัพธ์" : "ถัดไป"}
-                  {!isLastStep && <ArrowRight className="w-4 h-4 ml-1" />}
-                </Button>
-              )}
-            </div>
-          </>
-        )}
+        <div className="mt-8 flex items-center justify-between gap-3">
+          <Button type="button" variant="outline" onClick={handleBack} disabled={!canGoBack || computing} className="rounded-xl">
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            ย้อนกลับ
+          </Button>
+          <Button type="button" onClick={handleNext} disabled={!currentPageComplete || computing} className="rounded-xl">
+            {computing ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                กำลังประมวลผล...
+              </>
+            ) : (
+              <>
+                {isLastStep ? "ดูผลลัพธ์" : "ถัดไป"}
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

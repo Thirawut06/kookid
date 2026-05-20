@@ -5,80 +5,184 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { getStoredLeadProfile, getStoredUserProfileId, upsertLeadCapture } from "@/lib/leadCaptureApi";
 
-const initialForm = {
-  nickname: "",
-  gradeLevel: "",
-  schoolName: "",
-  studyTrack: "",
-  contact: "",
-  email: "",
-  schoolProvince: "",
-  consentAccepted: false,
+const LabelAny = /** @type {any} */ (Label);
+const CheckboxAny = /** @type {any} */ (Checkbox);
+const InputAny = /** @type {any} */ (Input);
+
+const USER_TYPES = [
+  { value: "student_junior", label: "นักเรียน ม.ต้น" },
+  { value: "student_senior", label: "นักเรียน ม.ปลาย / ปวช." },
+  { value: "parent", label: "ผู้ปกครอง" },
+  { value: "working_college", label: "นักศึกษา / วัยทำงาน" },
+];
+
+const STUDY_TRACK_OPTIONS = [
+  { value: "sci_math", label: "วิทย์-คณิต" },
+  { value: "arts_math", label: "ศิลป์-คำนวณ" },
+  { value: "arts_lang", label: "ศิลป์-ภาษา" },
+  { value: "thai_social", label: "ไทย-สังคม" },
+  { value: "arts_social", label: "ศิลป์-สังคม" },
+  { value: "other", label: "อื่นๆ" },
+];
+
+const GPAX_OPTIONS = [
+  { value: "3.50+", label: "3.50 ขึ้นไป" },
+  { value: "3.00-3.49", label: "3.00 - 3.49" },
+  { value: "2.50-2.99", label: "2.50 - 2.99" },
+  { value: "<2.50", label: "ต่ำกว่า 2.50" },
+];
+
+const GRADE_LEVEL_OPTIONS = {
+  student_junior: ["ม.1", "ม.2", "ม.3"],
+  student_senior: ["ม.4", "ม.5", "ม.6", "ปวช.1", "ปวช.2", "ปวช.3"],
+  parent: ["ม.ต้น", "ม.ปลาย", "ปวช."],
+  working_college: ["ปริญญาตรี", "ปริญญาโท", "กำลังทำงาน", "อื่นๆ"],
 };
 
+/**
+ * @typedef {{
+ *   nickname?: string,
+ *   userType?: string,
+ *   phone?: string,
+ *   email?: string,
+ *   lineId?: string,
+ *   province?: string,
+ *   gradeLevel?: string,
+ *   studyTrack?: string,
+ *   gpax?: string,
+ *   schoolName?: string,
+ *   consentAccepted?: boolean,
+ * }} LeadPrefill
+ * @typedef {{
+ *   user_type: string,
+ *   nickname: string,
+ *   phone: string,
+ *   email: string,
+ *   line_id: string | null,
+ *   province: string | null,
+ *   metadata: {
+ *     grade_level: string | null,
+ *     study_track: string | null,
+ *     gpax: string | null,
+ *     school_name: string | null,
+ *   },
+ *   consentAccepted: boolean,
+ * }} LeadPayload
+ */
+
+/**
+ * @param {{
+ *   onSubmit?: (payload: LeadPayload) => void | Promise<void>,
+ *   onSubmitSuccess?: () => void,
+ *   onCancel?: () => void,
+ *   submitLabel?: string,
+ *   className?: string,
+ *   prefill?: LeadPrefill,
+ *   compact?: boolean,
+ * }} props
+ */
 export default function LeadCaptureForm({
   onSubmit,
+  onSubmitSuccess,
   onCancel,
   submitLabel = "ยืนยัน",
   className,
   prefill,
   compact = false,
 }) {
-  const [form, setForm] = useState(initialForm);
-  const [errors, setErrors] = useState({});
+  const [form, setForm] = useState(() => buildInitialForm(prefill));
+  const [errors, setErrors] = useState(/** @type {Record<string, string | undefined>} */ ({}));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const profileId = getStoredUserProfileId();
 
   useEffect(() => {
-    if (!prefill) return;
-
-    const derivedGradeLevel = prefill.gradeLevel || prefill.gradeAndSchool || "";
-    const derivedSchoolName = prefill.schoolName || "";
-    const derivedStudyTrack = prefill.studyTrack || prefill.schoolName || "";
-
-    setForm(prev => ({
-      ...prev,
-      ...prefill,
-      gradeLevel: derivedGradeLevel,
-      schoolName: derivedSchoolName,
-      studyTrack: derivedStudyTrack,
-      consentAccepted: Boolean(prefill.consentAccepted),
-    }));
+    setForm(buildInitialForm(prefill));
   }, [prefill]);
 
+  /** @param {string} field @param {string | boolean} value */
   const updateField = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: undefined, form: undefined }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const validate = () => {
+    /** @type {Record<string, string | undefined>} */
     const nextErrors = {};
-    if (!form.nickname.trim()) nextErrors.nickname = "กรุณากรอกชื่อเล่น";
-    if (!form.gradeLevel.trim()) nextErrors.gradeLevel = "กรุณากรอกระดับชั้นของคุณ";
-    if (!form.schoolName.trim()) nextErrors.schoolName = "กรุณากรอกชื่อโรงเรียน";
-    if (!form.studyTrack.trim()) nextErrors.studyTrack = "กรุณากรอกสายการเรียน";
-    if (!form.contact.trim()) nextErrors.contact = "กรุณากรอกเบอร์โทรศัพท์หรือ Line ID อย่างน้อย 1 ช่องทาง";
-    if (!form.consentAccepted) nextErrors.consentAccepted = "กรุณายินยอมก่อนดำเนินการต่อ";
 
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      return;
+    if (!form.phone.trim()) nextErrors.phone = "กรุณากรอกเบอร์โทรศัพท์มือถือ";
+    if (!form.email.trim()) nextErrors.email = "กรุณากรอกอีเมล";
+
+    if (isStudentType(form.userType)) {
+      if (!form.gradeLevel) nextErrors.gradeLevel = "กรุณาเลือกระดับชั้น";
+      if (!form.studyTrack) nextErrors.studyTrack = "กรุณาเลือกสายการเรียน";
+      if (!form.gpax) nextErrors.gpax = "กรุณาเลือก GPAX";
+      if (!form.schoolName.trim()) nextErrors.schoolName = "กรุณากรอกชื่อโรงเรียน";
     }
 
+    if (form.userType === "parent") {
+      if (!form.gradeLevel) nextErrors.gradeLevel = "กรุณาเลือกระดับชั้นของบุตรหลาน";
+      if (!form.schoolName.trim()) nextErrors.schoolName = "กรุณากรอกชื่อโรงเรียนของบุตรหลาน";
+    }
+
+    if (form.userType === "working_college") {
+      if (!form.gradeLevel) nextErrors.gradeLevel = "กรุณาเลือกระดับการศึกษา / สถานะ";
+    }
+
+    if (!form.consentAccepted) nextErrors.consentAccepted = "กรุณายินยอมก่อนดำเนินการต่อ";
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  /** @param {React.FormEvent<HTMLFormElement>} event */
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!validate()) return;
+
     setIsSubmitting(true);
+
+    const payload = {
+      user_type: form.userType,
+      nickname: form.nickname.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim(),
+      line_id: form.lineId.trim() || null,
+      province: form.province.trim() || null,
+      metadata: {
+        grade_level: form.gradeLevel || null,
+        study_track: form.studyTrack || null,
+        gpax: form.gpax || null,
+        school_name: form.schoolName.trim() || null,
+      },
+      consentAccepted: form.consentAccepted,
+    };
+
     try {
-      await onSubmit({
-        nickname: form.nickname.trim(),
-        gradeLevel: form.gradeLevel.trim(),
-        schoolName: form.schoolName.trim(),
-        studyTrack: form.studyTrack.trim(),
-        contact: form.contact.trim(),
-        email: form.email.trim(),
-        schoolProvince: form.schoolProvince.trim(),
-        consentAccepted: form.consentAccepted,
+      if (onSubmit) {
+        await onSubmit(payload);
+      }
+
+      await upsertLeadCapture(profileId, {
+        result: null,
+        nickname: payload.nickname,
+        userType: payload.user_type,
+        gradeAndSchool: payload.metadata.school_name
+          ? `${payload.metadata.grade_level || ""} / ${payload.metadata.school_name || ""}`.trim()
+          : payload.metadata.grade_level || payload.metadata.school_name || "",
+        gradeLevel: payload.metadata.grade_level || "",
+        schoolName: payload.metadata.school_name || "",
+        studyTrack: payload.metadata.study_track || "",
+        gpax: payload.metadata.gpax || "",
+        contact: payload.phone,
+        email: payload.email,
+        lineId: payload.line_id,
+        educationLevel: payload.metadata.grade_level,
+        schoolProvince: payload.province || "",
       });
+
+      onSubmitSuccess?.();
     } catch (error) {
       console.error("Lead capture submit failed:", error);
       setErrors({ form: "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองอีกครั้ง" });
@@ -87,118 +191,185 @@ export default function LeadCaptureForm({
     }
   };
 
+  const gradeLevelOptions = getGradeLevelOptions(form.userType);
+
   return (
-    <form onSubmit={handleSubmit} className={cn("space-y-4", className)}>
+    <form onSubmit={handleSubmit} className={cn("space-y-6", className)}>
       <div>
-        <h2 className="text-lg font-semibold text-foreground">กรอกข้อมูลเพื่อดูรายงานฉบับเต็ม</h2>
-        <p className="text-sm text-muted-foreground mt-1">ระบบจะบันทึกผลการทดสอบของคุณ และอาจนำส่งข้อมูลนี้ให้มหาวิทยาลัยที่คุณสนใจเพื่อติดต่อกลับ</p>
+        <h2 className="text-lg font-semibold text-foreground">ยืนยันข้อมูลเพื่อปลดล็อกผลลัพธ์</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          ใช้ข้อมูลสั้น ๆ เพื่อเชื่อมผลการประเมินกับสิทธิ์โควต้า ทุน และมหาวิทยาลัยที่เหมาะกับคุณ
+        </p>
       </div>
-      <div className={cn("grid gap-4", compact ? "md:grid-cols-1" : "md:grid-cols-2")}>
-        <div className="space-y-2">
-          <Label htmlFor="nickname">ชื่อเล่น <span className="text-destructive">*</span></Label>
-          <Input
-            id="nickname"
-            value={form.nickname}
-            onChange={(e) => updateField("nickname", e.target.value)}
-            placeholder="เช่น ใบเตย"
-            autoComplete="nickname"
-          />
-          {errors.nickname && <p className="text-xs text-destructive">{errors.nickname}</p>}
-        </div>
 
+      <div className="rounded-2xl border border-border/60 bg-card p-4 space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="gradeLevel">ระดับชั้น <span className="text-destructive">*</span></Label>
-          <Input
-            id="gradeLevel"
-            value={form.gradeLevel}
-            onChange={(e) => updateField("gradeLevel", e.target.value)}
-            placeholder="เช่น ม.6 / ปวช.3"
-            autoComplete="organization-title"
-          />
-          {errors.gradeLevel && <p className="text-xs text-destructive">{errors.gradeLevel}</p>}
+          <LabelAny>ข้อมูลที่ยืนยันจากขั้นตอนก่อนหน้า</LabelAny>
+          <div className="grid gap-2 rounded-xl border border-border/60 bg-muted/30 p-3 text-sm text-foreground">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-muted-foreground">ชื่อเล่น</span>
+              <span className="font-medium">{form.nickname || getStoredLeadProfile(profileId)?.nickname || "-"}</span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-muted-foreground">สถานะ</span>
+              <span className="font-medium">
+                {getUserTypeLabel(form.userType || getStoredLeadProfile(profileId)?.userType || "")}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-muted-foreground">รหัสโปรไฟล์</span>
+              <span className="font-mono text-xs">{profileId || "-"}</span>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="schoolName">โรงเรียน <span className="text-destructive">*</span></Label>
-          <Input
-            id="schoolName"
-            value={form.schoolName}
-            onChange={(e) => updateField("schoolName", e.target.value)}
-            placeholder="เช่น โรงเรียนสวนกุหลาบวิทยาลัย"
-            autoComplete="organization"
-            aria-required="true"
-            required
-          />
-          {errors.schoolName && <p className="text-xs text-destructive">{errors.schoolName}</p>}
+      <div className="rounded-2xl border border-border/60 bg-card p-4">
+        <LabelAny className="text-sm font-medium">ข้อมูลติดต่อ</LabelAny>
+        <div className={cn("mt-3 grid gap-4", compact ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2")}>
+          <div className="space-y-2">
+            <LabelAny htmlFor="phone">เบอร์โทรศัพท์มือถือ <span className="text-destructive">*</span></LabelAny>
+            <InputAny
+              id="phone"
+              value={form.phone}
+              onChange={/** @param {React.ChangeEvent<HTMLInputElement>} e */ (e) => updateField("phone", e.target.value)}
+              placeholder="สำหรับรับสิทธิ์โควต้า/ทุน"
+            />
+            {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <LabelAny htmlFor="email">อีเมล <span className="text-destructive">*</span></LabelAny>
+            <InputAny
+              id="email"
+              type="email"
+              value={form.email}
+              onChange={/** @param {React.ChangeEvent<HTMLInputElement>} e */ (e) => updateField("email", e.target.value)}
+              placeholder="name@example.com"
+            />
+            {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <LabelAny htmlFor="lineId">Line ID <span className="text-muted-foreground">(ถ้ามี)</span></LabelAny>
+            <InputAny
+              id="lineId"
+              value={form.lineId}
+              onChange={/** @param {React.ChangeEvent<HTMLInputElement>} e */ (e) => updateField("lineId", e.target.value)}
+              placeholder="เพื่อความรวดเร็วในการติดต่อ"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <LabelAny htmlFor="province">จังหวัด <span className="text-muted-foreground">(ถ้ามี)</span></LabelAny>
+            <InputAny
+              id="province"
+              value={form.province}
+              onChange={/** @param {React.ChangeEvent<HTMLInputElement>} e */ (e) => updateField("province", e.target.value)}
+              placeholder="จังหวัด"
+            />
+          </div>
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="studyTrack">สายการเรียน <span className="text-destructive">*</span></Label>
-          <Input
-            id="studyTrack"
-            value={form.studyTrack}
-            onChange={(e) => updateField("studyTrack", e.target.value)}
-            placeholder="เช่น วิทย์-คณิต / ศิลป์-ภาษา"
-            autoComplete="organization"
-            aria-required="true"
-            required
-          />
-          {errors.studyTrack && <p className="text-xs text-destructive">{errors.studyTrack}</p>}
-        </div>
+      <div className="rounded-2xl border border-border/60 bg-card p-4">
+        <LabelAny className="text-sm font-medium">ข้อมูลการศึกษา</LabelAny>
+        <div className={cn("mt-3 grid gap-4", compact ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2")}>
+          <div className="space-y-2 md:col-span-2">
+            <LabelAny htmlFor="gradeLevel">
+              {form.userType === "parent" ? "ระดับชั้นของบุตรหลาน" : form.userType === "working_college" ? "ระดับการศึกษา / สถานะ" : "ระดับชั้น"}
+              {(form.userType !== "working_college") && <span className="text-destructive"> *</span>}
+            </LabelAny>
+            <select
+              id="gradeLevel"
+              value={form.gradeLevel}
+              onChange={/** @param {React.ChangeEvent<HTMLSelectElement>} e */ (e) => updateField("gradeLevel", e.target.value)}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <option value="">เลือก</option>
+              {gradeLevelOptions.map(/** @param {string} option */ (option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+            {errors.gradeLevel && <p className="text-xs text-destructive">{errors.gradeLevel}</p>}
+          </div>
 
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="contact">เบอร์โทรศัพท์ หรือ Line ID <span className="text-destructive">*</span></Label>
-          <Input
-            id="contact"
-            value={form.contact}
-            onChange={(e) => updateField("contact", e.target.value)}
-            placeholder="เบอร์โทรศัพท์ หรือ LINE ID เช่น 08x-xxx-xxxx / @lineid"
-            autoComplete="tel"
-          />
-          {errors.contact && <p className="text-xs text-destructive">{errors.contact}</p>}
-        </div>
+          {isStudentType(form.userType) && (
+            <>
+              <div className="space-y-2">
+                <LabelAny htmlFor="studyTrack">สายการเรียน <span className="text-destructive">*</span></LabelAny>
+                <select
+                  id="studyTrack"
+                  value={form.studyTrack}
+                  onChange={/** @param {React.ChangeEvent<HTMLSelectElement>} e */ (e) => updateField("studyTrack", e.target.value)}
+                  className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">เลือกสายการเรียน</option>
+                  {STUDY_TRACK_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+                {errors.studyTrack && <p className="text-xs text-destructive">{errors.studyTrack}</p>}
+              </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">อีเมล <span className="text-muted-foreground">(ถ้ามี)</span></Label>
-          <Input
-            id="email"
-            type="email"
-            value={form.email}
-            onChange={(e) => updateField("email", e.target.value)}
-            placeholder="name@example.com"
-            autoComplete="email"
-          />
-        </div>
+              <div className="space-y-2">
+                <LabelAny htmlFor="gpax">GPAX <span className="text-destructive">*</span></LabelAny>
+                <select
+                  id="gpax"
+                  value={form.gpax}
+                  onChange={/** @param {React.ChangeEvent<HTMLSelectElement>} e */ (e) => updateField("gpax", e.target.value)}
+                  className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">เลือก GPAX</option>
+                  {GPAX_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+                {errors.gpax && <p className="text-xs text-destructive">{errors.gpax}</p>}
+              </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="schoolProvince">จังหวัดของโรงเรียน <span className="text-muted-foreground">(ถ้าทราบ)</span></Label>
-          <Input
-            id="schoolProvince"
-            value={form.schoolProvince}
-            onChange={(e) => updateField("schoolProvince", e.target.value)}
-            placeholder="เช่น กรุงเทพมหานคร"
-            autoComplete="address-level1"
-          />
+              <div className="space-y-2 md:col-span-2">
+                <LabelAny htmlFor="schoolName">ชื่อโรงเรียน <span className="text-destructive">*</span></LabelAny>
+                <InputAny
+                  id="schoolName"
+                  value={form.schoolName}
+                  onChange={/** @param {React.ChangeEvent<HTMLInputElement>} e */ (e) => updateField("schoolName", e.target.value)}
+                  placeholder="ชื่อโรงเรียน"
+                />
+                {errors.schoolName && <p className="text-xs text-destructive">{errors.schoolName}</p>}
+              </div>
+            </>
+          )}
+
+          {form.userType === "parent" && (
+            <div className="space-y-2 md:col-span-2">
+              <LabelAny htmlFor="schoolName">ชื่อโรงเรียนของบุตรหลาน <span className="text-destructive">*</span></LabelAny>
+              <InputAny
+                id="schoolName"
+                value={form.schoolName}
+                onChange={/** @param {React.ChangeEvent<HTMLInputElement>} e */ (e) => updateField("schoolName", e.target.value)}
+                placeholder="ชื่อโรงเรียน"
+              />
+              {errors.schoolName && <p className="text-xs text-destructive">{errors.schoolName}</p>}
+            </div>
+          )}
         </div>
       </div>
 
       <div className="rounded-2xl border border-border/60 bg-muted/30 p-4 space-y-3">
         <div className="flex items-start gap-3">
-          <Checkbox
+          <CheckboxAny
             id="consentAccepted"
             checked={form.consentAccepted}
-            onCheckedChange={(checked) => updateField("consentAccepted", Boolean(checked))}
+            onCheckedChange={/** @param {any} checked */ (checked) => updateField("consentAccepted", Boolean(checked))}
             className="mt-1"
           />
           <div className="space-y-1">
-            <Label htmlFor="consentAccepted" className="text-sm leading-6 font-normal cursor-pointer">
+            <LabelAny htmlFor="consentAccepted" className="text-sm leading-6 font-normal cursor-pointer">
               ข้าพเจ้ารับทราบและยินยอมให้แพลตฟอร์มคู่คิด (KooKid) นำข้อมูลผลแบบทดสอบและข้อมูลติดต่อของข้าพเจ้าไปใช้ในการแนะนำโควต้า ทุนการศึกษา หรือส่งต่อข้อมูลให้มหาวิทยาลัยคู่สัญญาที่เกี่ยวข้องกับผลการประเมิน ตามนโยบายความเป็นส่วนตัว
-            </Label>
+            </LabelAny>
             <div className="text-xs text-muted-foreground">
               อ่านรายละเอียดเพิ่มเติมได้ที่ <Link to="/privacy" className="underline underline-offset-4 text-primary">นโยบายความเป็นส่วนตัว / PDPA</Link>
-            </div>
-            <div className="text-xs text-muted-foreground">
-              เราจะไม่ส่งข้อมูลของคุณให้มหาวิทยาลัยแบบสุ่ม ข้อมูลจะถูกใช้กับมหาวิทยาลัยที่เกี่ยวข้องกับผลการประเมินของคุณเท่านั้น
             </div>
           </div>
         </div>
@@ -209,18 +380,51 @@ export default function LeadCaptureForm({
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         {onCancel && (
-          <Button type="button" variant="secondary" onClick={onCancel} className="w-full sm:w-auto rounded-xl shadow-none">
+          <Button type="button" variant="secondary" onClick={() => onCancel()} className="w-full sm:w-auto rounded-xl shadow-none">
             ย้อนกลับ
           </Button>
         )}
-        <Button
-          type="submit"
-          disabled={isSubmitting || !form.consentAccepted}
-          className="w-full sm:w-auto rounded-xl"
-        >
+        <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto rounded-xl">
           {isSubmitting ? "กำลังบันทึก..." : submitLabel}
         </Button>
       </div>
     </form>
   );
+}
+
+/** @param {LeadPrefill | undefined} prefill */
+function buildInitialForm(prefill) {
+  const storedProfile = getStoredLeadProfile(getStoredUserProfileId());
+  return {
+    nickname: prefill?.nickname || storedProfile?.nickname || "",
+    userType: prefill?.userType || storedProfile?.userType || "",
+    phone: prefill?.phone || storedProfile?.contact || "",
+    email: prefill?.email || storedProfile?.email || "",
+    lineId: prefill?.lineId || storedProfile?.lineId || "",
+    province: prefill?.province || storedProfile?.schoolProvince || "",
+    gradeLevel: prefill?.gradeLevel || storedProfile?.gradeLevel || "",
+    studyTrack: prefill?.studyTrack || storedProfile?.studyTrack || "",
+    gpax: prefill?.gpax || storedProfile?.gpax || "",
+    schoolName: prefill?.schoolName || storedProfile?.schoolName || "",
+    consentAccepted: Boolean(prefill?.consentAccepted || storedProfile?.consentAccepted),
+  };
+}
+
+/** @param {string} userType */
+function isStudentType(userType) {
+  return userType === "student_junior" || userType === "student_senior";
+}
+
+/** @param {string} userType */
+function getGradeLevelOptions(userType) {
+  if (userType === "student_junior") return GRADE_LEVEL_OPTIONS.student_junior;
+  if (userType === "student_senior") return GRADE_LEVEL_OPTIONS.student_senior;
+  if (userType === "parent") return GRADE_LEVEL_OPTIONS.parent;
+  if (userType === "working_college") return GRADE_LEVEL_OPTIONS.working_college;
+  return [];
+}
+
+/** @param {string} userType */
+function getUserTypeLabel(userType) {
+  return USER_TYPES.find(option => option.value === userType)?.label || userType || "-";
 }

@@ -1,70 +1,73 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
-const DIMENSION_COLORS = {
-  R: "bg-red-500",
-  I: "bg-blue-500",
-  A: "bg-purple-500",
-  S: "bg-green-500",
-  E: "bg-amber-500",
-  C: "bg-cyan-500",
+const DIMENSION_DETAILS = {
+  R: { label: "R — Realistic (นักปฏิบัติ)", color: "bg-red-500" },
+  I: { label: "I — Investigative (นักวิเคราะห์)", color: "bg-blue-500" },
+  A: { label: "A — Artistic (The Creator/ศิลปิน)", color: "bg-purple-500" },
+  S: { label: "S — Social (นักบริการสังคม)", color: "bg-green-500" },
+  E: { label: "E — Enterprising (นักบริหาร/ผู้นำ)", color: "bg-amber-500" },
+  C: { label: "C — Conventional (นักจัดระบบ)", color: "bg-cyan-500" },
 };
 
-const DIMENSION_LABELS = {
-  R: "R — Realistic",
-  I: "I — Investigative",
-  A: "A — Artistic",
-  S: "S — Social",
-  E: "E — Enterprising",
-  C: "C — Conventional",
-};
+const RIASEC_ORDER = ["R", "I", "A", "S", "E", "C"];
 
-const ARCHETYPE_LABELS = {
-  R: "The Builder",
-  I: "The Thinker",
-  A: "The Creator",
-  S: "The Helper",
-  E: "The Leader",
-  C: "The Organizer",
-};
-
-export default function RIASECChart({ traitScores, hollandCode }) {
-  const riasec = traitScores
-    .filter(ts => ["R", "I", "A", "S", "E", "C"].includes(ts.dimension))
-    .sort((a, b) => {
-      const order = ["R", "I", "A", "S", "E", "C"];
-      return order.indexOf(a.dimension) - order.indexOf(b.dimension);
-    });
+export default function RIASECChart({ traitScores = [], hollandCode = "" }) {
+  // กรองเอาเฉพาะมิติที่เป็น RIASEC หลัก 6 ด้านมาแสดงผล (ไม่เอาตัวแปร Academic)
+  const riasecData = traitScores
+    .filter((item) => RIASEC_ORDER.includes(item.dimension))
+    .sort((a, b) => RIASEC_ORDER.indexOf(a.dimension) - RIASEC_ORDER.indexOf(b.dimension));
 
   return (
-    <div className="space-y-4">
-      {hollandCode && (
-        <Card className="border-primary/20 bg-gradient-to-br from-primary/10 to-background px-4 py-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/70">Archetype</p>
-          <p className="mt-1 text-xl sm:text-2xl font-bold text-foreground">
-            {ARCHETYPE_LABELS[hollandCode[0]] || "The Explorer"}
+    <div className="w-full space-y-4">
+      <div className="space-y-1">
+        <h3 className="text-sm font-semibold text-muted-foreground">
+          คะแนนจำแนกตามมิติบุคลิกภาพ (RIASEC)
+        </h3>
+        {hollandCode && (
+          <p className="text-xs text-muted-foreground">
+            Holland Code: <span className="font-semibold text-foreground">{hollandCode}</span>
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">รหัส Holland Code ของคุณ</p>
-          <p className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-[0.25em] text-primary">{hollandCode}</p>
-        </Card>
-      )}
-      {riasec.map((ts, i) => (
-        <div key={ts.dimension} className="flex items-center gap-3">
-          <span className="text-xs font-semibold w-28 sm:w-36 text-right text-muted-foreground shrink-0">
-            {DIMENSION_LABELS[ts.dimension]}
-          </span>
-          <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden relative">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${ts.normalizedScore}%` }}
-              transition={{ delay: i * 0.1, duration: 0.6, ease: "easeOut" }}
-              className={cn("h-full rounded-full", DIMENSION_COLORS[ts.dimension])}
-            />
-          </div>
-        </div>
-      ))}
+        )}
+      </div>
+
+      <div className="space-y-3.5">
+        {riasecData.map((item) => {
+          const detail = DIMENSION_DETAILS[item.dimension] || {
+            label: item.dimension,
+            color: "bg-primary",
+          };
+          const score = Number(item.normalizedScore ?? 0);
+          const safeScore = Number.isFinite(score) ? Math.max(0, Math.min(100, score)) : 0;
+          const isTopTrait = hollandCode.includes(item.dimension);
+
+          return (
+            <div key={item.dimension} className="space-y-1">
+              <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
+                <span
+                  className={[
+                    "min-w-0 truncate font-medium",
+                    isTopTrait ? "text-foreground font-bold" : "text-muted-foreground",
+                  ].join(" ")}
+                >
+                  {detail.label}
+                </span>
+                <span className="shrink-0 font-bold text-slate-700">{safeScore}%</span>
+              </div>
+
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${detail.color}`}
+                  style={{ width: `${safeScore}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+
+        {riasecData.length === 0 && (
+          <p className="text-sm text-muted-foreground">ยังไม่มีข้อมูลคะแนน RIASEC สำหรับแสดงผล</p>
+        )}
+      </div>
     </div>
   );
 }

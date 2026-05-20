@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, RotateCcw, Sparkles, BarChart3, Briefcase, GraduationCap, Download, ListChecks } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ArrowLeft, RotateCcw, Sparkles, BarChart3, Briefcase, GraduationCap, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/analyticsApi";
@@ -19,7 +18,6 @@ import { buildHollandCode } from "@/lib/scoringEngine";
 import {
   getStoredUserProfileId,
   hasLeadCapture,
-  upsertLeadCapture,
   upsertQuizResult,
   recordProgramInterest,
   getStoredLeadProfile,
@@ -28,7 +26,7 @@ import {
 const DialogContentAny = /** @type {any} */ (DialogContent);
 const DialogHeaderAny = /** @type {any} */ (DialogHeader);
 const DialogTitleAny = /** @type {any} */ (DialogTitle);
-const LeadCaptureFormAny = /** @type {any} */ (LeadCaptureForm);
+const DialogDescriptionAny = /** @type {any} */ (DialogDescription);
 
 function getOrCreateSessionProfileId() {
   const key = "tcas_profile_id";
@@ -46,15 +44,14 @@ function getOrCreateSessionProfileId() {
 /** @typedef {{ careerId: string, clusterId: string, nameTh: string, descriptionTh?: string, whyMatch?: string }} TopCareer */
 /** @typedef {{ id: string, nameTh: string, facultyNameTh?: string, clusterId: string, universityId?: string, universityNameTh?: string, universityShortName?: string }} MajorItem */
 /** @typedef {{ profile: QuizProfile, clusters: Array<TopCareer>, majors: Array<MajorItem>, summary: SummaryData, hollandCode?: string }} QuizResultData */
-/** @typedef {{ type: "report" } | { type: "program_interest", majorId: string, universityId: string }} PendingAction */
 
 export default function Results() {
   const navigate = useNavigate();
   const [result, setResult] = useState(/** @type {QuizResultData | null} */ (null));
   const [leadProfileId, setLeadProfileId] = useState(() => getStoredUserProfileId());
   const [sessionProfileId] = useState(() => getOrCreateSessionProfileId());
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState(/** @type {PendingAction | null} */ (null));
   const [requestedMajorIds, setRequestedMajorIds] = useState(/** @type {Record<string, boolean>} */ (readRequestedMajors()));
 
   // Feedback state — keyed by careerId → interestLevel
@@ -76,6 +73,12 @@ export default function Results() {
   }, [result, leadProfileId]);
 
   useEffect(() => {
+    if (leadProfileId && hasLeadCapture(leadProfileId)) {
+      setIsUnlocked(true);
+    }
+  }, [leadProfileId]);
+
+  useEffect(() => {
     trackEvent("results_viewed", {
       page: "results",
       hasLead: Boolean(leadProfileId && hasLeadCapture(leadProfileId)),
@@ -89,7 +92,7 @@ export default function Results() {
   // Use clusters directly from computeMatches
   const topClusters = clusters ?? [];
   const userProfileId = leadProfileId;
-  const hasCapturedLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
+  const hasCapturedLead = isUnlocked || Boolean(userProfileId && hasLeadCapture(userProfileId));
   const leadProfile = userProfileId ? getStoredLeadProfile(userProfileId) : null;
   const hollandCode = typedResult.hollandCode || profile.hollandCode || buildHollandCode(profile.traitScores || []);
 
@@ -101,7 +104,6 @@ export default function Results() {
     });
 
     if (!userProfileId || !hasCapturedLead) {
-      setPendingAction({ type: "report" });
       setLeadDialogOpen(true);
       return;
     }
@@ -119,7 +121,6 @@ export default function Results() {
     if (requestedMajorIds?.[major.id]) return;
 
     if (!userProfileId || !hasCapturedLead) {
-      setPendingAction({ type: "program_interest", majorId: major.id, universityId: major.universityId || "" });
       setLeadDialogOpen(true);
       return;
     }
@@ -155,53 +156,14 @@ export default function Results() {
       source: "major_teaser",
       userProfileId: userProfileId || null,
     });
-    setPendingAction(null);
     setLeadDialogOpen(true);
   };
 
-  /** @param {{ nickname: string, gradeLevel: string, schoolName: string, studyTrack: string, contact: string, email: string, schoolProvince: string, consentAccepted: boolean }} leadData */
-  const handleLeadSubmit = async (leadData) => {
-    const nextProfileId = await upsertLeadCapture({
-      userProfileId,
-      result,
-      gradeAndSchool: `${leadData.gradeLevel} / ${leadData.schoolName}`,
-      ...leadData,
-    });
-
-    trackEvent("lead_submitted", {
-      page: "results",
-      userProfileId: nextProfileId,
-    });
-
-    setLeadProfileId(nextProfileId);
-    sessionStorage.setItem("tcas_quiz_result", JSON.stringify({ ...result, userProfileId: nextProfileId }));
-
-    if (pendingAction?.type === "program_interest") {
-      await recordProgramInterest({
-        userProfileId: nextProfileId,
-        majorId: pendingAction.majorId,
-        universityId: pendingAction.universityId,
-        interestLevel: "request_info",
-      });
-      setRequestedMajorIds(prev => {
-        const next = { ...prev, [pendingAction.majorId]: true };
-        sessionStorage.setItem("kookid_requested_majors", JSON.stringify(next));
-        return next;
-      });
-      trackEvent("program_interest_submitted", {
-        page: "results",
-        userProfileId: nextProfileId,
-        majorId: pendingAction.majorId,
-      });
-      toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
-    } else if (pendingAction?.type === "report") {
-      window.open(`/report/${nextProfileId}`, "_blank");
-      toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
-    } else {
-      toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
-    }
-    setPendingAction(null);
+  const handleLeadSubmitSuccess = () => {
+    setIsUnlocked(true);
     setLeadDialogOpen(false);
+    setLeadProfileId(getStoredUserProfileId());
+    toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
   };
 
   /** @param {string} careerId @param {number} level */
@@ -252,12 +214,16 @@ export default function Results() {
     }
   };
 
+  const topMatch = topClusters[0];
+  const remainingCareers = topClusters.slice(1, 5);
+  const hasStoredLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
+  const unlocked = isUnlocked || hasStoredLead;
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto px-4 py-6 sm:py-10">
-        {/* Header */}
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="max-w-5xl mx-auto px-4 py-6 sm:py-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
@@ -279,121 +245,163 @@ export default function Results() {
             <Download className="w-3.5 h-3.5" />
             ดาวน์โหลดผลเป็น PDF
           </button>
-          {!hasCapturedLead && (
+          {!hasStoredLead && (
             <p className="mt-2 text-xs text-muted-foreground">
               กรุณายืนยันข้อมูลติดต่อก่อนเพื่อปลดล็อกรายงานฉบับเต็ม
             </p>
           )}
         </motion.div>
 
-        {/* Personality Summary */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="p-5 sm:p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-card mb-8">
-            <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              บุคลิกภาพของคุณ
-            </h2>
-            <div className="mb-4 rounded-2xl border border-primary/20 bg-background/80 px-4 py-3">
-              <p className="text-sm text-muted-foreground">รหัสบุคลิกภาพ Holland Code ของคุณคือ</p>
-              <p className="mt-1 text-2xl sm:text-3xl font-bold tracking-[0.2em] text-primary">{hollandCode}</p>
-            </div>
-            <div className="mb-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-widest text-primary/70">Archetype</p>
-              <p className="mt-1 text-lg sm:text-xl font-bold text-foreground">
-                {getArchetypeLabel(hollandCode)}
-              </p>
-            </div>
-            <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">{summary.summaryText}</p>
-            {/* Bullet points from rule-based personality analysis */}
-            {summary.bulletPoints?.length > 0 && (
-              <ul className="mt-3 space-y-1.5">
-                {summary.bulletPoints.map((bp, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-foreground/75">
-                    <span className="mt-0.5 text-primary">•</span>
-                    {bp}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {summary.topTraits.map(t => (
-                <span key={t.dimension} className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                  {t.label}
-                </span>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* RIASEC Chart */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+        {/* Section 1: Identity */}
+        <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
+          <div className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary" />
-            คะแนน RIASEC ของคุณ
-          </h2>
-          <Card className="p-5 sm:p-6 border border-border/50">
-            <RIASECChart traitScores={profile.traitScores} hollandCode={hollandCode} />
-          </Card>
-        </motion.div>
+            <h2 className="text-2xl font-bold text-foreground">บุคลิกภาพของคุณ</h2>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr] items-start">
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-primary/70 font-semibold">Holland Code</p>
+                <p className="mt-1 text-4xl font-bold tracking-[0.2em] text-primary">{hollandCode}</p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-widest text-primary/70 font-semibold">Archetype</p>
+                <p className="mt-1 text-xl font-bold text-foreground">{getArchetypeLabel(hollandCode)}</p>
+              </div>
+              <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">{summary.summaryText}</p>
+              {summary.bulletPoints?.length > 0 && (
+                <ul className="space-y-1.5">
+                  {summary.bulletPoints.map((bp, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-foreground/75">
+                      <span className="mt-0.5 text-primary">•</span>
+                      {bp}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {summary.topTraits.map((t) => (
+                  <span key={t.dimension} className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                    {t.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4">
+              <RIASECChart traitScores={profile.traitScores} hollandCode={hollandCode} />
+            </div>
+          </div>
+        </section>
 
-        {/* Academic Scores */}
-        {/* Top Career Clusters — with per-career feedback */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+        {/* Section 2: Top Match Hook */}
+        <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
+          <div className="flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-primary" />
-            กลุ่มอาชีพที่เหมาะกับคุณ (Top 5)
-          </h2>
-          <div className="space-y-3">
-            {topClusters.map((c, i) => (
+            <h2 className="text-2xl font-bold">🌟 อันดับ 1: {topMatch?.nameTh || "-"}</h2>
+          </div>
+
+          {topMatch && (
+            <div className="flex flex-col gap-3">
               <CareerCard
-                key={c.careerId || `${c.clusterId}-${i}`}
-                career={c}
-                rank={i}
-                feedbackValue={careerFeedback[c.careerId]}
+                career={topMatch}
+                rank={0}
+                feedbackValue={careerFeedback[topMatch.careerId]}
                 onFeedback={handleCareerFeedback}
                 onCareerViewed={handleCareerViewed}
+                showMatchScore={false}
+                showFeedback={false}
               />
-            ))}
-          </div>
-        </motion.div>
 
-        {/* Suggested Majors — with per-major feedback */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-foreground">สาขาวิชา/มหาวิทยาลัยที่เกี่ยวข้องกับอันดับ 1</h3>
+                <MajorList
+                  majors={majors}
+                  topCareers={[topMatch]}
+                  onProgramInterest={handleProgramInterest}
+                  requestedMajorIds={requestedMajorIds}
+                  hasCapturedLead={true}
+                  hideFeedback={true}
+                />
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Section 3: Paywall & Remaining Careers */}
+        <section className="flex flex-col gap-8 mb-12">
+          <div className="flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-primary" />
-            สาขาวิชาที่แนะนำ
-          </h2>
-          <p className="text-xs text-muted-foreground mb-3">
-            เราจะไม่ส่งข้อมูลของคุณให้มหาวิทยาลัยแบบสุ่ม ข้อมูลจะถูกใช้กับมหาวิทยาลัยที่เกี่ยวข้องกับผลการประเมินของคุณเท่านั้น
-          </p>
-          <Card className="p-5 sm:p-6 border border-border/50">
-            <MajorList
-              majors={majors}
-              topCareers={topClusters}
-              onProgramInterest={handleProgramInterest}
-              requestedMajorIds={requestedMajorIds}
-                hasCapturedLead={hasCapturedLead}
-                onUnlockLead={handleUnlockMajors}
-            />
-          </Card>
-        </motion.div>
+            <h2 className="text-2xl font-bold text-foreground">อาชีพและโอกาสที่เหลือ</h2>
+          </div>
 
-        {/* Action Plan — below majors, above feedback */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            <ListChecks className="w-5 h-5 text-primary" />
-            แผนการต่อไปของคุณ
-          </h2>
+          {!unlocked ? (
+            <div className="relative mt-8 rounded-2xl border border-slate-200 bg-slate-50/50 p-12 text-center flex flex-col items-center justify-center gap-6 overflow-hidden">
+              <div className="absolute inset-0 backdrop-blur-md bg-white/30" aria-hidden="true" />
+              <div className="relative z-10 max-w-2xl space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50 select-none pointer-events-none">
+                  {remainingCareers.map((career, index) => (
+                    <div key={career.careerId || `${career.clusterId}-${index}`} className="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm">
+                      <p className="text-sm font-semibold text-slate-700">อันดับ {index + 2}: {career.nameTh}</p>
+                      <p className="mt-2 text-sm text-slate-500">{career.descriptionTh}</p>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  size="lg"
+                  onClick={handleUnlockMajors}
+                  className="rounded-full px-8 py-6 text-base sm:text-lg font-bold text-white bg-gradient-to-r from-primary to-indigo-500 shadow-[0_18px_50px_rgba(79,70,229,0.35)]"
+                >
+                  🔒 ยืนยันข้อมูลเพื่อปลดล็อกอีก 4 อาชีพ และโควต้ามหาวิทยาลัยทั้งหมด ฟรี!
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="flex flex-col gap-8"
+            >
+              {remainingCareers.map((career, index) => (
+                <div key={career.careerId || `${career.clusterId}-${index}`} className="flex flex-col gap-6 pb-8 border-b border-slate-200 last:border-b-0 last:pb-0">
+                  <h3 className="text-xl font-bold text-slate-800 mt-8">อันดับ {index + 2}: {career.nameTh}</h3>
+                  <CareerCard
+                    career={career}
+                    rank={index + 1}
+                    feedbackValue={careerFeedback[career.careerId]}
+                    onFeedback={handleCareerFeedback}
+                    onCareerViewed={handleCareerViewed}
+                    showMatchScore={false}
+                    showFeedback={false}
+                  />
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-semibold text-foreground">สาขาวิชา/มหาวิทยาลัยที่เกี่ยวข้อง</h4>
+                    <MajorList
+                      majors={majors}
+                      topCareers={[career]}
+                      onProgramInterest={handleProgramInterest}
+                      requestedMajorIds={requestedMajorIds}
+                      hasCapturedLead={true}
+                      hideFeedback={true}
+                    />
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </section>
+
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-10">
           <ActionPlan
             topClusters={topClusters.slice(0, 3)}
             acadMathScore={summary.acadMathScore ?? 0}
             acadSciScore={summary.acadSciScore ?? 0}
-            topDims={summary.topTraits?.map(t => t.dimension) ?? []}
+            topDims={summary.topTraits?.map((t) => t.dimension) ?? []}
           />
         </motion.div>
 
-        {/* Overall Feedback Panel */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="mb-10">
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }} className="mb-10">
           <OverallFeedbackPanel
             onSubmit={handleFeedbackSubmit}
             isSubmitting={isSubmitting}
@@ -401,31 +409,6 @@ export default function Results() {
           />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="mb-10">
-          <Card className="p-5 sm:p-6 border border-border/50">
-            <h3 className="text-base font-semibold text-foreground mb-3">คำถามที่พบบ่อย</h3>
-            <div className="space-y-3 text-sm">
-              <div>
-                <p className="font-medium text-foreground">ข้อมูลของฉันถูกใช้ทำอะไร?</p>
-                <p className="text-muted-foreground mt-1">ใช้เพื่อแนะนำโควต้า ทุนการศึกษา และข้อมูลที่สอดคล้องกับผลการประเมินของคุณเท่านั้น</p>
-              </div>
-              <div>
-                <p className="font-medium text-foreground">ต้องเสียเงินไหม?</p>
-                <p className="text-muted-foreground mt-1">ไม่มีค่าใช้จ่าย คุณสามารถขอข้อมูลโควต้า/ทุนได้ฟรี</p>
-              </div>
-              <div>
-                <p className="font-medium text-foreground">มหาวิทยาลัยจะติดต่อมาเมื่อไหร่?</p>
-                <p className="text-muted-foreground mt-1">โดยทั่วไปจะมีการติดต่อเมื่อมีโควต้าหรือทุนที่ตรงกับผลของคุณผ่านช่องทางที่คุณให้ไว้</p>
-              </div>
-              <div>
-                <p className="font-medium text-foreground">ต้องกรอกข้อมูลซ้ำทุกครั้งไหม?</p>
-                <p className="text-muted-foreground mt-1">หากใช้อุปกรณ์เดิม ระบบจะจำข้อมูลที่ยืนยันแล้วและไม่ต้องกรอกใหม่บ่อยครั้ง</p>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Navigation Actions */}
         <div className="flex flex-wrap items-center justify-center gap-3 pb-10">
           <Link to="/">
             <Button variant="outline" className="rounded-xl">
@@ -446,16 +429,16 @@ export default function Results() {
         <DialogContentAny className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeaderAny>
             <DialogTitleAny className="text-xl">ยืนยันข้อมูลเพื่อปลดล็อกรายงานและโควต้ามหาวิทยาลัย</DialogTitleAny>
+            <DialogDescriptionAny>
+              กรอกข้อมูลสั้น ๆ เพื่อปลดล็อกรายการคณะทั้งหมด รับข้อมูลโควต้า ทุนการศึกษา และรายงานที่เหมาะกับคุณได้ครบถ้วน
+            </DialogDescriptionAny>
           </DialogHeaderAny>
-          <p className="text-sm text-muted-foreground">
-            กรอกข้อมูลสั้น ๆ เพื่อปลดล็อกรายการคณะทั้งหมด รับข้อมูลโควต้า ทุนการศึกษา และรายงานที่เหมาะกับคุณได้ครบถ้วน
-          </p>
           <p className="text-xs text-muted-foreground">
             เราจะไม่ส่งข้อมูลของคุณให้มหาวิทยาลัยแบบสุ่ม ข้อมูลจะถูกใช้กับมหาวิทยาลัยที่เกี่ยวข้องกับผลการประเมินของคุณเท่านั้น
           </p>
-          <LeadCaptureFormAny
-            onSubmit={handleLeadSubmit}
-            onCancel={undefined}
+          <LeadCaptureForm
+            onSubmitSuccess={handleLeadSubmitSuccess}
+            onCancel={() => setLeadDialogOpen(false)}
             submitLabel="ยืนยัน"
             prefill={leadProfile || undefined}
             className="space-y-4"

@@ -10,18 +10,23 @@ const LIKERT_OPTIONS = [
   { value: 5, label: "ชอบมาก", emoji: "🤩" },
 ];
 
+/** @typedef {{ id: string, text: string }} LikertQuestionData */
+/** @typedef {{ value: number, label: string, emoji: string }} LikertOption */
+
 /**
  * LikertQuestion: A 5-point Likert scale component with radio-style layout.
  * 
  * @param {Object} props
- * @param {Object} props.question - Question object with id and text
- * @param {number} props.value - Currently selected value (1-5) or undefined
+ * @param {LikertQuestionData} props.question - Question object with id and text
+ * @param {number | undefined} props.value - Currently selected value (1-5) or undefined
  * @param {Function} props.onChange - Callback: (questionId, value)
  * @param {number} props.index - Question number for display
  * @param {Function} [props.onAnswered] - Optional callback fired only on first selection: (questionId, value)
  */
 export default function LikertQuestion({ question, value, onChange, index, onAnswered }) {
-  const handleAnswer = useCallback((opt) => {
+  const handleAnswer = useCallback(
+    /** @param {LikertOption} opt */
+    (opt) => {
     const isFirstSelection = value === undefined || value === null;
     
     // Always call onChange to update the answer
@@ -31,7 +36,9 @@ export default function LikertQuestion({ question, value, onChange, index, onAns
     if (isFirstSelection && onAnswered) {
       onAnswered(question.id, opt.value);
     }
-  }, [value, question.id, onChange, onAnswered]);
+    },
+    [value, question.id, onChange, onAnswered]
+  );
 
   return (
     <motion.div
