@@ -22,6 +22,17 @@ async function postToServer(path, body) {
 
 const EVENT_STORAGE_KEY = "kookid_event_logs";
 const SESSION_KEY = "kookid_session_id";
+const EVENT_DEDUPE_WINDOW_MS = 1500;
+const PROFILE_SYNC_MIN_INTERVAL_MS = 30000;
+
+/** @type {Map<string, number>} */
+const recentEventMap = new Map();
+/** @type {Map<string, number>} */
+const profileSyncMap = new Map();
+
+function getEventDedupeKey(eventName, page, userProfileId) {
+  return `${eventName}|${page}|${userProfileId || "anon"}`;
+}
 
 function getSessionId() {
   if (typeof window === "undefined") return "server";
@@ -52,17 +63,30 @@ export function getLocalEvents() {
 }
 
 export async function trackEvent(eventName, payload = {}) {
-  const now = new Date().toISOString();
+  const nowDate = new Date();
+  const now = nowDate.toISOString();
+  const nowMs = nowDate.getTime();
   const page = payload.page || (typeof window !== "undefined" ? window.location.pathname : "unknown");
   const sessionId = getSessionId();
   const userProfileId = payload.userProfileId || null;
 
+  // Prevent burst duplicates from rapid re-renders or repeated transitions.
+  const dedupeKey = getEventDedupeKey(eventName, page, userProfileId);
+  const lastEventAt = recentEventMap.get(dedupeKey) || 0;
+  if (nowMs - lastEventAt < EVENT_DEDUPE_WINDOW_MS) {
+    return;
+  }
+  recentEventMap.set(dedupeKey, nowMs);
+
   if (userProfileId) {
-    // Fire-and-forget profile sync to avoid blocking UI renders or analytics calls.
-    // Errors are logged but won't reject the main flow.
-    ensureRemoteLeadProfile(userProfileId).catch((error) => {
-      console.warn("trackEvent profile sync skipped:", error);
-    });
+    // Keep profile sync, but throttle it to avoid posting profile data for every single event.
+    const lastProfileSyncAt = profileSyncMap.get(userProfileId) || 0;
+    if (nowMs - lastProfileSyncAt >= PROFILE_SYNC_MIN_INTERVAL_MS) {
+      profileSyncMap.set(userProfileId, nowMs);
+      ensureRemoteLeadProfile(userProfileId).catch((error) => {
+        console.warn("trackEvent profile sync skipped:", error);
+      });
+    }
   }
 
   const localRecord = {

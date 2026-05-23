@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -63,6 +63,7 @@ export default function Results() {
   const [careerFeedback, setCareerFeedback] = useState(/** @type {Record<string, number>} */ ({}));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const hasTrackedResultsViewRef = useRef(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("tcas_quiz_result");
@@ -84,10 +85,12 @@ export default function Results() {
   }, [leadProfileId]);
 
   useEffect(() => {
+    if (hasTrackedResultsViewRef.current) return;
     trackEvent("results_viewed", {
       page: "results",
       hasLead: Boolean(leadProfileId && hasLeadCapture(leadProfileId)),
     });
+    hasTrackedResultsViewRef.current = true;
   }, [leadProfileId]);
 
   if (!result) return null;
