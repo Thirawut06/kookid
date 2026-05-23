@@ -3,9 +3,12 @@ create extension if not exists pgcrypto;
 create table if not exists public.user_profiles (
   id text primary key,
   nickname text not null,
-  grade_and_school text not null,
-  contact text not null,
+  user_type text,
+  grade_and_school text,
+  contact text,
   email text,
+  line_id text,
+  education_level text,
   school_province text,
   consent_accepted boolean not null default true,
   consent_at timestamptz not null default now(),
@@ -54,16 +57,28 @@ alter table public.user_profiles enable row level security;
 alter table public.quiz_results enable row level security;
 alter table public.program_interests enable row level security;
 
+alter table public.user_profiles
+  add column if not exists user_type text;
+
+alter table public.user_profiles
+  add column if not exists line_id text;
+
+alter table public.user_profiles
+  add column if not exists education_level text;
+
+alter table public.user_profiles
+  alter column grade_and_school drop not null;
+
+alter table public.user_profiles
+  alter column contact drop not null;
+
 do $$
 begin
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'user_profiles' and policyname = 'public read user_profiles'
   ) then
-    create policy "public read user_profiles"
-      on public.user_profiles
-      for select
-      using (true);
+    drop policy "public read user_profiles" on public.user_profiles;
   end if;
 
   if not exists (
@@ -87,14 +102,11 @@ begin
       with check (true);
   end if;
 
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'quiz_results' and policyname = 'public read quiz_results'
   ) then
-    create policy "public read quiz_results"
-      on public.quiz_results
-      for select
-      using (true);
+    drop policy "public read quiz_results" on public.quiz_results;
   end if;
 
   if not exists (
@@ -107,14 +119,11 @@ begin
       with check (true);
   end if;
 
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'program_interests' and policyname = 'public read program_interests'
   ) then
-    create policy "public read program_interests"
-      on public.program_interests
-      for select
-      using (true);
+    drop policy "public read program_interests" on public.program_interests;
   end if;
 
   if not exists (
@@ -171,14 +180,11 @@ create index if not exists idx_event_logs_user_profile_id on public.event_logs(u
 
 do $$
 begin
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'event_logs' and policyname = 'public read event_logs'
   ) then
-    create policy "public read event_logs"
-      on public.event_logs
-      for select
-      using (true);
+    drop policy "public read event_logs" on public.event_logs;
   end if;
 
   if not exists (

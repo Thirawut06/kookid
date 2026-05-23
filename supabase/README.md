@@ -20,6 +20,6 @@ supabase db query supabase/schema.sql
 ```
 
 Notes:
-- `schema.sql` enables minimal RLS policies granting public insert/select for MVP; review before production.
+- `schema.sql` keeps the public write flow needed by the app, but removes public read policies for sensitive tables in production-oriented setups.
 - The `pgcrypto` extension is required for `gen_random_uuid()`.
 - If you already have data, avoid using any "reset database" or destructive migration wizard; run the SQL as a normal query instead.
