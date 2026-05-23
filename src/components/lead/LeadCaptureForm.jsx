@@ -197,9 +197,9 @@ export default function LeadCaptureForm({
   return (
     <form onSubmit={handleSubmit} className={cn("space-y-6", className)}>
       <div>
-        <h2 className="text-lg font-semibold text-foreground">ยืนยันข้อมูลเพื่อปลดล็อกผลลัพธ์</h2>
+        <h2 className="text-lg font-semibold text-foreground">ตรวจสอบข้อมูลและกรอกข้อมูลติดต่อ</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          ใช้ข้อมูลสั้น ๆ เพื่อเชื่อมผลการประเมินกับสิทธิ์โควต้า ทุน และมหาวิทยาลัยที่เหมาะกับคุณ
+          ข้อมูลส่วนนี้จะใช้เชื่อมผลประเมินกับรายงาน โควต้า และทุนที่เหมาะกับคุณ
         </p>
       </div>
 

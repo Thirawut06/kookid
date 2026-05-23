@@ -507,13 +507,13 @@ export default function Results() {
       <Dialog open={leadDialogOpen} onOpenChange={setLeadDialogOpen}>
         <DialogContentAny className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeaderAny>
-            <DialogTitleAny className="text-xl">ยืนยันข้อมูลเพื่อปลดล็อกรายงานและโควต้ามหาวิทยาลัย</DialogTitleAny>
+            <DialogTitleAny className="text-xl">ยืนยันข้อมูลติดต่อเพื่อปลดล็อกรายงานและโควต้า</DialogTitleAny>
             <DialogDescriptionAny>
-              กรอกข้อมูลสั้น ๆ เพื่อปลดล็อกรายการคณะทั้งหมด รับข้อมูลโควต้า ทุนการศึกษา และรายงานที่เหมาะกับคุณได้ครบถ้วน
+              กรอกข้อมูลเพียงไม่กี่ช่องเพื่อรับรายงานฉบับเต็ม พร้อมรายการคณะ โควต้า และทุนที่สอดคล้องกับผลประเมินของคุณ
             </DialogDescriptionAny>
           </DialogHeaderAny>
           <p className="text-xs text-muted-foreground">
-            เราจะไม่ส่งข้อมูลของคุณให้มหาวิทยาลัยแบบสุ่ม ข้อมูลจะถูกใช้กับมหาวิทยาลัยที่เกี่ยวข้องกับผลการประเมินของคุณเท่านั้น
+            เราใช้ข้อมูลเฉพาะเพื่อแนะนำสิทธิ์ที่เกี่ยวข้องกับผลประเมินของคุณเท่านั้น และไม่ส่งแบบสุ่ม
           </p>
           <LeadCaptureForm
             onSubmitSuccess={handleLeadSubmitSuccess}
