@@ -38,18 +38,12 @@ Add these environment variables in Vercel Project Settings:
 - `ADMIN_JWT_SECRET`
 - `VITE_ENABLE_ADMIN=true`
 
-If you want the fast stop-gap browser prompt before the admin page loads, also add:
+If you want a stop-gap protection for the admin route, you have two options:
 
-- `ADMIN_BASIC_AUTH_USER`
-- `ADMIN_BASIC_AUTH_PASSWORD`
+- Host-level (recommended for quick staging): use your hosting provider's password protection or Basic Auth feature (e.g., Vercel Password Protection / password-protected deployments) and set `ADMIN_BASIC_AUTH_USER` / `ADMIN_BASIC_AUTH_PASSWORD` there.
+- App-level (already implemented): we protect sensitive data via `/api/admin/login` and `/api/admin/data` which require `ADMIN_PASSWORD` and a server-issued token. This is active by default and does not rely on any middleware.
 
 Then redeploy.
-
-With the middleware in place, these routes are protected by Basic Auth:
-
-- `/admin`
-- `/api/admin/login`
-- `/api/admin/data`
 
 ## 4) Verify the admin flow
 
