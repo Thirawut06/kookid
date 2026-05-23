@@ -217,10 +217,6 @@ export default function LeadCaptureForm({
                 {getUserTypeLabel(form.userType || getStoredLeadProfile(profileId)?.userType || "")}
               </span>
             </div>
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-muted-foreground">รหัสโปรไฟล์</span>
-              <span className="font-mono text-xs">{profileId || "-"}</span>
-            </div>
           </div>
         </div>
       </div>
