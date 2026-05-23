@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/analyticsApi";
 
-import RIASECChart from "@/components/results/RIASECChart";
+import RIASECChart from "../components/results/RIASECChart.jsx";
 import CareerCard from "@/components/results/CareerCard";
 import MajorList from "../components/results/MajorList.jsx";
 import OverallFeedbackPanel from "@/components/feedback/OverallFeedbackPanel";
@@ -40,7 +40,8 @@ function getOrCreateSessionProfileId() {
 
 /** @typedef {{ dimension: string, label?: string, description?: string, score?: number }} TopTrait */
 /** @typedef {{ summaryText: string, bulletPoints: string[], topTraits: TopTrait[], acadMathScore?: number, acadSciScore?: number }} SummaryData */
-/** @typedef {{ traitScores: Array<{ dimension: string, normalizedScore: number, rawScore?: number }>, hollandCode?: string }} QuizProfile */
+/** @typedef {'R' | 'I' | 'A' | 'S' | 'E' | 'C'} RiasecDimension */
+/** @typedef {{ traitScores: Array<{ dimension: RiasecDimension, normalizedScore: number, rawScore?: number }>, hollandCode?: string }} QuizProfile */
 /** @typedef {{ careerId: string, clusterId: string, nameTh: string, descriptionTh?: string, whyMatch?: string }} TopCareer */
 /** @typedef {{ id: string, nameTh: string, facultyNameTh?: string, clusterId: string, universityId?: string, universityNameTh?: string, universityShortName?: string }} MajorItem */
 /** @typedef {{ profile: QuizProfile, clusters: Array<TopCareer>, majors: Array<MajorItem>, summary: SummaryData, hollandCode?: string }} QuizResultData */
@@ -53,6 +54,7 @@ export default function Results() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
   const [requestedMajorIds, setRequestedMajorIds] = useState(/** @type {Record<string, boolean>} */ (readRequestedMajors()));
+  const [expandedCareerMajors, setExpandedCareerMajors] = useState(/** @type {Record<string, boolean>} */ ({}));
 
   // Feedback state — keyed by careerId → interestLevel
   const [careerFeedback, setCareerFeedback] = useState(/** @type {Record<string, number>} */ ({}));
@@ -219,6 +221,14 @@ export default function Results() {
   const hasStoredLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
   const unlocked = isUnlocked || hasStoredLead;
 
+  /** @param {string} careerId */
+  const toggleCareerMajors = (careerId) => {
+    setExpandedCareerMajors((prev) => ({
+      ...prev,
+      [careerId]: !prev[careerId],
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="max-w-5xl mx-auto px-4 py-6 sm:py-10">
@@ -335,14 +345,28 @@ export default function Results() {
           </div>
 
           {!unlocked ? (
-            <div className="relative mt-8 rounded-2xl border border-slate-200 bg-slate-50/50 p-12 text-center flex flex-col items-center justify-center gap-6 overflow-hidden">
-              <div className="absolute inset-0 backdrop-blur-md bg-white/30" aria-hidden="true" />
-              <div className="relative z-10 max-w-2xl space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50 select-none pointer-events-none">
+            <div className="relative mt-8 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-6 overflow-hidden">
+              <div
+                className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55),rgba(248,250,252,0.88)_58%,rgba(248,250,252,0.98))]"
+                aria-hidden="true"
+              />
+              <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/85 to-transparent" aria-hidden="true" />
+              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-50 to-transparent" aria-hidden="true" />
+              <div className="relative z-10 w-full max-w-3xl space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 select-none pointer-events-none">
                   {remainingCareers.map((career, index) => (
-                    <div key={career.careerId || `${career.clusterId}-${index}`} className="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm">
-                      <p className="text-sm font-semibold text-slate-700">อันดับ {index + 2}: {career.nameTh}</p>
-                      <p className="mt-2 text-sm text-slate-500">{career.descriptionTh}</p>
+                    <div
+                      key={career.careerId || `${career.clusterId}-${index}`}
+                      className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-4 text-left shadow-sm"
+                    >
+                      <div className="space-y-2 blur-[2px] opacity-55">
+                        <p className="text-sm font-semibold text-slate-700">อันดับ {index + 2}: {career.nameTh}</p>
+                        <p className="text-sm text-slate-500">{career.descriptionTh}</p>
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white via-white/95 to-transparent" aria-hidden="true" />
+                      <div className="absolute inset-x-3 bottom-3 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500 shadow-sm">
+                        Preview
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -363,31 +387,53 @@ export default function Results() {
               transition={{ duration: 0.25 }}
               className="flex flex-col gap-8"
             >
-              {remainingCareers.map((career, index) => (
-                <div key={career.careerId || `${career.clusterId}-${index}`} className="flex flex-col gap-6 pb-8 border-b border-slate-200 last:border-b-0 last:pb-0">
-                  <h3 className="text-xl font-bold text-slate-800 mt-8">อันดับ {index + 2}: {career.nameTh}</h3>
-                  <CareerCard
-                    career={career}
-                    rank={index + 1}
-                    feedbackValue={careerFeedback[career.careerId]}
-                    onFeedback={handleCareerFeedback}
-                    onCareerViewed={handleCareerViewed}
-                    showMatchScore={false}
-                    showFeedback={false}
-                  />
-                  <div className="space-y-3">
-                    <h4 className="text-sm font-semibold text-foreground">สาขาวิชา/มหาวิทยาลัยที่เกี่ยวข้อง</h4>
-                    <MajorList
-                      majors={majors}
-                      topCareers={[career]}
-                      onProgramInterest={handleProgramInterest}
-                      requestedMajorIds={requestedMajorIds}
-                      hasCapturedLead={true}
-                      hideFeedback={true}
+              {remainingCareers.map((career, index) => {
+                const careerKey = career.careerId || `${career.clusterId}-${index}`;
+                const isMajorsOpen = Boolean(expandedCareerMajors[careerKey]);
+
+                return (
+                  <div key={careerKey} className="flex flex-col gap-4 pb-8 border-b border-slate-200 last:border-b-0 last:pb-0">
+                    <h3 className="text-xl font-bold text-slate-800 mt-8">อันดับ {index + 2}: {career.nameTh}</h3>
+                    <CareerCard
+                      career={career}
+                      rank={index + 1}
+                      feedbackValue={careerFeedback[career.careerId]}
+                      onFeedback={handleCareerFeedback}
+                      onCareerViewed={handleCareerViewed}
+                      showMatchScore={false}
+                      showFeedback={false}
                     />
+                    <div className="space-y-3">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="w-full justify-between rounded-xl border border-border/60 bg-secondary/70 px-4 py-3 text-left text-sm font-semibold text-foreground hover:bg-secondary"
+                        onClick={() => toggleCareerMajors(careerKey)}
+                        aria-expanded={isMajorsOpen}
+                      >
+                        <span>🔽 ดูสาขาวิชาและมหาวิทยาลัยที่รองรับ ของอันดับนี้</span>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {isMajorsOpen ? "ซ่อน" : "แสดง"}
+                        </span>
+                      </Button>
+
+                      {isMajorsOpen && (
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-foreground">สาขาวิชา/มหาวิทยาลัยที่เกี่ยวข้อง</h4>
+                          <MajorList
+                            majors={majors}
+                            topCareers={[career]}
+                            onProgramInterest={handleProgramInterest}
+                            requestedMajorIds={requestedMajorIds}
+                            hasCapturedLead={true}
+                            hideFeedback={true}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </motion.div>
           )}
         </section>
@@ -395,8 +441,6 @@ export default function Results() {
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-10">
           <ActionPlan
             topClusters={topClusters.slice(0, 3)}
-            acadMathScore={summary.acadMathScore ?? 0}
-            acadSciScore={summary.acadSciScore ?? 0}
             topDims={summary.topTraits?.map((t) => t.dimension) ?? []}
           />
         </motion.div>

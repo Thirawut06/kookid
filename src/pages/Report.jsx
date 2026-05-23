@@ -19,10 +19,18 @@ const RIASEC_COLORS = { R: "#6366f1", I: "#0ea5e9", A: "#f59e0b", S: "#22c55e", 
 // Build a lookup map from careerClusters.json by id → cluster data
 const CLUSTER_MAP = Object.fromEntries(getCareerClusters().map(c => [c.id, c]));
 
+/** @typedef {{ dimension: string, label?: string, description?: string, score?: number }} TopTrait */
+/** @typedef {{ summaryText: string, bulletPoints: string[], topTraits: TopTrait[] }} SummaryData */
+/** @typedef {'R' | 'I' | 'A' | 'S' | 'E' | 'C'} RiasecDimension */
+/** @typedef {{ dimension: RiasecDimension, normalizedScore: number, rawScore?: number }} TraitScore */
+/** @typedef {{ traitScores: TraitScore[], hollandCode?: string }} QuizProfile */
+/** @typedef {{ careerId: string, clusterId: string, nameTh: string, descriptionTh?: string, whyMatch?: string, matchScore?: number }} TopCareer */
+/** @typedef {{ profile: QuizProfile, clusters?: TopCareer[], careers?: TopCareer[], summary: SummaryData, hollandCode?: string }} QuizResultData */
+
 export default function Report() {
   const navigate = useNavigate();
   const { profileId } = useParams();
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(/** @type {QuizResultData | null} */ (null));
   const [leadUnlocked, setLeadUnlocked] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const leadProfile = profileId ? getStoredLeadProfile(profileId) : null;
@@ -62,6 +70,8 @@ export default function Report() {
 
   if (!isReady || !result) return null;
 
+  const typedResult = /** @type {QuizResultData} */ (result);
+
   if (!leadUnlocked) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4 py-10">
@@ -96,15 +106,13 @@ export default function Report() {
     );
   }
 
-  const { profile, clusters, careers, summary } = result;
+  const { profile, clusters, careers, summary } = typedResult;
   const topClusters = (clusters ?? careers ?? []).slice(0, 3);
-  const hollandCode = result.hollandCode || profile.hollandCode || buildHollandCode(profile.traitScores || []);
+  const hollandCode = typedResult.hollandCode || profile.hollandCode || buildHollandCode(profile.traitScores || []);
 
   const riasecScores = profile.traitScores
     .filter(ts => ["R", "I", "A", "S", "E", "C"].includes(ts.dimension))
     .sort((a, b) => b.normalizedScore - a.normalizedScore);
-
-  const topDims = summary.topTraits?.map(t => t.dimension) ?? [];
 
   return (
     <>
@@ -174,7 +182,7 @@ export default function Report() {
           <h2 className="report-section-title">กลุ่มอาชีพที่เหมาะสม (Top 3)</h2>
           <div className="grid grid-cols-3 gap-3">
             {topClusters.map((c, i) => {
-              const clusterData = CLUSTER_MAP[c.clusterId];
+              const clusterData = /** @type {any} */ (CLUSTER_MAP[c.clusterId]);
               const examples = clusterData?.exampleCareers?.slice(0, 3) ?? [];
               return (
                 <div key={c.careerId || `${c.clusterId}-${i}`} className="border border-gray-200 rounded-lg p-2.5 bg-gray-50">
@@ -239,6 +247,7 @@ export default function Report() {
  * Inline stripped-down Action Plan for print (no framer-motion, no Card wrapper).
  * Re-implements the same rule logic but outputs plain <li> items.
  */
+/** @param {{ topClusters: TopCareer[] }} props */
 function ActionPlanPrint({ topClusters }) {
   const clusterIds = topClusters.map(c => c.clusterId);
 

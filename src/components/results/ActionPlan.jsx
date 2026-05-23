@@ -5,78 +5,65 @@ import { motion } from "framer-motion";
 
 // ---------------------------------------------------------------------------
 // ACTION PLAN RULES
-// Each rule: { check: (clusterIds, acadMath, acadSci, topDims) => bool, text }
+// Each rule: { check: (clusterIds, topDims) => bool, text }
 // Evaluated in order; first 4 matching rules are shown.
 // ---------------------------------------------------------------------------
 const ACTION_RULES = [
   // Always shown — generic first step
   {
-    check: (_clusterIds, _acadMath, _acadSci, _topDims) => true,
+    check: (_clusterIds, _topDims) => true,
     text: "เลือก 2–3 สาขาที่สนใจจากลิสต์ด้านบน แล้วเข้าไปอ่านรายละเอียดหลักสูตรในเว็บมหาวิทยาลัย",
   },
-  // Engineering / IT / Data + Math
   {
-    check: (clusterIds, acadMath, _acadSci, _topDims) =>
-      clusterIds.includes("CLUSTER_IT_ENGINEERING") && acadMath >= 50,
-    text: "ฝึกทักษะคณิตศาสตร์และตรรกะเพิ่มเติม เช่น ลองเรียน Coding เบื้องต้น หรือทำโจทย์ PAT1 เก่า ๆ",
+    check: (clusterIds, topDims) =>
+      clusterIds.includes("CLUSTER_IT_ENGINEERING") || topDims.includes("R") || topDims.includes("I"),
+    text: "ฝึกทักษะการคิดเป็นระบบและทำโปรเจกต์เล็ก ๆ เช่น Coding เบื้องต้น หรือการทดลองแก้ปัญหาจริง",
   },
-  // Business / Accounting / Econ + Math
   {
-    check: (clusterIds, acadMath, _acadSci, _topDims) =>
-      clusterIds.includes("CLUSTER_BUSINESS") && acadMath >= 50,
-    text: "ลองศึกษาเรื่อง การเงินพื้นฐาน หรือเล่น Business Simulation เช่น Investory เพื่อฝึกความคิดเชิงธุรกิจ",
+    check: (clusterIds, topDims) =>
+      clusterIds.includes("CLUSTER_BUSINESS") || topDims.includes("E") || topDims.includes("C"),
+    text: "ลองศึกษาเรื่องการจัดการ การเงินพื้นฐาน หรือทำ Mini Project ที่สะท้อนความเป็นผู้นำและการจัดระบบ",
   },
-  // Health clusters
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) =>
+    check: (clusterIds, _topDims) =>
       clusterIds.includes("CLUSTER_HEALTH"),
     text: "ลองอาสาสมัครงานด้านสุขภาพ หรือคุยกับพยาบาล/แพทย์ในครอบครัวหรือชุมชน เพื่อเข้าใจงานจริง",
   },
-  // Science / Research
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_SCIENCE"),
+    check: (clusterIds, _topDims) => clusterIds.includes("CLUSTER_SCIENCE"),
     text: "ฝึกทักษะการคิดแบบวิทยาศาสตร์ เช่น ทำ Project ทดลองง่าย ๆ หรืออ่านบทความวิทย์ภาษาไทย",
   },
-  // Social / Law / Media
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_MEDIA") || clusterIds.includes("CLUSTER_LAW"),
+    check: (clusterIds, _topDims) => clusterIds.includes("CLUSTER_MEDIA") || clusterIds.includes("CLUSTER_LAW"),
     text: "ลองฝึกทักษะการพูดและการเขียน เช่น เข้าร่วมชมรมโต้วาที ทำ Content บน Social Media หรืออาสาสมัครในชุมชน",
   },
-  // Education / Teaching
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_EDUCATION"),
+    check: (clusterIds, _topDims) => clusterIds.includes("CLUSTER_EDUCATION"),
     text: "ลองสอนพิเศษน้อง ๆ หรือเป็นผู้ช่วยสอนในโรงเรียน เพื่อทดสอบว่าชอบงานสอนจริงหรือเปล่า",
   },
-  // Tourism / Agri
   {
-    check: (clusterIds, _acadMath, _acadSci, _topDims) => clusterIds.includes("CLUSTER_HOSPITALITY"),
+    check: (clusterIds, _topDims) => clusterIds.includes("CLUSTER_HOSPITALITY"),
     text: "ลองฝึกงานในโรงแรม ร้านอาหาร หรือฟาร์ม/สวนเกษตรช่วงปิดเทอม เพื่อสัมผัสบรรยากาศงานจริง",
   },
-  // High Academic_Math generic
   {
-    check: (_clusterIds, acadMath, _acadSci, _topDims) => acadMath >= 70,
-    text: "คุณมีคะแนนคณิตศาสตร์ค่อนข้างสูง ลองตรวจสอบว่าสาขาที่สนใจต้องการสอบ PAT1 หรือ TGAT หรือไม่",
-  },
-  // Generic last step — always append
-  {
-    check: (_clusterIds, _acadMath, _acadSci, _topDims) => true,
+    check: (_clusterIds, _topDims) => true,
     text: "เข้าไปอ่านข้อมูล TCAS ล่าสุดที่ mytcas.com และปรึกษาครูแนะแนวหรือผู้ปกครองก่อนตัดสินใจ",
   },
 ];
 
 /**
  * ActionPlan component — shows deterministic next-step suggestions
- * based on matched clusters and academic scores.
+ * based on matched clusters and top RIASEC dimensions.
  *
- * @param {{ topClusters, acadMathScore, acadSciScore, topDims }} props
+ * @param {{ topClusters, topDims }} props
  */
-export default function ActionPlan({ topClusters, acadMathScore, acadSciScore, topDims }) {
+export default function ActionPlan({ topClusters, topDims }) {
   const clusterIds = topClusters.map(c => c.clusterId);
 
   // Evaluate rules; deduplicate text; keep first 4
   const seen = new Set();
   const bullets = ACTION_RULES.filter(rule => {
-    if (!rule.check(clusterIds, acadMathScore, acadSciScore, topDims)) return false;
+    if (!rule.check(clusterIds, topDims)) return false;
     if (seen.has(rule.text)) return false;
     seen.add(rule.text);
     return true;

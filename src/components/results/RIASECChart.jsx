@@ -1,5 +1,9 @@
 import React from "react";
 
+/** @typedef {'R' | 'I' | 'A' | 'S' | 'E' | 'C'} RiasecDimension */
+/** @typedef {{ dimension: RiasecDimension, normalizedScore: number, rawScore?: number }} TraitScore */
+/** @typedef {{ traitScores?: TraitScore[], hollandCode?: string }} RIASECChartProps */
+
 const DIMENSION_DETAILS = {
   R: { label: "R — Realistic (นักปฏิบัติ)", color: "bg-red-500" },
   I: { label: "I — Investigative (นักวิเคราะห์)", color: "bg-blue-500" },
@@ -11,6 +15,7 @@ const DIMENSION_DETAILS = {
 
 const RIASEC_ORDER = ["R", "I", "A", "S", "E", "C"];
 
+/** @param {RIASECChartProps} props */
 export default function RIASECChart({ traitScores = [], hollandCode = "" }) {
   // กรองเอาเฉพาะมิติที่เป็น RIASEC หลัก 6 ด้านมาแสดงผล (ไม่เอาตัวแปร Academic)
   const riasecData = traitScores

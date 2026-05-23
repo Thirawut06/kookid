@@ -82,41 +82,53 @@ export default function MajorList({
                 <div key={major.id} className="relative">
                   <Card
                     className={cn(
-                      "flex flex-col h-full overflow-hidden p-3 sm:p-4 border border-border/50 transition-all",
-                      !isUnlocked && "blur-sm opacity-70 select-none"
+                        "flex h-full flex-col overflow-hidden rounded-[18px] border border-border/50 bg-white/72 p-5 shadow-[0_6px_20px_rgba(0,0,0,0.04)] transition-all",
+                        !isUnlocked && "bg-white/68"
                     )}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-start gap-2.5 min-w-0">
-                        <GraduationCap className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                        <div className="min-w-0 break-words whitespace-normal">
-                          <p className="text-sm font-medium text-foreground line-clamp-2">{major.nameTh}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{major.facultyNameTh}</p>
-                          <p className="text-xs text-muted-foreground/70 line-clamp-2">{major.universityNameTh}</p>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex min-w-0 items-start gap-2.5">
+                          <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <div className={cn("min-w-0 break-words whitespace-normal", !isUnlocked && "blur-[3px] opacity-80") }>
+                            <p className="text-sm font-semibold leading-5 text-foreground">{major.nameTh}</p>
+                          </div>
+                        </div>
+                        <div className="flex shrink-0 flex-wrap justify-end gap-1">
+                          {!isUnlocked ? (
+                            <Badge
+                              variant="outline"
+                              className="rounded-full border-border/60 bg-white/90 px-2.5 py-1 text-[10px] uppercase tracking-[0.08em] text-muted-foreground"
+                            >
+                              Preview
+                            </Badge>
+                          ) : (
+                            major.universityShortName && (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                {major.universityShortName}
+                              </Badge>
+                            )
+                          )}
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1 justify-end shrink-0">
-                        {major.universityShortName && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                            {major.universityShortName}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
 
-                    <div className={cn(!isUnlocked && "pointer-events-none") }>
-                      <div className="mt-auto pt-3 border-t border-border/50 space-y-2">
+                      <div className={cn("mt-3 space-y-1.5", !isUnlocked && "blur-[4px] opacity-75") }>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{major.facultyNameTh}</p>
+                        <p className="text-xs text-muted-foreground/70 line-clamp-2 leading-5">{major.universityNameTh}</p>
+                      </div>
+
+                      <div className="mt-auto pt-4">
+                        <div className={cn("space-y-2", !isUnlocked && "pointer-events-none")}>
                         <Button
                           type="button"
                           size="sm"
                           disabled={alreadyRequested}
-                          className="w-full rounded-xl h-auto py-2.5 px-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-md disabled:bg-orange-100 disabled:text-muted-foreground disabled:opacity-100"
+                          className="h-auto w-full rounded-xl bg-orange-600 px-3 py-2.5 font-semibold text-white shadow-md hover:bg-orange-700 disabled:bg-orange-100 disabled:text-muted-foreground disabled:opacity-100"
                           onClick={() => onProgramInterest?.(major)}
                         >
                           <Gift className="w-4 h-4 mr-1.5 shrink-0" />
                           {alreadyRequested
                             ? "ส่งคำขอแล้ว"
-                            : "🔥 รับสิทธิ์โควต้า/ทุน"}
+                            : "รับสิทธิ์โควต้า/ทุน"}
                         </Button>
                         {!hideFeedback && (
                           <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -131,9 +143,12 @@ export default function MajorList({
                     <button
                       type="button"
                       onClick={onUnlockLead}
-                      className="absolute inset-0 flex items-center justify-center rounded-2xl border border-dashed border-primary/30 bg-background/75 p-4 text-center backdrop-blur-sm transition-all hover:bg-background/85"
+                      className="absolute inset-0 rounded-[18px] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.4)_58%,rgba(255,255,255,0.88))] text-left transition-all hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.46)_58%,rgba(255,255,255,0.92))]"
                     >
-                      <span className="inline-flex max-w-[90%] items-center justify-center rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-lg sm:text-base">
+                      <span className="absolute left-4 top-4 inline-flex items-center rounded-full border border-border/60 bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground shadow-sm">
+                        Preview
+                      </span>
+                      <span className="absolute inset-x-4 bottom-4 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg">
                         🔒 ยืนยันข้อมูลเบื้องต้น เพื่อปลดล็อกโควต้ามหาวิทยาลัยทั้งหมดฟรี
                       </span>
                     </button>
