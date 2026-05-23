@@ -1,5 +1,24 @@
 import { supabase } from "@/utils/supabase";
 
+async function postToServer(path, body) {
+  try {
+    const res = await fetch(`/api/submit/${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error || `Server responded ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    throw err;
+  }
+}
+
 const STORAGE_KEY = "kookid_lead_capture_store";
 const ACTIVE_PROFILE_KEY = "kookid_user_profile_id";
 
@@ -65,28 +84,23 @@ function buildGradeAndSchool(gradeLevel, schoolName) {
 }
 
 export async function ensureRemoteLeadProfile(userProfileId) {
-  if (!supabase || !userProfileId) return false;
+  if (!userProfileId) return false;
 
   const profile = getStoredProfile(userProfileId);
   if (!profile) return false;
 
-  const { error } = await supabase.from("user_profiles").upsert([
-    {
-      id: userProfileId,
-      nickname: profile.nickname,
-      grade_and_school: profile.gradeAndSchool,
-      contact: profile.contact,
-      email: profile.email || null,
-      school_province: profile.schoolProvince || null,
-      consent_accepted: Boolean(profile.consentAccepted),
-      consent_at: profile.consentAt || profile.updatedAt || new Date().toISOString(),
-      updated_at: profile.updatedAt || new Date().toISOString(),
-    },
-  ]);
-
-  if (error) {
-    throw error;
-  }
+  // Server-only: require server endpoint to accept writes.
+  await postToServer("profile", {
+    id: userProfileId,
+    nickname: profile.nickname,
+    grade_and_school: profile.gradeAndSchool,
+    contact: profile.contact,
+    email: profile.email || null,
+    school_province: profile.schoolProvince || null,
+    consent_accepted: Boolean(profile.consentAccepted),
+    consent_at: profile.consentAt || profile.updatedAt || new Date().toISOString(),
+    updated_at: profile.updatedAt || new Date().toISOString(),
+  });
 
   return true;
 }
@@ -143,26 +157,19 @@ export async function createInitialProfile({ nickname = "", userType = "" } = {}
   writeStore(store);
   setActiveProfileId(profileId);
 
-  if (supabase) {
-    const { error } = await supabase.from("user_profiles").insert([
-      {
-        id: profileId,
-        nickname,
-        user_type: userType,
-        contact: null,
-        grade_and_school: null,
-        email: null,
-        line_id: null,
-        education_level: null,
-        consent_accepted: false,
-        updated_at: now,
-      },
-    ]);
-
-    if (error) {
-      throw error;
-    }
-  }
+  // Persist to server-only endpoint. Throw if server write fails.
+  await postToServer("profile", {
+    id: profileId,
+    nickname,
+    user_type: userType,
+    contact: null,
+    grade_and_school: null,
+    email: null,
+    line_id: null,
+    education_level: null,
+    consent_accepted: false,
+    updated_at: now,
+  });
 
   return profileId;
 }
@@ -195,23 +202,16 @@ export async function upsertQuizResult(userProfileId, result) {
 }
 
 async function persistQuizResultToSupabase(userProfileId, result) {
-  if (!supabase) return;
+  if (!userProfileId) return;
 
   await ensureRemoteLeadProfile(userProfileId);
 
-  const { error } = await supabase
-    .from("quiz_results")
-    .upsert([
-      {
-        user_profile_id: userProfileId,
-        result,
-        linked_at: new Date().toISOString(),
-      },
-    ], { onConflict: "user_profile_id" });
-
-  if (error) {
-    throw error;
-  }
+  // Server-only quiz persist
+  await postToServer("quiz", {
+    user_profile_id: userProfileId,
+    result,
+    linked_at: new Date().toISOString(),
+  });
 }
 
 export async function upsertLeadCapture(userProfileId, fullData = {}) {
@@ -278,32 +278,24 @@ export async function upsertLeadCapture(userProfileId, fullData = {}) {
     window.localStorage.setItem(ACTIVE_PROFILE_KEY, profileId);
   }
 
-  // Persist to Supabase and let callers await failures.
-  if (supabase) {
-    const { error } = await supabase
-      .from("user_profiles")
-      .update({
-        nickname: nickname || existing.nickname || null,
-        user_type: userType || existing.userType || null,
-        grade_and_school: resolvedGradeAndSchool || null,
-        contact: contact ?? existing.contact ?? null,
-        email: email ?? existing.email ?? null,
-        line_id: lineId ?? existing.lineId ?? null,
-        education_level: educationLevel ?? existing.educationLevel ?? null,
-        school_province: schoolProvince ?? existing.schoolProvince ?? null,
-        consent_accepted: true,
-        consent_at: now,
-        updated_at: now,
-      })
-      .eq("id", profileId);
+  // Persist via server endpoint only. Throw if server write fails.
+  await postToServer("profile", {
+    id: profileId,
+    nickname: nickname || existing.nickname || null,
+    user_type: userType || existing.userType || null,
+    grade_and_school: resolvedGradeAndSchool || null,
+    contact: contact ?? existing.contact ?? null,
+    email: email ?? existing.email ?? null,
+    line_id: lineId ?? existing.lineId ?? null,
+    education_level: educationLevel ?? existing.educationLevel ?? null,
+    school_province: schoolProvince ?? existing.schoolProvince ?? null,
+    consent_accepted: true,
+    consent_at: now,
+    updated_at: now,
+  });
 
-    if (error) {
-      throw error;
-    }
-
-    if (result) {
-      await persistQuizResultToSupabase(profileId, result);
-    }
+  if (result) {
+    await persistQuizResultToSupabase(profileId, result);
   }
 
   return profileId;
@@ -323,17 +315,9 @@ export async function recordProgramInterest({ userProfileId, majorId, university
   store.interests.push(record);
   writeStore(store);
 
-  if (supabase) {
-    await ensureRemoteLeadProfile(userProfileId);
-
-    const { error } = await supabase.from("program_interests").insert([
-      { user_profile_id: userProfileId, major_id: majorId, university_id: universityId || null, interest_level: interestLevel },
-    ]);
-
-    if (error) {
-      throw error;
-    }
-  }
+  // Server-only interest record
+  await ensureRemoteLeadProfile(userProfileId);
+  await postToServer("interest", { user_profile_id: userProfileId, major_id: majorId, university_id: universityId || null, interest_level: interestLevel });
 
   return record;
 }

@@ -1,6 +1,25 @@
 import { supabase } from "@/utils/supabase";
 import { ensureRemoteLeadProfile } from "@/lib/leadCaptureApi";
 
+async function postToServer(path, body) {
+  try {
+    const res = await fetch(`/api/submit/${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error || `Server responded ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    throw err;
+  }
+}
+
 const EVENT_STORAGE_KEY = "kookid_event_logs";
 const SESSION_KEY = "kookid_session_id";
 
@@ -62,21 +81,16 @@ export async function trackEvent(eventName, payload = {}) {
 
   if (!supabase) return;
 
-  // Send analytics to Supabase without awaiting to keep UI snappy and avoid
-  // duplicated blocking calls during frequent state updates (e.g. clicks).
-  supabase
-    .from("event_logs")
-    .insert([
-      {
-        event_name: eventName,
-        user_profile_id: userProfileId || null,
-        session_id: sessionId,
-        page,
-        payload,
-        created_at: now,
-      },
-    ])
-    .then(({ error }) => {
-      if (error) console.error("Supabase trackEvent error:", error);
+  try {
+    await postToServer("event", {
+      event_name: eventName,
+      user_profile_id: userProfileId || null,
+      session_id: sessionId,
+      page,
+      payload,
+      created_at: now,
     });
+  } catch (err) {
+    console.error("trackEvent server write failed:", err);
+  }
 }
