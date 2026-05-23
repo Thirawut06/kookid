@@ -96,7 +96,9 @@ export async function submitResultFeedback(userProfileId, overallFitScore, selec
   if (supabase) {
     try {
       await ensureRemoteLeadProfile(userProfileId);
-      await supabase.from("quiz_results").insert([{ user_profile_id: userProfileId, result: record }]);
+      await supabase
+        .from("quiz_results")
+        .upsert([{ user_profile_id: userProfileId, result: record }], { onConflict: "user_profile_id" });
     } catch (err) {
       console.error("Supabase submitResultFeedback error:", err);
     }

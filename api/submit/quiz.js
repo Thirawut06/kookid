@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { enforceRateLimit } from "../_lib/rateLimit.js";
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
@@ -10,6 +11,14 @@ const supabase = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  if (!enforceRateLimit(req, res, {
+    keyPrefix: "submit_quiz",
+    limit: 30,
+    windowMs: 60 * 1000,
+  })) {
     return;
   }
 

@@ -1,4 +1,5 @@
 import { createHmac } from "crypto";
+import { enforceRateLimit } from "../_lib/rateLimit.js";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || "";
@@ -13,6 +14,14 @@ function signToken(expiresAt) {
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  if (!enforceRateLimit(req, res, {
+    keyPrefix: "admin_login",
+    limit: 10,
+    windowMs: 15 * 60 * 1000,
+  })) {
     return;
   }
 
