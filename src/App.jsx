@@ -10,6 +10,7 @@ import Report from './pages/Report';
 import Privacy from './pages/Privacy';
 import AdminDashboard from './pages/AdminDashboard';
 
+const ENABLE_ADMIN = import.meta.env.VITE_ENABLE_ADMIN === "true";
 
 function App() {
 
@@ -22,7 +23,11 @@ function App() {
           <Route path="/results" element={<Results />} />
           <Route path="/report/:profileId" element={<Report />} />
           <Route path="/privacy" element={<Privacy />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          {ENABLE_ADMIN ? (
+            <Route path="/admin" element={<AdminDashboard />} />
+          ) : (
+            <Route path="/admin" element={<PageNotFound />} />
+          )}
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>

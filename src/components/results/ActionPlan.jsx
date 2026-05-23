@@ -3,6 +3,10 @@ import { Card } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
+/** @typedef {{ clusterId: string }} TopCluster */
+/** @typedef {{ dimension: string }} TopDim */
+/** @typedef {(clusterIds: string[], topDims: string[]) => boolean} ActionPlanRuleCheck */
+
 // ---------------------------------------------------------------------------
 // ACTION PLAN RULES
 // Each rule: { check: (clusterIds, topDims) => bool, text }
@@ -11,41 +15,50 @@ import { motion } from "framer-motion";
 const ACTION_RULES = [
   // Always shown — generic first step
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (_clusterIds, _topDims) => true,
     text: "เลือก 2–3 สาขาที่สนใจจากลิสต์ด้านบน แล้วเข้าไปอ่านรายละเอียดหลักสูตรในเว็บมหาวิทยาลัย",
   },
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (clusterIds, topDims) =>
       clusterIds.includes("CLUSTER_IT_ENGINEERING") || topDims.includes("R") || topDims.includes("I"),
     text: "ฝึกทักษะการคิดเป็นระบบและทำโปรเจกต์เล็ก ๆ เช่น Coding เบื้องต้น หรือการทดลองแก้ปัญหาจริง",
   },
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (clusterIds, topDims) =>
       clusterIds.includes("CLUSTER_BUSINESS") || topDims.includes("E") || topDims.includes("C"),
     text: "ลองศึกษาเรื่องการจัดการ การเงินพื้นฐาน หรือทำ Mini Project ที่สะท้อนความเป็นผู้นำและการจัดระบบ",
   },
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (clusterIds, _topDims) =>
       clusterIds.includes("CLUSTER_HEALTH"),
     text: "ลองอาสาสมัครงานด้านสุขภาพ หรือคุยกับพยาบาล/แพทย์ในครอบครัวหรือชุมชน เพื่อเข้าใจงานจริง",
   },
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (clusterIds, _topDims) => clusterIds.includes("CLUSTER_SCIENCE"),
     text: "ฝึกทักษะการคิดแบบวิทยาศาสตร์ เช่น ทำ Project ทดลองง่าย ๆ หรืออ่านบทความวิทย์ภาษาไทย",
   },
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (clusterIds, _topDims) => clusterIds.includes("CLUSTER_MEDIA") || clusterIds.includes("CLUSTER_LAW"),
     text: "ลองฝึกทักษะการพูดและการเขียน เช่น เข้าร่วมชมรมโต้วาที ทำ Content บน Social Media หรืออาสาสมัครในชุมชน",
   },
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (clusterIds, _topDims) => clusterIds.includes("CLUSTER_EDUCATION"),
     text: "ลองสอนพิเศษน้อง ๆ หรือเป็นผู้ช่วยสอนในโรงเรียน เพื่อทดสอบว่าชอบงานสอนจริงหรือเปล่า",
   },
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (clusterIds, _topDims) => clusterIds.includes("CLUSTER_HOSPITALITY"),
     text: "ลองฝึกงานในโรงแรม ร้านอาหาร หรือฟาร์ม/สวนเกษตรช่วงปิดเทอม เพื่อสัมผัสบรรยากาศงานจริง",
   },
   {
+    /** @type {ActionPlanRuleCheck} */
     check: (_clusterIds, _topDims) => true,
     text: "เข้าไปอ่านข้อมูล TCAS ล่าสุดที่ mytcas.com และปรึกษาครูแนะแนวหรือผู้ปกครองก่อนตัดสินใจ",
   },
@@ -55,10 +68,10 @@ const ACTION_RULES = [
  * ActionPlan component — shows deterministic next-step suggestions
  * based on matched clusters and top RIASEC dimensions.
  *
- * @param {{ topClusters, topDims }} props
+ * @param {{ topClusters: TopCluster[], topDims: string[] }} props
  */
 export default function ActionPlan({ topClusters, topDims }) {
-  const clusterIds = topClusters.map(c => c.clusterId);
+  const clusterIds = topClusters.map((c) => c.clusterId);
 
   // Evaluate rules; deduplicate text; keep first 4
   const seen = new Set();

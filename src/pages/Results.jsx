@@ -15,6 +15,7 @@ import ActionPlan from "@/components/results/ActionPlan";
 import { submitCareerFeedback, submitResultFeedback } from "@/lib/feedbackApi";
 import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
 import { buildHollandCode } from "@/lib/scoringEngine";
+import { appName } from "@/lib/app-params";
 import {
   getStoredUserProfileId,
   hasLeadCapture,

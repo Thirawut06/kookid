@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/utils/supabase";
+// Admin data is loaded from server-side endpoints to avoid exposing service role keys to the client.
 import { getMajors, getCareerClusters } from "@/lib/dataLoader";
 
 function toCsvValue(value) {
@@ -46,7 +46,10 @@ export default function AdminDashboard() {
   const majorById = useMemo(() => Object.fromEntries(majors.map(m => [m.id, m])), [majors]);
   const clusterById = useMemo(() => Object.fromEntries(clusters.map(c => [c.id, c])), [clusters]);
 
+  // `token` is the typed password input. `bearerToken` is the server-issued admin token
+  // returned from /api/admin/login and used to call protected endpoints.
   const [token, setToken] = useState("");
+  const [bearerToken, setBearerToken] = useState("");
   const [isAuthed, setIsAuthed] = useState(false);
 
   const [profiles, setProfiles] = useState([]);
@@ -60,7 +63,9 @@ export default function AdminDashboard() {
   const [universityFilter, setUniversityFilter] = useState("all");
   const [majorFilter, setMajorFilter] = useState("all");
 
-  const expectedToken = import.meta.env.VITE_ADMIN_TOKEN || "";
+  // The client no longer relies on VITE_ADMIN_TOKEN. The serverless endpoints
+  // require ADMIN_PASSWORD and ADMIN_JWT_SECRET (server-side only) and a
+  // SUPABASE_SERVICE_ROLE_KEY to query protected data.
 
   const profileById = useMemo(
     () => Object.fromEntries(profiles.map(p => [p.id, p])),
@@ -201,41 +206,49 @@ export default function AdminDashboard() {
       .slice(0, 10);
   }, [eventRows, hasActiveFilters, filteredProfileIds, clusterById]);
 
+  // Attempt to load data from the protected server endpoint. The endpoint
+  // validates the token and queries Supabase with a service role key on the server.
   useEffect(() => {
     if (!isAuthed) return;
-    if (!supabase) {
-      setError("ยังไม่ได้ตั้งค่า Supabase ใน environment นี้");
-      return;
-    }
 
     let mounted = true;
     async function loadData() {
       setIsLoading(true);
       setError("");
       try {
-        const [profilesRes, interestsRes, quizResultsRes, eventsRes, quizCountRes] = await Promise.all([
-          supabase.from("user_profiles").select("*"),
-          supabase.from("program_interests").select("id,user_profile_id,major_id,university_id,created_at").order("created_at", { ascending: false }),
-          supabase.from("quiz_results").select("user_profile_id,result,created_at").order("created_at", { ascending: false }),
-          supabase.from("event_logs").select("event_name,created_at,user_profile_id,session_id,page,payload").order("created_at", { ascending: false }).limit(5000),
-          supabase.from("quiz_results").select("id", { count: "exact", head: true }),
-        ]);
-
-        const errors = [profilesRes.error, interestsRes.error, quizResultsRes.error, eventsRes.error, quizCountRes.error].filter(Boolean);
-        if (errors.length > 0) {
-          throw errors[0];
-        }
+        const resp = await fetch("/api/admin/data", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!mounted) return;
-        setProfiles(profilesRes.data || []);
-        setInterests(interestsRes.data || []);
-        setQuizResults(quizResultsRes.data || []);
-        setEventRows(eventsRes.data || []);
-        setQuizCount(quizCountRes.count || 0);
+
+        if (resp.status === 401) {
+          setError("ไม่ได้รับอนุญาต (token หมดอายุหรือไม่ถูกต้อง)");
+          setIsAuthed(false);
+          setBearerToken("");
+          localStorage.removeItem("kookid_admin_token");
+          return;
+        }
+
+        if (!resp.ok) {
+          const body = await resp.json().catch(() => ({}));
+          throw new Error(body?.error || "Failed to load admin data");
+        }
+
+        const body = await resp.json();
+        setProfiles(body.profiles || []);
+        setInterests(body.interests || []);
+        setQuizResults(body.quizResults || []);
+        setEventRows(body.eventRows || []);
+        setQuizCount(body.quizCount || 0);
       } catch (err) {
         console.error("AdminDashboard load error:", err);
         if (mounted) {
-          setError("โหลดข้อมูลไม่สำเร็จ กรุณาตรวจสอบสิทธิ์ตารางและนโยบาย RLS");
+          setError("โหลดข้อมูลไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า server-side และสิทธิ์ Supabase");
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -246,17 +259,49 @@ export default function AdminDashboard() {
     return () => {
       mounted = false;
     };
-  }, [isAuthed]);
+  }, [isAuthed, bearerToken]);
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    if (token.trim() === expectedToken) {
+    setError("");
+    try {
+      const resp = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: token }),
+      });
+
+      if (!resp.ok) {
+        const body = await resp.json().catch(() => ({}));
+        setError(body?.error || "รหัสผ่านผู้ดูแลไม่ถูกต้อง");
+        return;
+      }
+
+      const body = await resp.json();
+      const remoteToken = body.token;
+      if (!remoteToken) {
+        setError("ไม่สามารถรับ token จาก server ได้");
+        return;
+      }
+
+      localStorage.setItem("kookid_admin_token", remoteToken);
+      setBearerToken(remoteToken);
       setIsAuthed(true);
       setError("");
-      return;
+    } catch (err) {
+      console.error("admin login error", err);
+      setError("มีปัญหาในการเชื่อมต่อกับ server");
     }
-    setError("รหัสผ่านผู้ดูแลไม่ถูกต้อง");
   };
+
+  // On mount, check for a saved admin token and try to use it.
+  useEffect(() => {
+    const saved = localStorage.getItem("kookid_admin_token");
+    if (saved) {
+      setBearerToken(saved);
+      setIsAuthed(true);
+    }
+  }, []);
 
   const handleExportCsv = () => {
     const header = [
