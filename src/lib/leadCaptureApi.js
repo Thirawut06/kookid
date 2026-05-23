@@ -315,9 +315,28 @@ export async function recordProgramInterest({ userProfileId, majorId, university
   store.interests.push(record);
   writeStore(store);
 
-  // Server-only interest record
-  await ensureRemoteLeadProfile(userProfileId);
-  await postToServer("interest", { user_profile_id: userProfileId, major_id: majorId, university_id: universityId || null, interest_level: interestLevel });
+  const payload = {
+    user_profile_id: userProfileId,
+    major_id: majorId,
+    university_id: universityId || null,
+    interest_level: interestLevel,
+  };
+
+  // Fast path: submit interest immediately.
+  // Retry with profile sync only if server indicates a profile/FK dependency issue.
+  try {
+    await postToServer("interest", payload);
+  } catch (error) {
+    const message = String(error?.message || "").toLowerCase();
+    const needsProfileSync = message.includes("foreign key") || message.includes("user_profile") || message.includes("violates");
+
+    if (!needsProfileSync) {
+      throw error;
+    }
+
+    await ensureRemoteLeadProfile(userProfileId);
+    await postToServer("interest", payload);
+  }
 
   return record;
 }
