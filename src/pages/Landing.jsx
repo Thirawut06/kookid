@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { appNameFull } from "@/lib/app-params";
 import { motion } from "framer-motion";
 import { ArrowRight, Clock, CheckCircle, GraduationCap, Sparkles, Target } from "lucide-react";
 
@@ -88,7 +89,7 @@ export default function Landing() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6 tracking-wide">
               <Sparkles className="w-4 h-4" />
-              คู่คิด KooKid
+              {appNameFull}
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
               หาคณะที่ใช่ มหาลัยที่ชอบ... พร้อมปลดล็อกโควต้าเรียนฟรี!
@@ -139,7 +140,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="border-t border-border/50 py-8 text-center text-xs sm:text-sm text-muted-foreground">
-        <div>คู่คิด KooKid · เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6</div>
+        <div>{appNameFull} · เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6</div>
         <div className="mt-2 text-xs sm:text-sm">
           <span className="font-medium">ติดต่อผู้พัฒนา:</span> 
           <a href="tel:0864062711" className="underline hover:text-primary ml-1" aria-label="โทร 086-406-2711">086-406-2711</a>

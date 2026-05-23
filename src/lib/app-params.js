@@ -5,3 +5,7 @@ export const appParams = {
 	functionsVersion: "",
 	appBaseUrl: "",
 };
+
+// Centralized brand names for consistent UI copy
+export const appNameFull = "คู่คิด KooKid";
+export const appName = "KooKid";

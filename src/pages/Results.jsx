@@ -55,6 +55,8 @@ export default function Results() {
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
   const [requestedMajorIds, setRequestedMajorIds] = useState(/** @type {Record<string, boolean>} */ (readRequestedMajors()));
   const [expandedCareerMajors, setExpandedCareerMajors] = useState(/** @type {Record<string, boolean>} */ ({}));
+  
+  const [pendingInterestMajor, setPendingInterestMajor] = useState(/** @type {MajorItem | null} */ (null));
 
   // Feedback state — keyed by careerId → interestLevel
   const [careerFeedback, setCareerFeedback] = useState(/** @type {Record<string, number>} */ ({}));
@@ -123,10 +125,13 @@ export default function Results() {
     if (requestedMajorIds?.[major.id]) return;
 
     if (!userProfileId || !hasCapturedLead) {
+      // remember this major so we can auto-submit after lead capture completes
+      setPendingInterestMajor(major);
       setLeadDialogOpen(true);
       return;
     }
 
+    // Submit immediately when user is already unlocked
     recordProgramInterest({
       userProfileId,
       majorId: major.id,
@@ -166,6 +171,37 @@ export default function Results() {
     setLeadDialogOpen(false);
     setLeadProfileId(getStoredUserProfileId());
     toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
+    // If user had attempted to request a major before providing lead info, auto-submit it now
+    if (pendingInterestMajor) {
+      const newUserProfileId = getStoredUserProfileId();
+      const major = pendingInterestMajor;
+      // clear pending immediately to avoid duplicate attempts
+      setPendingInterestMajor(null);
+
+      recordProgramInterest({
+        userProfileId: newUserProfileId,
+        majorId: major.id,
+        universityId: major.universityId,
+        interestLevel: "request_info",
+      })
+        .then(() => {
+          setRequestedMajorIds(prev => {
+            const next = { ...prev, [major.id]: true };
+            sessionStorage.setItem("kookid_requested_majors", JSON.stringify(next));
+            return next;
+          });
+          trackEvent("program_interest_submitted", {
+            page: "results",
+            userProfileId: newUserProfileId,
+            majorId: major.id,
+          });
+          toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
+        })
+        .catch((error) => {
+          console.error("Auto program interest submit failed:", error);
+          toast.error("บันทึกคำขอข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
+        });
+    }
   };
 
   /** @param {string} careerId @param {number} level */
@@ -241,7 +277,7 @@ export default function Results() {
             <Sparkles className="w-4 h-4" />
             ผลการวิเคราะห์ของคุณ
           </div>
-          <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-1">คู่คิด KooKid</div>
+          <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-1">{appName}</div>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">สรุปผลแบบทดสอบ</h1>
           {leadProfile?.nickname && leadProfile?.gradeAndSchool && (
             <p className="mt-2 text-sm text-muted-foreground">
@@ -364,9 +400,7 @@ export default function Results() {
                         <p className="text-sm text-slate-500">{career.descriptionTh}</p>
                       </div>
                       <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white via-white/95 to-transparent" aria-hidden="true" />
-                      <div className="absolute inset-x-3 bottom-3 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500 shadow-sm">
-                        Preview
-                      </div>
+                      {/* Preview badge removed per design request */}
                     </div>
                   ))}
                 </div>
@@ -411,7 +445,7 @@ export default function Results() {
                         onClick={() => toggleCareerMajors(careerKey)}
                         aria-expanded={isMajorsOpen}
                       >
-                        <span>🔽 ดูสาขาวิชาและมหาวิทยาลัยที่รองรับ ของอันดับนี้</span>
+                        <span>{isMajorsOpen ? "🔽" : "▶️"} ดูสาขาวิชาและมหาวิทยาลัยที่รองรับ ของอันดับนี้</span>
                         <span className="text-xs font-medium text-muted-foreground">
                           {isMajorsOpen ? "ซ่อน" : "แสดง"}
                         </span>

@@ -366,7 +366,7 @@ export default function LeadCaptureForm({
           />
           <div className="space-y-1">
             <LabelAny htmlFor="consentAccepted" className="text-sm leading-6 font-normal cursor-pointer">
-              ข้าพเจ้ารับทราบและยินยอมให้แพลตฟอร์มคู่คิด (KooKid) นำข้อมูลผลแบบทดสอบและข้อมูลติดต่อของข้าพเจ้าไปใช้ในการแนะนำโควต้า ทุนการศึกษา หรือส่งต่อข้อมูลให้มหาวิทยาลัยคู่สัญญาที่เกี่ยวข้องกับผลการประเมิน ตามนโยบายความเป็นส่วนตัว
+              ข้าพเจ้ารับทราบและยินยอมให้แพลตฟอร์ม{` `}{appNameFull} นำข้อมูลผลแบบทดสอบและข้อมูลติดต่อของข้าพเจ้้าไปใช้ในการแนะนำโควต้า ทุนการศึกษา หรือส่งต่อข้อมูลให้มหาวิทยาลัยคู่สัญญาที่เกี่ยวข้องกับผลการประเมิน ตามนโยบายความเป็นส่วนตัว
             </LabelAny>
             <div className="text-xs text-muted-foreground">
               อ่านรายละเอียดเพิ่มเติมได้ที่ <Link to="/privacy" className="underline underline-offset-4 text-primary">นโยบายความเป็นส่วนตัว / PDPA</Link>

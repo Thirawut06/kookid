@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import CareerFeedbackRow from "@/components/feedback/CareerFeedbackRow";
+import { appName } from "@/lib/app-params";
 
 export default function CareerCard({
   career,
@@ -18,31 +19,26 @@ export default function CareerCard({
       transition={{ delay: rank * 0.06 }}
       className="w-full"
     >
-      <div className="bg-primary/5 rounded-2xl p-4 sm:p-5 mt-2 border border-primary/10">
-        {/* คำอธิบายอาชีพ */}
-        <p className="text-sm text-foreground/80 leading-relaxed">
-          {career.descriptionTh}
-        </p>
-        
-        {/* Option B: เส้นคั่นมินิมอล (The Minimal Quote) ลดความอึดอัด */}
-        <div className="mt-4 pl-3 sm:pl-4 border-l-4 border-primary/40">
-          <p className="text-sm font-bold text-primary mb-1">💡 ทำไมถึงเหมาะกับคุณ?</p>
-          <p className="text-sm text-slate-700 leading-relaxed">
-            {career.whyMatch}
-          </p>
+      <div className="mt-2">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary font-medium">สำหรับคุณ</span>
+          <span className="text-xs text-muted-foreground">ข้อมูลสรุปโดย {appName}</span>
         </div>
 
-        {/* ระบบ Feedback (ถ้ามีการเปิดใช้) */}
-        {showFeedback && (
-          <div className="mt-4 pt-4 border-t border-primary/10">
-            <CareerFeedbackRow
-              clusterId={career.clusterId}
-              value={feedbackValue}
-              onChange={onFeedback}
-            />
-          </div>
-        )}
+        <p className="text-sm text-foreground/80 leading-relaxed">{career.descriptionTh}</p>
+
+        <div className="mt-4 border-b border-border/50" />
       </div>
+      {/* ระบบ Feedback (ถ้ามีการเปิดใช้) */}
+      {showFeedback && (
+        <div className="mt-3">
+          <CareerFeedbackRow
+            clusterId={career.clusterId}
+            value={feedbackValue}
+            onChange={onFeedback}
+          />
+        </div>
+      )}
     </motion.div>
   );
 }

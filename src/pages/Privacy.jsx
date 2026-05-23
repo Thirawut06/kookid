@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { appNameFull } from "@/lib/app-params";
 import { Button } from "@/components/ui/button";
 
 export default function Privacy() {
@@ -8,7 +9,7 @@ export default function Privacy() {
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-4 py-10 sm:py-14">
         <div className="text-center mb-8">
-          <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-2">คู่คิด KooKid</div>
+          <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-2">{appNameFull}</div>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">นโยบายความเป็นส่วนตัว / PDPA</h1>
           <p className="mt-3 text-sm sm:text-base text-muted-foreground">
             หน้านี้เป็นข้อความตัวอย่างสำหรับอธิบายการเก็บ ใช้ และส่งต่อข้อมูลตามความยินยอมของผู้ใช้
@@ -17,7 +18,7 @@ export default function Privacy() {
 
         <Card className="p-5 sm:p-7 border-border/60 shadow-sm space-y-4 leading-relaxed text-sm sm:text-base text-foreground/80">
           <p>
-            คู่คิด KooKid เก็บข้อมูลที่ผู้ใช้กรอกไว้เพื่อใช้ในการแนะนำสาขาวิชา โควต้า ทุนการศึกษา และข้อมูลที่เกี่ยวข้องกับผลการประเมินของผู้ใช้เท่านั้น
+            {appNameFull} เก็บข้อมูลที่ผู้ใช้กรอกไว้เพื่อใช้ในการแนะนำสาขาวิชา โควต้า ทุนการศึกษา และข้อมูลที่เกี่ยวข้องกับผลการประเมินของผู้ใช้เท่านั้น
           </p>
           <p>
             ข้อมูลอาจถูกส่งต่อให้มหาวิทยาลัยหรือพันธมิตรที่เกี่ยวข้องเฉพาะในกรณีที่สอดคล้องกับความยินยอมของผู้ใช้ และใช้เพื่อการติดต่อกลับหรือการให้คำแนะนำทางการศึกษา

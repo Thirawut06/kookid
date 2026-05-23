@@ -11,6 +11,7 @@ import { getCareerClusters } from "@/lib/dataLoader";
 import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
 import { hasLeadCapture, getStoredQuizResult, getStoredLeadProfile } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
+import { appNameFull } from "@/lib/app-params";
 import { buildHollandCode } from "@/lib/scoringEngine";
 
 const RIASEC_LABELS = { R: "Realistic", I: "Investigative", A: "Artistic", S: "Social", E: "Enterprising", C: "Conventional" };
@@ -77,7 +78,7 @@ export default function Report() {
       <div className="min-h-screen bg-background flex items-center justify-center px-4 py-10">
         <Card className="w-full max-w-2xl p-5 sm:p-7 border-border/60 shadow-sm">
           <div className="text-center mb-6">
-            <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-2">คู่คิด KooKid</div>
+            <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-2">{appNameFull}</div>
             <h1 className="text-2xl font-bold text-foreground">ยืนยันข้อมูลก่อนดูรายงานฉบับเต็ม</h1>
             <p className="mt-3 text-sm text-muted-foreground">
               รายงานฉบับนี้จะแสดงได้หลังจากยืนยันข้อมูลติดต่อและความยินยอม PDPA ตามความสมัครใจ
@@ -118,7 +119,7 @@ export default function Report() {
     <>
       {/* ── Screen view: header + close hint ────────────────────── */}
       <div className="no-print text-sm px-6 py-3 flex items-center justify-between" style={{background:"#eff6ff",color:"#1a4fba"}}>
-        <span className="font-medium"><span className="font-bold mr-2">คู่คิด KooKid</span>รายงานสรุปผล — กด <kbd className="border rounded px-1.5 py-0.5 text-xs font-mono" style={{borderColor:"#93c5fd"}}>Ctrl+P</kbd> หรือ <kbd className="border rounded px-1.5 py-0.5 text-xs font-mono" style={{borderColor:"#93c5fd"}}>⌘P</kbd> เพื่อพิมพ์ / บันทึก PDF</span>
+        <span className="font-medium"><span className="font-bold mr-2">{appNameFull}</span>รายงานสรุปผล — กด <kbd className="border rounded px-1.5 py-0.5 text-xs font-mono" style={{borderColor:"#93c5fd"}}>Ctrl+P</kbd> หรือ <kbd className="border rounded px-1.5 py-0.5 text-xs font-mono" style={{borderColor:"#93c5fd"}}>⌘P</kbd> เพื่อพิมพ์ / บันทึก PDF</span>
         <button onClick={() => window.close()} className="text-xs underline opacity-70 hover:opacity-100">ปิดหน้าต่าง</button>
       </div>
 
@@ -129,7 +130,7 @@ export default function Report() {
         <div className="border-b-2 pb-3 mb-5 flex items-end justify-between" style={{borderColor:"#1a4fba"}}>
           <div>
             <h1 className="text-xl font-bold leading-tight" style={{color:"#1a4fba"}}>ผลการวิเคราะห์บุคลิกภาพและแนวทางการเรียน TCAS</h1>
-            <p className="text-xs text-gray-400 mt-0.5">คู่คิด KooKid · อ้างอิง TCAS67–68 · วันที่ {new Date().toLocaleDateString("th-TH")}</p>
+            <p className="text-xs text-gray-400 mt-0.5">{appNameFull} · อ้างอิง TCAS67–68 · วันที่ {new Date().toLocaleDateString("th-TH")}</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-gray-500 font-medium">ผลของคุณ</p>
@@ -213,7 +214,7 @@ export default function Report() {
 
         {/* Footer */}
         <p className="text-[10px] text-gray-400 border-t pt-2 mt-4 leading-relaxed">
-          คู่คิด KooKid · ผลนี้ใช้เพื่อเป็นแนวทางเบื้องต้นเท่านั้น อ้างอิงข้อมูล TCAS67–68 และตลาดแรงงานไทย
+          {appNameFull} · ผลนี้ใช้เพื่อเป็นแนวทางเบื้องต้นเท่านั้น อ้างอิงข้อมูล TCAS67–68 และตลาดแรงงานไทย
           ควรปรึกษาครูแนะแนวหรือผู้ปกครองก่อนตัดสินใจ
         </p>
       </div>

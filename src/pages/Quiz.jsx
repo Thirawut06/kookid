@@ -10,6 +10,7 @@ import { computeMatches } from "@/lib/matchingEngine";
 import { computeProfile } from "@/lib/scoringEngine";
 import { generatePersonalitySummary, generateWhyMatch } from "@/lib/summaryGenerator";
 import { trackEvent } from "@/lib/analyticsApi";
+import { appName } from "@/lib/app-params";
 import { getOrCreateActiveProfileId, getStoredLeadProfile, upsertQuizResult } from "@/lib/leadCaptureApi";
 
 import SectionStepper from "@/components/quiz/SectionStepper";
@@ -163,7 +164,7 @@ export default function Quiz() {
             ลุยเลย{nickname ? ` น้อง ${nickname}` : ""}!
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            พร้อมแล้ว มาดูว่าคู่คิด KooKid จะพาคุณไปเจอตัวตนของคุณกัน
+            พร้อมแล้ว มาดูว่า{appName} จะพาคุณไปเจอตัวตนของคุณกัน
           </p>
         </Card>
 
@@ -177,7 +178,7 @@ export default function Quiz() {
           <AnimatePresence>
             {visibleQuestions.map((question, visibleIndex) => {
               const globalIndex = allQuestions.findIndex(allQuestion => allQuestion.id === question.id);
-              const questionIndex = isInterests ? globalIndex - (interestPage * INTEREST_PAGE_SIZE) : visibleIndex;
+              const questionIndex = globalIndex; // use global index so numbering is sequential across pages
               const answer = answers[question.id];
 
               return (
