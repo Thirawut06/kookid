@@ -12,13 +12,6 @@ const LabelAny = /** @type {any} */ (Label);
 const CheckboxAny = /** @type {any} */ (Checkbox);
 const InputAny = /** @type {any} */ (Input);
 
-const USER_TYPES = [
-  { value: "student_junior", label: "นักเรียน ม.ต้น" },
-  { value: "student_senior", label: "นักเรียน ม.ปลาย / ปวช." },
-  { value: "parent", label: "ผู้ปกครอง" },
-  { value: "working_college", label: "นักศึกษา / วัยทำงาน" },
-];
-
 const STUDY_TRACK_OPTIONS = [
   { value: "sci_math", label: "วิทย์-คณิต" },
   { value: "arts_math", label: "ศิลป์-คำนวณ" },
@@ -81,7 +74,6 @@ const GRADE_LEVEL_OPTIONS = {
  *   submitLabel?: string,
  *   className?: string,
  *   prefill?: LeadPrefill,
- *   compact?: boolean,
  * }} props
  */
 export default function LeadCaptureForm({
@@ -91,7 +83,6 @@ export default function LeadCaptureForm({
   submitLabel = "ยืนยัน",
   className,
   prefill,
-  compact = false,
 }) {
   const [form, setForm] = useState(() => buildInitialForm(prefill));
   const [errors, setErrors] = useState(/** @type {Record<string, string | undefined>} */ ({}));
@@ -196,34 +187,8 @@ export default function LeadCaptureForm({
 
   return (
     <form onSubmit={handleSubmit} className={cn("space-y-6", className)}>
-      <div>
-        <h2 className="text-lg font-semibold text-foreground">ตรวจสอบข้อมูลและกรอกข้อมูลติดต่อ</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          ข้อมูลส่วนนี้จะใช้เชื่อมผลประเมินกับรายงาน โควต้า และทุนที่เหมาะกับคุณ
-        </p>
-      </div>
-
-      <div className="rounded-2xl border border-border/60 bg-card p-4 space-y-4">
-        <div className="space-y-2">
-          <LabelAny>ข้อมูลที่ยืนยันจากขั้นตอนก่อนหน้า</LabelAny>
-          <div className="grid gap-2 rounded-xl border border-border/60 bg-muted/30 p-3 text-sm text-foreground">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-muted-foreground">ชื่อเล่น</span>
-              <span className="font-medium">{form.nickname || getStoredLeadProfile(profileId)?.nickname || "-"}</span>
-            </div>
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-muted-foreground">สถานะ</span>
-              <span className="font-medium">
-                {getUserTypeLabel(form.userType || getStoredLeadProfile(profileId)?.userType || "")}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-border/60 bg-card p-4">
-        <LabelAny className="text-sm font-medium">ข้อมูลติดต่อ</LabelAny>
-        <div className={cn("mt-3 grid gap-4", compact ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2")}>
+      <div className="rounded-2xl border border-border/60 bg-card p-4 md:p-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <LabelAny htmlFor="phone">เบอร์โทรศัพท์มือถือ <span className="text-destructive">*</span></LabelAny>
             <InputAny
@@ -267,11 +232,7 @@ export default function LeadCaptureForm({
             />
           </div>
         </div>
-      </div>
 
-      <div className="rounded-2xl border border-border/60 bg-card p-4">
-        <LabelAny className="text-sm font-medium">ข้อมูลการศึกษา</LabelAny>
-        <div className={cn("mt-3 grid gap-4", compact ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2")}>
           <div className="space-y-2 md:col-span-2">
             <LabelAny htmlFor="gradeLevel">
               {form.userType === "parent" ? "ระดับชั้นของบุตรหลาน" : form.userType === "working_college" ? "ระดับการศึกษา / สถานะ" : "ระดับชั้น"}
@@ -351,7 +312,6 @@ export default function LeadCaptureForm({
             </div>
           )}
         </div>
-      </div>
 
       <div className="rounded-2xl border border-border/60 bg-muted/30 p-4 space-y-3">
         <div className="flex items-start gap-3">
@@ -361,13 +321,10 @@ export default function LeadCaptureForm({
             onCheckedChange={/** @param {any} checked */ (checked) => updateField("consentAccepted", Boolean(checked))}
             className="mt-1"
           />
-          <div className="space-y-1">
-            <LabelAny htmlFor="consentAccepted" className="text-sm leading-6 font-normal cursor-pointer">
-              ข้าพเจ้ารับทราบและยินยอมให้แพลตฟอร์ม{` `}{appNameFull} นำข้อมูลผลแบบทดสอบและข้อมูลติดต่อของข้าพเจ้าไปใช้ในการแนะนำโควต้า ทุนการศึกษา หรือส่งต่อข้อมูลให้มหาวิทยาลัยคู่สัญญาที่เกี่ยวข้องกับผลการประเมิน ตามนโยบายความเป็นส่วนตัว
+          <div>
+            <LabelAny htmlFor="consentAccepted" className="text-sm leading-snug cursor-pointer">
+              ข้าพเจ้ายินยอมให้ {appNameFull} ใช้ข้อมูลเพื่อแนะนำโควต้า ทุนการศึกษา และมหาวิทยาลัยที่ตรงกับผลประเมิน (อ่าน <Link to="/privacy" className="underline text-primary">นโยบายความเป็นส่วนตัว</Link>)
             </LabelAny>
-            <div className="text-xs text-muted-foreground">
-              อ่านรายละเอียดเพิ่มเติมได้ที่ <Link to="/privacy" className="underline underline-offset-4 text-primary">นโยบายความเป็นส่วนตัว / PDPA</Link>
-            </div>
           </div>
         </div>
         {errors.consentAccepted && <p className="text-xs text-destructive">{errors.consentAccepted}</p>}
@@ -419,9 +376,4 @@ function getGradeLevelOptions(userType) {
   if (userType === "parent") return GRADE_LEVEL_OPTIONS.parent;
   if (userType === "working_college") return GRADE_LEVEL_OPTIONS.working_college;
   return [];
-}
-
-/** @param {string} userType */
-function getUserTypeLabel(userType) {
-  return USER_TYPES.find(option => option.value === userType)?.label || userType || "-";
 }
