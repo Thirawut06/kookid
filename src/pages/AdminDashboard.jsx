@@ -379,7 +379,7 @@ export default function AdminDashboard() {
       <div className="max-w-6xl mx-auto space-y-5">
         <div>
           <h1 className="text-2xl font-bold text-foreground">KooKid Admin Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">สรุปผู้ทำแบบทดสอบ คำขอข้อมูลโควต้า/ทุน ความสนใจตามกลุ่มอาชีพ และ event พื้นฐานของระบบ</p>
+          <p className="text-sm text-muted-foreground mt-1">สรุปผู้ทำแบบทดสอบ ความสนใจตามกลุ่มอาชีพ และ event พื้นฐานของระบบ</p>
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
@@ -390,7 +390,7 @@ export default function AdminDashboard() {
             <p className="text-2xl font-bold text-foreground mt-1">{quizCount}</p>
           </Card>
           <Card className="p-4">
-            <p className="text-xs text-muted-foreground">คำขอข้อมูลโควต้า/ทุนทั้งหมด</p>
+            <p className="text-xs text-muted-foreground">ความสนใจในคณะ/สาขาทั้งหมด</p>
             <p className="text-2xl font-bold text-foreground mt-1">{interests.length}</p>
           </Card>
           <Card className="p-4">
@@ -432,7 +432,7 @@ export default function AdminDashboard() {
 
             <div className="flex flex-col sm:flex-row gap-2">
               <Button onClick={handleExportCsv} className="rounded-xl">
-                Export รายการคำขอ (CSV)
+                Export รายการที่สนใจ (CSV)
               </Button>
               <Button onClick={handleExportEventsCsv} variant="outline" className="rounded-xl">
                 Export Event Logs (CSV)
@@ -493,14 +493,14 @@ export default function AdminDashboard() {
         </Card>
 
         <Card className="p-4 sm:p-5 border border-border/60">
-          <h2 className="text-base font-semibold text-foreground mb-3">คำขอข้อมูลแยกตามมหาวิทยาลัยและสาขา</h2>
+          <h2 className="text-base font-semibold text-foreground mb-3">ความสนใจแยกตามมหาวิทยาลัยและสาขา</h2>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[520px] text-sm">
               <thead>
                 <tr className="text-left border-b border-border">
                   <th className="py-2 pr-2">มหาวิทยาลัย</th>
                   <th className="py-2 pr-2">สาขา</th>
-                  <th className="py-2 pr-2">จำนวนคำขอ</th>
+                  <th className="py-2 pr-2">จำนวนความสนใจ</th>
                 </tr>
               </thead>
               <tbody>
@@ -549,7 +549,7 @@ export default function AdminDashboard() {
         </Card>
 
         <Card className="p-4 sm:p-5 border border-border/60">
-          <h2 className="text-base font-semibold text-foreground mb-3">รายการคำขอ (ตามตัวกรองปัจจุบัน)</h2>
+          <h2 className="text-base font-semibold text-foreground mb-3">รายการความสนใจ (ตามตัวกรองปัจจุบัน)</h2>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[980px] text-sm">
               <thead>
@@ -583,7 +583,7 @@ export default function AdminDashboard() {
                 ))}
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td className="py-3 text-muted-foreground" colSpan={10}>ไม่พบรายการคำขอตามตัวกรองที่เลือก</td>
+                    <td className="py-3 text-muted-foreground" colSpan={10}>ไม่พบรายการความสนใจตามตัวกรองที่เลือก</td>
                   </tr>
                 )}
               </tbody>

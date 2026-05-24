@@ -90,17 +90,21 @@ export async function ensureRemoteLeadProfile(userProfileId) {
   if (!profile) return false;
 
   // Server-only: require server endpoint to accept writes.
-  await postToServer("profile", {
-    id: userProfileId,
-    nickname: profile.nickname,
-    grade_and_school: profile.gradeAndSchool,
-    contact: profile.contact,
-    email: profile.email || null,
-    school_province: profile.schoolProvince || null,
-    consent_accepted: Boolean(profile.consentAccepted),
-    consent_at: profile.consentAt || profile.updatedAt || new Date().toISOString(),
-    updated_at: profile.updatedAt || new Date().toISOString(),
-  });
+  try {
+    await postToServer("profile", {
+      id: userProfileId,
+      nickname: profile.nickname,
+      grade_and_school: profile.gradeAndSchool,
+      contact: profile.contact,
+      email: profile.email || null,
+      school_province: profile.schoolProvince || null,
+      consent_accepted: Boolean(profile.consentAccepted),
+      consent_at: profile.consentAt || profile.updatedAt || new Date().toISOString(),
+      updated_at: profile.updatedAt || new Date().toISOString(),
+    });
+  } catch (error) {
+    console.warn("Skipping ensureRemoteLeadProfile server sync:", error);
+  }
 
   return true;
 }
@@ -157,19 +161,23 @@ export async function createInitialProfile({ nickname = "", userType = "" } = {}
   writeStore(store);
   setActiveProfileId(profileId);
 
-  // Persist to server-only endpoint. Throw if server write fails.
-  await postToServer("profile", {
-    id: profileId,
-    nickname,
-    user_type: userType,
-    contact: null,
-    grade_and_school: null,
-    email: null,
-    line_id: null,
-    education_level: null,
-    consent_accepted: false,
-    updated_at: now,
-  });
+  // Persist to server-only endpoint. Catch if server write fails (e.g. local dev).
+  try {
+    await postToServer("profile", {
+      id: profileId,
+      nickname,
+      user_type: userType,
+      contact: null,
+      grade_and_school: null,
+      email: null,
+      line_id: null,
+      education_level: null,
+      consent_accepted: false,
+      updated_at: now,
+    });
+  } catch (error) {
+    console.warn("Skipping createInitialProfile server sync:", error);
+  }
 
   return profileId;
 }
@@ -207,11 +215,15 @@ async function persistQuizResultToSupabase(userProfileId, result) {
   await ensureRemoteLeadProfile(userProfileId);
 
   // Server-only quiz persist
-  await postToServer("quiz", {
-    user_profile_id: userProfileId,
-    result,
-    linked_at: new Date().toISOString(),
-  });
+  try {
+    await postToServer("quiz", {
+      user_profile_id: userProfileId,
+      result,
+      linked_at: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.warn("Skipping persistQuizResultToSupabase server sync:", error);
+  }
 }
 
 export async function upsertLeadCapture(userProfileId, fullData = {}) {
@@ -278,21 +290,25 @@ export async function upsertLeadCapture(userProfileId, fullData = {}) {
     window.localStorage.setItem(ACTIVE_PROFILE_KEY, profileId);
   }
 
-  // Persist via server endpoint only. Throw if server write fails.
-  await postToServer("profile", {
-    id: profileId,
-    nickname: nickname || existing.nickname || null,
-    user_type: userType || existing.userType || null,
-    grade_and_school: resolvedGradeAndSchool || null,
-    contact: contact ?? existing.contact ?? null,
-    email: email ?? existing.email ?? null,
-    line_id: lineId ?? existing.lineId ?? null,
-    education_level: educationLevel ?? existing.educationLevel ?? null,
-    school_province: schoolProvince ?? existing.schoolProvince ?? null,
-    consent_accepted: true,
-    consent_at: now,
-    updated_at: now,
-  });
+  // Persist via server endpoint only. Catch if server write fails (e.g. local dev).
+  try {
+    await postToServer("profile", {
+      id: profileId,
+      nickname: nickname || existing.nickname || null,
+      user_type: userType || existing.userType || null,
+      grade_and_school: resolvedGradeAndSchool || null,
+      contact: contact ?? existing.contact ?? null,
+      email: email ?? existing.email ?? null,
+      line_id: lineId ?? existing.lineId ?? null,
+      education_level: educationLevel ?? existing.educationLevel ?? null,
+      school_province: schoolProvince ?? existing.schoolProvince ?? null,
+      consent_accepted: true,
+      consent_at: now,
+      updated_at: now,
+    });
+  } catch (error) {
+    console.warn("Skipping upsertLeadCapture server sync:", error);
+  }
 
   if (result) {
     await persistQuizResultToSupabase(profileId, result);

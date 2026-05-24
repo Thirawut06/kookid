@@ -46,10 +46,10 @@ export const riasecQuestions = [
 const constraintQuestions = [
   {
     id: "Q_CON_GPAX", section: "constraints", type: "multiple_choice",
-    text: "เพื่อเช็กสิทธิ์ 'โควต้าและทุนเรียนดี' เกรดเฉลี่ยสะสม (GPAX) ของคุณอยู่ในช่วงไหน?",
+    text: "เพื่อประเมินโอกาสสอบติดและคัดกรองมหาลัยที่เหมาะกับคุณ เกรดเฉลี่ยสะสม (GPAX) ของคุณอยู่ในช่วงไหน?",
     options: [
-      { id: "gpax_high", label: "3.50 ขึ้นไป (ลุ้นทุน 100%)" },
-      { id: "gpax_mid_high", label: "3.00 - 3.49 (ลุ้นทุน 50%)" },
+      { id: "gpax_high", label: "3.50 ขึ้นไป" },
+      { id: "gpax_mid_high", label: "3.00 - 3.49" },
       { id: "gpax_mid", label: "2.50 - 2.99" },
       { id: "gpax_low", label: "ต่ำกว่า 2.50" },
       { id: "not_sure", label: "จำไม่ได้ / ยังไม่อยากบอก" },
@@ -63,7 +63,6 @@ const constraintQuestions = [
       { id: "full_support", label: "ที่บ้านซัพพอร์ตเต็มที่ (ม.รัฐ หรือ เอกชน ก็ได้หมด)" },
       { id: "state_only", label: "เน้น ม.รัฐ หรือที่ที่ค่าเทอมประหยัดไว้ก่อน" },
       { id: "loan_needed", label: "วางแผนจะกู้ กยศ. / เพื่อส่งตัวเองเรียน" },
-      { id: "scholarship_hunter", label: "นักล่าทุน! ตามหาทุนการศึกษาเป็นหลัก" },
     ],
     tags: ["financial_capacity"], weight: 1.0,
   },

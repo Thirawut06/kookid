@@ -20,7 +20,6 @@ import {
   getStoredUserProfileId,
   hasLeadCapture,
   upsertQuizResult,
-  recordProgramInterest,
   getStoredLeadProfile,
 } from "@/lib/leadCaptureApi";
 
@@ -54,10 +53,7 @@ export default function Results() {
   const [sessionProfileId] = useState(() => getOrCreateSessionProfileId());
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
-  const [requestedMajorIds, setRequestedMajorIds] = useState(/** @type {Record<string, boolean>} */ (readRequestedMajors()));
   const [expandedCareerMajors, setExpandedCareerMajors] = useState(/** @type {Record<string, boolean>} */ ({}));
-  
-  const [pendingInterestMajor, setPendingInterestMajor] = useState(/** @type {MajorItem | null} */ (null));
 
   // Feedback state — keyed by careerId → interestLevel
   const [careerFeedback, setCareerFeedback] = useState(/** @type {Record<string, number>} */ ({}));
@@ -95,8 +91,8 @@ export default function Results() {
 
   if (!result) return null;
 
-  const typedResult = /** @type {QuizResultData} */ (result);
-  const { profile, clusters, majors, summary } = typedResult;
+  const typedResult = /** @type {QuizResultData & { answers?: Record<string, any> }} */ (result);
+  const { profile, clusters, majors, summary, answers = {} } = typedResult;
   // Use clusters directly from computeMatches
   const topClusters = clusters ?? [];
   const userProfileId = leadProfileId;
@@ -118,51 +114,8 @@ export default function Results() {
     window.open(`/report/${userProfileId}`, "_blank");
   };
 
-  /** @param {MajorItem} major */
-  const handleProgramInterest = (major) => {
-    trackEvent("program_interest_clicked", {
-      page: "results",
-      userProfileId: userProfileId || null,
-      majorId: major.id,
-    });
-
-    if (requestedMajorIds?.[major.id]) return;
-
-    if (!userProfileId || !hasCapturedLead) {
-      // remember this major so we can auto-submit after lead capture completes
-      setPendingInterestMajor(major);
-      setLeadDialogOpen(true);
-      return;
-    }
-
-    // Submit immediately when user is already unlocked
-    recordProgramInterest({
-      userProfileId,
-      majorId: major.id,
-      universityId: major.universityId,
-      interestLevel: "request_info",
-    })
-      .then(() => {
-        setRequestedMajorIds(prev => {
-          const next = { ...prev, [major.id]: true };
-          sessionStorage.setItem("kookid_requested_majors", JSON.stringify(next));
-          return next;
-        });
-        trackEvent("program_interest_submitted", {
-          page: "results",
-          userProfileId,
-          majorId: major.id,
-        });
-        toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
-      })
-      .catch((error) => {
-        console.error("Program interest submit failed:", error);
-        toast.error("บันทึกคำขอข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
-      });
-  };
-
   const handleUnlockMajors = () => {
-    trackEvent("lead_gate_clicked", {
+    trackEvent("fake_door_click_59thb", {
       page: "results",
       source: "major_teaser",
       userProfileId: userProfileId || null,
@@ -175,37 +128,6 @@ export default function Results() {
     setLeadDialogOpen(false);
     setLeadProfileId(getStoredUserProfileId());
     toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
-    // If user had attempted to request a major before providing lead info, auto-submit it now
-    if (pendingInterestMajor) {
-      const newUserProfileId = getStoredUserProfileId();
-      const major = pendingInterestMajor;
-      // clear pending immediately to avoid duplicate attempts
-      setPendingInterestMajor(null);
-
-      recordProgramInterest({
-        userProfileId: newUserProfileId,
-        majorId: major.id,
-        universityId: major.universityId,
-        interestLevel: "request_info",
-      })
-        .then(() => {
-          setRequestedMajorIds(prev => {
-            const next = { ...prev, [major.id]: true };
-            sessionStorage.setItem("kookid_requested_majors", JSON.stringify(next));
-            return next;
-          });
-          trackEvent("program_interest_submitted", {
-            page: "results",
-            userProfileId: newUserProfileId,
-            majorId: major.id,
-          });
-          toast.success("เราได้รับคำขอข้อมูลจากคุณแล้ว หากมีโควต้าหรือทุนที่ตรงกับผลของคุณ เราจะติดต่อกลับผ่านข้อมูลที่ให้ไว้");
-        })
-        .catch((error) => {
-          console.error("Auto program interest submit failed:", error);
-          toast.error("บันทึกคำขอข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง");
-        });
-    }
   };
 
   /** @param {string} careerId @param {number} level */
@@ -261,6 +183,17 @@ export default function Results() {
   const hasStoredLead = Boolean(userProfileId && hasLeadCapture(userProfileId));
   const unlocked = isUnlocked || hasStoredLead;
 
+  const painpointAnswer = answers?.Q_CON_PAINPOINT;
+  const isFindingInfo = Array.isArray(painpointAnswer) ? painpointAnswer.includes("finding_info") : painpointAnswer === "finding_info";
+  const isPortfolio = Array.isArray(painpointAnswer) ? painpointAnswer.includes("portfolio") : painpointAnswer === "portfolio";
+
+  let unlockButtonText = "🔒 ปลดล็อกบทวิเคราะห์เชิงลึก 5 อันดับ + สรุปเกณฑ์ TCAS เฉพาะคุณ (เพียง 59 บาท)";
+  if (isFindingInfo) {
+    unlockButtonText = "🔒 ปลดล็อกรายงาน 5 อาชีพ + แถมฟรี! สรุปเกณฑ์ TCAS ฉบับกันพลาด (59 บาท)";
+  } else if (isPortfolio) {
+    unlockButtonText = "🔒 ปลดล็อกรายงาน 5 อาชีพ + แถมฟรี! ไอเดียปั้นพอร์ตฉุกเฉินให้ติดรอบ 1 (59 บาท)";
+  }
+
   /** @param {string} careerId */
   const toggleCareerMajors = (careerId) => {
     setExpandedCareerMajors((prev) => ({
@@ -288,19 +221,7 @@ export default function Results() {
               สวัสดี {leadProfile.nickname} จาก {leadProfile.gradeAndSchool}
             </p>
           )}
-          <button
-            onClick={openReport}
-            className="mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
-          >
-            <Download className="w-3.5 h-3.5" />
-            ดาวน์โหลดผลเป็น PDF
-          </button>
-          {!hasStoredLead && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              กรุณายืนยันข้อมูลติดต่อก่อนเพื่อปลดล็อกรายงานฉบับเต็ม
-            </p>
-          )}
-        </motion.div>
+          </motion.div>
 
         {/* Section 1: Identity */}
         <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
@@ -367,8 +288,6 @@ export default function Results() {
                 <MajorList
                   majors={majors}
                   topCareers={[topMatch]}
-                  onProgramInterest={handleProgramInterest}
-                  requestedMajorIds={requestedMajorIds}
                   hasCapturedLead={true}
                   hideFeedback={true}
                 />
@@ -412,9 +331,9 @@ export default function Results() {
                   type="button"
                   size="lg"
                   onClick={handleUnlockMajors}
-                  className="rounded-full px-8 py-6 text-base sm:text-lg font-bold text-white bg-gradient-to-r from-primary to-indigo-500 shadow-[0_18px_50px_rgba(79,70,229,0.35)]"
+                  className="rounded-full px-8 py-6 text-base sm:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)]"
                 >
-                  🔒 ยืนยันข้อมูลเพื่อปลดล็อกอีก 4 อาชีพ และโควต้ามหาวิทยาลัยทั้งหมด ฟรี!
+                  {unlockButtonText}
                 </Button>
               </div>
             </div>
@@ -461,8 +380,6 @@ export default function Results() {
                           <MajorList
                             majors={majors}
                             topCareers={[career]}
-                            onProgramInterest={handleProgramInterest}
-                            requestedMajorIds={requestedMajorIds}
                             hasCapturedLead={true}
                             hideFeedback={true}
                           />
@@ -510,14 +427,11 @@ export default function Results() {
       <Dialog open={leadDialogOpen} onOpenChange={setLeadDialogOpen}>
         <DialogContentAny className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeaderAny>
-            <DialogTitleAny className="text-xl">ยืนยันข้อมูลติดต่อเพื่อปลดล็อกรายงานและโควต้า</DialogTitleAny>
+            <DialogTitleAny className="text-xl">🚨 ขออภัย ระบบชำระเงินกำลังปิดปรับปรุง!</DialogTitleAny>
             <DialogDescriptionAny>
-              กรอกข้อมูลเพียงไม่กี่ช่องเพื่อรับรายงานฉบับเต็ม พร้อมรายการคณะ โควต้า และทุนที่สอดคล้องกับผลประเมินของคุณ
+              แต่คุณคือผู้โชคดี! เนื่องจากระบบขัดข้อง เราขอมอบสิทธิ์รับ Report ฉบับเต็มให้คุณ ฟรี ทันทีที่ระบบใช้งานได้ กรุณาทิ้งข้อมูลติดต่อไว้ด้านล่าง
             </DialogDescriptionAny>
           </DialogHeaderAny>
-          <p className="text-xs text-muted-foreground">
-            เราใช้ข้อมูลเฉพาะเพื่อแนะนำสิทธิ์ที่เกี่ยวข้องกับผลประเมินของคุณเท่านั้น และไม่ส่งแบบสุ่ม
-          </p>
           <LeadCaptureForm
             onSubmitSuccess={handleLeadSubmitSuccess}
             onCancel={() => setLeadDialogOpen(false)}
@@ -544,13 +458,4 @@ function getArchetypeLabel(hollandCode) {
     C: "The Organizer",
   };
   return archetypes[leading] || "The Explorer";
-}
-
-function readRequestedMajors() {
-  if (typeof window === "undefined") return {};
-  try {
-    return JSON.parse(sessionStorage.getItem("kookid_requested_majors") || "{}");
-  } catch {
-    return {};
-  }
 }

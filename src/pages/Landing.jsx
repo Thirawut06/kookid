@@ -29,8 +29,8 @@ const features = [
   },
   {
     icon: Sparkles,
-    title: "ชี้เป้าทุนและโควต้า",
-    desc: "ไม่ต้องงมหาเองให้เหนื่อย รับข้อมูลทุนการศึกษาและโควต้าจากมหาลัยส่งตรงถึงมือคุณ",
+    title: "เตรียมตัวตรงจุด",
+    desc: "รู้จุดแข็ง จุดอ่อน พร้อมแนวทางพัฒนาตัวเองให้โดดเด่นโดนใจกรรมการ",
   },
 ];
 
@@ -92,7 +92,7 @@ export default function Landing() {
               {appNameFull}
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
-              หาคณะที่ใช่ มหาลัยที่ชอบ... พร้อมปลดล็อกโควต้าเรียนฟรี!
+              หาคณะที่ใช่ มหาลัยที่ชอบ... ด้วยบทวิเคราะห์ฉบับเจาะลึก!
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               ทำแบบทดสอบจิตวิทยาแค่ 3 นาที เพื่อค้นหาอาชีพที่เกิดมาเพื่อคุณ พร้อมจับคู่คณะในระบบ TCAS อัตโนมัติ

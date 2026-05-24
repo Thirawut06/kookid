@@ -22,25 +22,11 @@ import { motion } from "framer-motion";
  * }} MajorGroup
  */
 
-/**
- * @param {{
- *   majors: MajorItem[],
- *   topCareers: Array<{ clusterId: string, nameTh: string }>,
- *   onProgramInterest?: (major: MajorItem) => void,
- *   requestedMajorIds?: Record<string, boolean>,
- *   hasCapturedLead?: boolean,
- *   onUnlockLead?: () => void,
- *   hideFeedback?: boolean,
- * }} props
- */
 export default function MajorList({
   majors,
   topCareers,
-  onProgramInterest,
-  requestedMajorIds,
   hasCapturedLead = false,
   onUnlockLead,
-  hideFeedback = false,
 }) {
   /** @type {Record<string, MajorGroup>} */
   const clusterMap = {};
@@ -79,8 +65,6 @@ export default function MajorList({
               return (
                 <>
                   {unlocked.map((major) => {
-                    const alreadyRequested = Boolean(requestedMajorIds?.[major.id]);
-
                     return (
                       <div key={major.id} className="relative">
                         <Card className="flex h-full flex-col overflow-hidden rounded-[18px] border border-border/50 bg-white/72 p-5 shadow-[0_6px_20px_rgba(0,0,0,0.04)] transition-all">
@@ -103,26 +87,6 @@ export default function MajorList({
                           <div className="mt-3 space-y-1.5">
                             <p className="text-xs text-muted-foreground line-clamp-1">{major.facultyNameTh}</p>
                             <p className="text-xs text-muted-foreground/70 line-clamp-2 leading-5">{major.universityNameTh}</p>
-                          </div>
-
-                          <div className="mt-auto pt-4">
-                            <div className="space-y-2">
-                              <Button
-                                type="button"
-                                size="sm"
-                                disabled={alreadyRequested}
-                                className="h-auto w-full rounded-xl bg-orange-600 px-3 py-2.5 font-semibold text-white shadow-md hover:bg-orange-700 disabled:bg-orange-100 disabled:text-muted-foreground disabled:opacity-100"
-                                onClick={() => onProgramInterest?.(major)}
-                              >
-                                <Gift className="w-4 h-4 mr-1.5 shrink-0" />
-                                {alreadyRequested ? "ส่งคำขอแล้ว" : "รับสิทธิ์โควต้า/ทุน"}
-                              </Button>
-                              {!hideFeedback && (
-                                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                                  กดปุ่มนี้ถ้าคุณอยากให้มหาวิทยาลัยส่งข้อมูลโควต้า/ทุนที่ตรงกับผลของคุณมาให้ (ไม่มีค่าใช้จ่าย)
-                                </p>
-                              )}
-                            </div>
                           </div>
                         </Card>
                       </div>
