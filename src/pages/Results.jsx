@@ -54,6 +54,7 @@ export default function Results() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
   const [expandedCareerMajors, setExpandedCareerMajors] = useState(/** @type {Record<string, boolean>} */ ({}));
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
 
   // Feedback state — keyed by careerId → interestLevel
   const [careerFeedback, setCareerFeedback] = useState(/** @type {Record<string, number>} */ ({}));
@@ -120,7 +121,11 @@ export default function Results() {
       source: "major_teaser",
       userProfileId: userProfileId || null,
     });
-    setLeadDialogOpen(true);
+    setIsPaymentLoading(true);
+    setTimeout(() => {
+      setIsPaymentLoading(false);
+      setLeadDialogOpen(true);
+    }, 1800);
   };
 
   const handleLeadSubmitSuccess = () => {
@@ -331,9 +336,10 @@ export default function Results() {
                   type="button"
                   size="lg"
                   onClick={handleUnlockMajors}
-                  className="rounded-full px-8 py-6 text-base sm:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)]"
+                  disabled={isPaymentLoading}
+                  className="rounded-full px-8 py-6 text-base sm:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)] disabled:opacity-70 disabled:cursor-wait"
                 >
-                  {unlockButtonText}
+                  {isPaymentLoading ? "⏳ กำลังเชื่อมต่อ Payment Gateway..." : unlockButtonText}
                 </Button>
               </div>
             </div>

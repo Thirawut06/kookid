@@ -206,6 +206,66 @@ export default function AdminDashboard() {
       .slice(0, 10);
   }, [eventRows, hasActiveFilters, filteredProfileIds, clusterById]);
 
+  // ── Conversion Intent Metrics ──────────────────────────────────────
+  const premiumClickerIds = useMemo(() => {
+    const ids = new Set();
+    eventRows.forEach(row => {
+      if (row.event_name === "fake_door_click_59thb" && row.user_profile_id) {
+        ids.add(row.user_profile_id);
+      }
+    });
+    return ids;
+  }, [eventRows]);
+
+  const conversionMetrics = useMemo(() => {
+    const premiumClicks = eventRows.filter(r => r.event_name === "fake_door_click_59thb").length;
+    const totalPageViews = eventRows.filter(r => r.event_name === "results_viewed").length;
+    const conversionRate = totalPageViews > 0 ? ((premiumClicks / totalPageViews) * 100).toFixed(1) : "0.0";
+
+    // Pain points from users who clicked the premium button
+    const PAINPOINT_LABELS = {
+      portfolio: "ไม่มีผลงานทำ Portfolio",
+      interview: "กลัวสอบสัมภาษณ์",
+      exam_prep: "อ่านหนังสือสอบไม่ทัน",
+      finding_info: "งงระบบ TCAS / ไม่รู้จะเริ่มจากตรงไหน",
+    };
+    const painMap = new Map();
+    quizResults.forEach(row => {
+      if (!premiumClickerIds.has(row.user_profile_id)) return;
+      const answers = row.result?.answers || {};
+      let painVal = answers.Q_CON_PAINPOINT;
+      if (!painVal) return;
+      const painArr = Array.isArray(painVal) ? painVal : [painVal];
+      painArr.forEach(p => {
+        painMap.set(p, (painMap.get(p) || 0) + 1);
+      });
+    });
+    const painPoints = Array.from(painMap.entries())
+      .map(([id, count]) => ({ id, label: PAINPOINT_LABELS[id] || id, count }))
+      .sort((a, b) => b.count - a.count);
+
+    return { premiumClicks, totalPageViews, conversionRate, painPoints };
+  }, [eventRows, quizResults, premiumClickerIds]);
+
+  // ── Hot Schools (B2B Sales) ────────────────────────────────────────
+  const hotSchools = useMemo(() => {
+    const map = new Map();
+    profiles.forEach(p => {
+      const parsed = splitGradeAndSchool(p.grade_and_school);
+      const school = parsed.schoolName || p.school_name || p.schoolName;
+      if (!school || school === "-") return;
+      const province = p.school_province || p.schoolProvince || "-";
+      const key = `${school}::${province}`;
+      const current = map.get(key) || { school, province, count: 0, hasPremiumClick: false };
+      current.count += 1;
+      if (premiumClickerIds.has(p.id)) current.hasPremiumClick = true;
+      map.set(key, current);
+    });
+    return Array.from(map.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 20);
+  }, [profiles, premiumClickerIds]);
+
   // Attempt to load data from the protected server endpoint. The endpoint
   // validates the token and queries Supabase with a service role key on the server.
   useEffect(() => {
@@ -379,11 +439,58 @@ export default function AdminDashboard() {
       <div className="max-w-6xl mx-auto space-y-5">
         <div>
           <h1 className="text-2xl font-bold text-foreground">KooKid Admin Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">สรุปผู้ทำแบบทดสอบ ความสนใจตามกลุ่มอาชีพ และ event พื้นฐานของระบบ</p>
+          <p className="text-sm text-muted-foreground mt-1">Conversion Intent · Fake Door Test 59 THB · สรุปผู้ทำแบบทดสอบ ความสนใจ และ event</p>
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
+        {/* ── Conversion Intent Metrics (Fake Door 59 THB) ──────────── */}
+        <Card className="p-4 sm:p-5 border-2 border-amber-400/60 bg-amber-50/30">
+          <h2 className="text-base font-bold text-amber-700 mb-3 flex items-center gap-2">
+            🔥 Conversion Intent — Fake Door Test (59 THB)
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            <div className="rounded-xl border border-amber-200 bg-white p-4">
+              <p className="text-xs text-muted-foreground">Total Premium Clicks</p>
+              <p className="text-3xl font-bold text-amber-600 mt-1">{conversionMetrics.premiumClicks}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">event: fake_door_click_59thb</p>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-white p-4">
+              <p className="text-xs text-muted-foreground">Conversion Rate (Click / Results View)</p>
+              <p className="text-3xl font-bold text-amber-600 mt-1">{conversionMetrics.conversionRate}%</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{conversionMetrics.premiumClicks} clicks / {conversionMetrics.totalPageViews} views</p>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-white p-4">
+              <p className="text-xs text-muted-foreground">Unique Premium Clickers</p>
+              <p className="text-3xl font-bold text-amber-600 mt-1">{premiumClickerIds.size}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">unique user_profile_ids</p>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground mb-2">🎯 Top Pain Points (จากคนที่กดปุ่ม Premium)</h3>
+            {conversionMetrics.painPoints.length > 0 ? (
+              <div className="space-y-1.5">
+                {conversionMetrics.painPoints.map(pp => {
+                  const maxPP = conversionMetrics.painPoints[0]?.count || 1;
+                  const barW = Math.max(8, Math.round((pp.count / maxPP) * 100));
+                  return (
+                    <div key={pp.id} className="flex items-center gap-3">
+                      <span className="text-xs text-foreground w-56 shrink-0 truncate">{pp.label}</span>
+                      <div className="flex-1 h-2 rounded-full bg-amber-100 overflow-hidden">
+                        <div className="h-full rounded-full bg-amber-500" style={{ width: `${barW}%` }} />
+                      </div>
+                      <span className="text-xs font-semibold text-amber-700 w-8 text-right">{pp.count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">ยังไม่มีข้อมูล — รอให้ user ที่กดปุ่ม Premium ทำแบบทดสอบจบก่อน</p>
+            )}
+          </div>
+        </Card>
+
+        {/* ── Original Summary Cards ────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Card className="p-4">
             <p className="text-xs text-muted-foreground">โปรไฟล์ที่ทำแบบทดสอบเสร็จ</p>
@@ -521,6 +628,48 @@ export default function AdminDashboard() {
           </div>
         </Card>
 
+        {/* ── Hot Schools (B2B Sales Target) ────────────────────────── */}
+        <Card className="p-4 sm:p-5 border-2 border-emerald-400/60 bg-emerald-50/30">
+          <h2 className="text-base font-bold text-emerald-700 mb-3 flex items-center gap-2">
+            🏫 Hot Schools — B2B Sales Target
+          </h2>
+          <p className="text-xs text-muted-foreground mb-3">โรงเรียนที่มีนักเรียนใช้งานมากที่สุด สำหรับวางแผนเข้าถึง B2B</p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[520px] text-sm">
+              <thead>
+                <tr className="text-left border-b border-emerald-200">
+                  <th className="py-2 pr-2">#</th>
+                  <th className="py-2 pr-2">โรงเรียน</th>
+                  <th className="py-2 pr-2">จังหวัด</th>
+                  <th className="py-2 pr-2">จำนวนนักเรียน</th>
+                  <th className="py-2 pr-2">มี Premium Click?</th>
+                </tr>
+              </thead>
+              <tbody>
+                {hotSchools.map((row, idx) => (
+                  <tr key={`${row.school}_${idx}`} className="border-b border-border/50">
+                    <td className="py-2 pr-2 text-muted-foreground">{idx + 1}</td>
+                    <td className="py-2 pr-2 font-medium">{row.school}</td>
+                    <td className="py-2 pr-2">{row.province}</td>
+                    <td className="py-2 pr-2 font-semibold">{row.count}</td>
+                    <td className="py-2 pr-2">
+                      {row.hasPremiumClick
+                        ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">🔥 YES</span>
+                        : <span className="text-muted-foreground text-xs">—</span>
+                      }
+                    </td>
+                  </tr>
+                ))}
+                {hotSchools.length === 0 && (
+                  <tr>
+                    <td className="py-3 text-muted-foreground" colSpan={5}>ยังไม่มีข้อมูลโรงเรียน (จะปรากฏเมื่อนักเรียนกรอก grade_and_school)</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
         <Card className="p-4 sm:p-5 border border-border/60">
           <h2 className="text-base font-semibold text-foreground mb-3">Event Tracking พื้นฐาน</h2>
           <div className="overflow-x-auto">
@@ -551,24 +700,25 @@ export default function AdminDashboard() {
         <Card className="p-4 sm:p-5 border border-border/60">
           <h2 className="text-base font-semibold text-foreground mb-3">รายการความสนใจ (ตามตัวกรองปัจจุบัน)</h2>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] text-sm">
+            <table className="w-full min-w-[1080px] text-sm">
               <thead>
                 <tr className="text-left border-b border-border">
                   <th className="py-2 pr-2">เวลา</th>
                   <th className="py-2 pr-2">นักเรียน</th>
                   <th className="py-2 pr-2">ระดับชั้น</th>
                   <th className="py-2 pr-2">โรงเรียน</th>
-                  <th className="py-2 pr-2">จังหวัดของโรงเรียน</th>
+                  <th className="py-2 pr-2">จังหวัด</th>
                   <th className="py-2 pr-2">เบอร์โทร/LINE</th>
                   <th className="py-2 pr-2">อีเมล</th>
                   <th className="py-2 pr-2">กลุ่มอาชีพ</th>
                   <th className="py-2 pr-2">สาขา</th>
                   <th className="py-2 pr-2">มหาวิทยาลัย</th>
+                  <th className="py-2 pr-2">Premium Click</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRows.map((row) => (
-                  <tr key={row.id} className="border-b border-border/50">
+                  <tr key={row.id} className={`border-b border-border/50 ${premiumClickerIds.has(row.userProfileId) ? "bg-amber-50/50" : ""}`}>
                     <td className="py-2 pr-2 whitespace-nowrap">{new Date(row.createdAt).toLocaleString("th-TH")}</td>
                     <td className="py-2 pr-2">{row.nickname}</td>
                     <td className="py-2 pr-2">{row.gradeLevel}</td>
@@ -579,11 +729,17 @@ export default function AdminDashboard() {
                     <td className="py-2 pr-2">{row.clusterName}</td>
                     <td className="py-2 pr-2">{row.majorName}</td>
                     <td className="py-2 pr-2">{row.universityName}</td>
+                    <td className="py-2 pr-2">
+                      {premiumClickerIds.has(row.userProfileId)
+                        ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">🔥 YES</span>
+                        : <span className="text-xs text-muted-foreground">no</span>
+                      }
+                    </td>
                   </tr>
                 ))}
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td className="py-3 text-muted-foreground" colSpan={10}>ไม่พบรายการความสนใจตามตัวกรองที่เลือก</td>
+                    <td className="py-3 text-muted-foreground" colSpan={11}>ไม่พบรายการความสนใจตามตัวกรองที่เลือก</td>
                   </tr>
                 )}
               </tbody>

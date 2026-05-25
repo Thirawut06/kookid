@@ -101,7 +101,7 @@ export default function MajorList({
                           </div>
                         <div className="flex items-center gap-3">
                           <Button size="sm" variant="ghost" onClick={onUnlockLead} className="rounded-full">
-                            🔒 ยืนยันข้อมูลเพื่อปลดล็อก
+                            🔒 ดูสาขาทั้งหมด (รวมอยู่ในแพ็กเกจ 59 บาท)
                           </Button>
                         </div>
                       </div>

@@ -79,9 +79,9 @@ export default function Report() {
         <Card className="w-full max-w-2xl p-5 sm:p-7 border-border/60 shadow-sm">
           <div className="text-center mb-6">
             <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-2">{appNameFull}</div>
-            <h1 className="text-2xl font-bold text-foreground">ยืนยันข้อมูลก่อนดูรายงานฉบับเต็ม</h1>
+            <h1 className="text-2xl font-bold text-foreground">🚨 รายงานนี้สงวนสิทธิ์เฉพาะผู้ใช้ Premium (59 บาท)</h1>
             <p className="mt-3 text-sm text-muted-foreground">
-              รายงานฉบับนี้จะแสดงได้หลังจากยืนยันข้อมูลติดต่อและความยินยอม PDPA ตามความสมัครใจ
+              ขออภัย ระบบชำระเงินกำลังปิดปรับปรุงชั่วคราว เราจึงเปิดให้คุณลงทะเบียนเพื่อรับสิทธิ์ดู Report ฉบับเต็มได้ <strong>ฟรี</strong> ด้านล่างนี้
             </p>
           </div>
           <LeadCaptureForm
