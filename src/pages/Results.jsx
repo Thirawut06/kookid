@@ -61,6 +61,7 @@ export default function Results() {
   const [careerFeedback, setCareerFeedback] = useState(/** @type {Record<string, number>} */ ({}));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [intentToDownloadPdf, setIntentToDownloadPdf] = useState(false);
   const hasTrackedResultsViewRef = useRef(false);
 
   useEffect(() => {
@@ -123,7 +124,8 @@ export default function Results() {
     });
 
     if (!userProfileId || !hasCapturedLead) {
-      setLeadDialogOpen(true);
+      setIntentToDownloadPdf(true);
+      document.getElementById("unlock-section")?.scrollIntoView({ behavior: "smooth" });
       return;
     }
     window.open(`/report/${userProfileId}`, "_blank");
@@ -145,8 +147,16 @@ export default function Results() {
   const handleLeadSubmitSuccess = () => {
     setIsUnlocked(true);
     setLeadDialogOpen(false);
-    setLeadProfileId(getStoredUserProfileId());
-    toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
+    const newProfileId = getStoredUserProfileId();
+    setLeadProfileId(newProfileId);
+    
+    if (intentToDownloadPdf) {
+      toast.success("บันทึกข้อมูลเรียบร้อย กำลังเปิดรายงาน PDF...");
+      window.open(`/report/${newProfileId}`, "_blank");
+      setIntentToDownloadPdf(false);
+    } else {
+      toast.success("บันทึกข้อมูลเรียบร้อย คุณสามารถดูรายงานฉบับเต็มได้แล้ว");
+    }
   };
 
   /** @param {string} careerId @param {number} level */
@@ -243,18 +253,16 @@ export default function Results() {
           </motion.div>
 
         {/* Download PDF Button */}
-        {unlocked && userProfileId && (
-          <div className="flex justify-center mb-8">
-            <Button
-              size="lg"
-              onClick={openReport}
-              className="rounded-xl gap-2 px-6 py-5 text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
-            >
-              <FileDown className="w-5 h-5" />
-              ดาวน์โหลดรายงานฉบับเต็ม (PDF)
-            </Button>
-          </div>
-        )}
+        <div className="flex justify-center mb-8">
+          <Button
+            size="lg"
+            onClick={openReport}
+            className="rounded-xl gap-2 px-6 py-5 text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
+          >
+            <FileDown className="w-5 h-5" />
+            ดาวน์โหลดรายงานฉบับเต็ม (PDF)
+          </Button>
+        </div>
 
         {/* Section 1: Identity */}
         <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
@@ -360,15 +368,17 @@ export default function Results() {
                     </div>
                   ))}
                 </div>
-                <Button
-                  type="button"
-                  size="lg"
-                  onClick={handleUnlockMajors}
-                  disabled={isPaymentLoading}
-                  className="w-full sm:w-auto rounded-full px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)] disabled:opacity-70 disabled:cursor-wait leading-snug whitespace-normal min-h-[56px]"
-                >
-                  {isPaymentLoading ? "⏳ กำลังเชื่อมต่อ Payment Gateway..." : unlockButtonText}
-                </Button>
+                <div id="unlock-section" className="w-full flex justify-center pt-2">
+                  <Button
+                    type="button"
+                    size="lg"
+                    onClick={handleUnlockMajors}
+                    disabled={isPaymentLoading}
+                    className="w-full sm:w-auto rounded-full px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)] disabled:opacity-70 disabled:cursor-wait leading-snug whitespace-normal min-h-[56px]"
+                  >
+                    {isPaymentLoading ? "⏳ กำลังเชื่อมต่อ Payment Gateway..." : unlockButtonText}
+                  </Button>
+                </div>
               </div>
             </div>
           ) : (

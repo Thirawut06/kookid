@@ -19,24 +19,19 @@ const LabelAny = /** @type {any} */ (Label);
 const features = [
   {
     icon: Brain,
-    title: "หยุดวิกฤติตัวตน",
-    desc: "ค้นหาความถนัดที่ซ่อนอยู่ด้วยทฤษฎีจิตวิทยาระดับโลก (RIASEC) เลิกเลือกคณะตามกระแส แต่เลือกตามศักยภาพที่คุณมีจริงๆ",
+    title: "ค้นหาตัวตน ไม่ตามกระแส",
+    desc: "เลิกสุ่มเดาอนาคต ระบบใช้แบบทดสอบจิตวิทยาอาชีพ (RIASEC) เพื่อบอกจุดแข็งที่คุณมีจริงๆ และอาชีพที่ทำแล้วจะรอดในระยะยาว",
   },
   {
     icon: Filter,
-    title: "ตัดข้อมูลขยะทิ้ง",
-    desc: "ระบบคัดกรองมหาวิทยาลัยจากฐานข้อมูลนับพัน ให้เหลือเฉพาะตัวเลือกที่ตรงกับเงื่อนไข เกรด และเป้าหมายของคุณโดยอัตโนมัติ ไม่ต้องนั่งงมเว็บ ทปอ. เอง",
+    title: "จับคู่คณะ ตรงสเปก",
+    desc: "คัดกรองคณะจากหลักสูตรนับพัน ให้เหลือเฉพาะที่ตรงกับ \"ความถนัด\" และ \"เกรดเฉลี่ย\" ของคุณแบบอัตโนมัติ",
   },
   {
     icon: Users,
-    title: "คัมภีร์เคลียร์ใจที่บ้าน",
-    desc: "รับรายงานวิเคราะห์เชิงลึก สรุปโอกาสเติบโตของอาชีพและเงินเดือน เพื่อนำไปใช้พูดคุยกับผู้ปกครองด้วย 'เหตุผลและข้อมูลจริง' ลดปัญหาการถูกบังคับเรียนในสิ่งที่ไม่ชอบ",
+    title: "เอา Data ไปคุยกับพ่อแม่",
+    desc: "ได้ Report สรุป \"เงินเดือนเฉลี่ย\" และ \"โอกาสเติบโต\" ของอาชีพนั้นๆ เพื่อใช้เป็นข้อมูลจริงคุยกับที่บ้าน ลดปัญหาถูกบังคับเรียน",
   },
-];
-
-const stats = [
-  { icon: Clock, label: "ใช้เวลาประเมินเพียง 3-5 นาที" },
-  { icon: CheckCircle, label: "ทำง่าย 30 คำถาม (รู้ผลทันที)" },
 ];
 
 export default function Landing() {
@@ -87,36 +82,43 @@ export default function Landing() {
             transition={{ duration: 0.7 }}
             className="text-center"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6 tracking-wide">
-              <Target className="w-4 h-4" />
-              เครื่องมือตัดสินใจอนาคต สำหรับเด็ก ม.ปลาย
-            </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
-              อย่าปล่อยให้อนาคตเป็นเรื่องเดาใจ.{" "}
-              <span className="text-primary">ค้นหาคณะที่ 'รอด' และอาชีพที่ 'ใช่'</span>{" "}
-              ก่อนเสียเวลาซิ่วฟรี 1 ปี
+              เลือกคณะพลาด เสียเวลาฟรี 1 ปี<br className="hidden sm:block" />
+              หา <span className="text-primary">"อาชีพที่ใช่"</span> ก่อนลงสนาม TCAS
             </h1>
+            
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              จบปัญหางงระบบ TCAS และข้อมูลท่วมหัว สแกนบุคลิกภาพลึกระดับ DNA ด้วยแบบประเมินมาตรฐานสากล พร้อมระบบคัดกรองมหาวิทยาลัยที่ตรงกับ 'เกรด' และ 'เป้าหมาย' ของคุณ ภายใน 3 นาที
+              สแกนความถนัดด้วยทฤษฎีสากล (RIASEC) พร้อมจับคู่คณะและมหาวิทยาลัย
+              ที่ "รอด" สำหรับคุณ ภายใน 3 นาที โดยไม่ต้องงมระเบียบการเอง
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-5 text-sm text-muted-foreground">
-              {stats.map((s, i) => (
-                <div key={i} className="flex items-center gap-1.5">
-                  <s.icon className="w-4 h-4 text-primary/70" />
-                  {s.label}
-                </div>
-              ))}
+            {/* Trust Badges */}
+            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 mt-8 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span>ประเมินด้วยทฤษฎีสากล (RIASEC)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span>อิงฐานข้อมูลเงินเดือนตลาดแรงงาน</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span>อัปเดตเกณฑ์รับสมัคร TCAS ล่าสุด</span>
+              </div>
             </div>
 
             <div className="mt-10">
               <Button size="lg" className="text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all" onClick={handlePreQuizStart}>
-                เริ่มสแกนตัวตน (ทำฟรี 100%)
+                เริ่มทำควิซ (ฟรี 100%)
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <div className="mt-4 flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                <ShieldCheck className="w-4 h-4 text-primary/60" />
-                <span>อ้างอิงข้อมูลอาชีพจากฐานข้อมูลตลาดแรงงานจริง และระเบียบการ TCAS อัปเดตล่าสุด</span>
+              <div className="mt-4 flex items-center justify-center gap-4 text-sm font-medium text-muted-foreground">
+                <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> ⏱️ ใช้เวลาแค่ 3 นาที</span>
+                <span className="text-border">|</span>
+                <span className="flex items-center gap-1.5">📝 30 คำถาม</span>
+                <span className="text-border">|</span>
+                <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4" /> ⚡ รู้ผลทันที</span>
               </div>
             </div>
           </motion.div>
@@ -145,15 +147,30 @@ export default function Landing() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-8 text-center text-xs sm:text-sm text-muted-foreground">
-        <div>{appNameFull} · เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6</div>
-        <div className="mt-2 text-xs sm:text-sm">
-          <span className="font-medium">ติดต่อผู้พัฒนา:</span> 
-          <a href="tel:0864062711" className="underline hover:text-primary ml-1" aria-label="โทร 086-406-2711">086-406-2711</a>
-          <span className="mx-2">·</span>
-          <a href="https://line.me/ti/p/l6MqQjBc-t" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary" aria-label="Line t12312121">Line: t12312121</a>
-          <span className="mx-2">·</span>
-          <a href="mailto:tthirawut06@gmail.com" className="underline hover:text-primary" aria-label="Email tthirawut06@gmail.com">Email: tthirawut06@gmail.com</a>
+      <footer className="border-t border-border/50 py-10 px-4 text-center">
+        <div className="max-w-4xl mx-auto space-y-5">
+          <p className="text-sm font-medium text-foreground/80">
+            &copy; 2026 KooKid. เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6
+          </p>
+          
+          <p className="text-xs text-muted-foreground/70 leading-relaxed max-w-3xl mx-auto">
+            <span className="font-semibold">Beta Version:</span> แพลตฟอร์มนี้อยู่ในช่วงการพัฒนาและทดสอบ ข้อมูลอาชีพและเกณฑ์รับสมัครอ้างอิงจากฐานข้อมูลสาธารณะและสถิติตลาดแรงงาน ผลลัพธ์ที่ได้จัดทำขึ้นเพื่อเป็น "แนวทางเบื้องต้น" ในการสำรวจตัวเองเท่านั้น ผู้ใช้งานควรตรวจสอบระเบียบการทางการของแต่ละมหาวิทยาลัยประกอบการตัดสินใจเสมอ
+          </p>
+
+          <div className="text-sm text-foreground/70 flex flex-wrap justify-center gap-2 sm:gap-4 items-center pt-2">
+            <span className="font-medium mr-1">ติดต่อทีมงาน:</span>
+            <a href="tel:0864062711" className="hover:text-primary transition-colors flex items-center gap-1.5" aria-label="โทร 086-406-2711">
+              📞 086-406-2711
+            </a>
+            <span className="text-border hidden sm:inline">|</span>
+            <a href="https://line.me/ti/p/l6MqQjBc-t" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors flex items-center gap-1.5" aria-label="Line t12312121">
+              💬 Line: t12312121
+            </a>
+            <span className="text-border hidden sm:inline">|</span>
+            <a href="mailto:tthirawut06@gmail.com" className="hover:text-primary transition-colors flex items-center gap-1.5" aria-label="Email tthirawut06@gmail.com">
+              ✉️ tthirawut06@gmail.com
+            </a>
+          </div>
         </div>
       </footer>
 
