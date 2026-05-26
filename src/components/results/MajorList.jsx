@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, Building2, Gift } from "lucide-react";
+import { GraduationCap, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 /**
@@ -20,12 +20,20 @@ import { motion } from "framer-motion";
  *   nameTh: string,
  *   majors: MajorItem[],
  * }} MajorGroup
+ * @param {{
+ *   majors: MajorItem[],
+ *   topCareers: any[],
+ *   hasCapturedLead?: boolean,
+ *   hideFeedback?: boolean,
+ *   onUnlockLead?: () => void,
+ * }} props
  */
 
 export default function MajorList({
   majors,
   topCareers,
   hasCapturedLead = false,
+  hideFeedback = false,
   onUnlockLead,
 }) {
   /** @type {Record<string, MajorGroup>} */

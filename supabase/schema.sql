@@ -81,25 +81,18 @@ begin
     drop policy "public read user_profiles" on public.user_profiles;
   end if;
 
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'user_profiles' and policyname = 'public insert user_profiles'
   ) then
-    create policy "public insert user_profiles"
-      on public.user_profiles
-      for insert
-      with check (true);
+    drop policy "public insert user_profiles" on public.user_profiles;
   end if;
 
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'user_profiles' and policyname = 'public update user_profiles'
   ) then
-    create policy "public update user_profiles"
-      on public.user_profiles
-      for update
-      using (true)
-      with check (true);
+    drop policy "public update user_profiles" on public.user_profiles;
   end if;
 
   if exists (
@@ -109,14 +102,11 @@ begin
     drop policy "public read quiz_results" on public.quiz_results;
   end if;
 
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'quiz_results' and policyname = 'public insert quiz_results'
   ) then
-    create policy "public insert quiz_results"
-      on public.quiz_results
-      for insert
-      with check (true);
+    drop policy "public insert quiz_results" on public.quiz_results;
   end if;
 
   if exists (
@@ -126,14 +116,11 @@ begin
     drop policy "public read program_interests" on public.program_interests;
   end if;
 
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'program_interests' and policyname = 'public insert program_interests'
   ) then
-    create policy "public insert program_interests"
-      on public.program_interests
-      for insert
-      with check (true);
+    drop policy "public insert program_interests" on public.program_interests;
   end if;
 end $$;
 
@@ -151,14 +138,11 @@ create index if not exists idx_career_feedback_user_profile_id on public.career_
 
 do $$
 begin
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'career_feedback' and policyname = 'public insert career_feedback'
   ) then
-    create policy "public insert career_feedback"
-      on public.career_feedback
-      for insert
-      with check (true);
+    drop policy "public insert career_feedback" on public.career_feedback;
   end if;
 end $$;
 
@@ -187,14 +171,11 @@ begin
     drop policy "public read event_logs" on public.event_logs;
   end if;
 
-  if not exists (
+  if exists (
     select 1 from pg_policies
     where schemaname = 'public' and tablename = 'event_logs' and policyname = 'public insert event_logs'
   ) then
-    create policy "public insert event_logs"
-      on public.event_logs
-      for insert
-      with check (true);
+    drop policy "public insert event_logs" on public.event_logs;
   end if;
 end $$;
 

@@ -4,6 +4,9 @@ import { Card } from "@/components/ui/card";
 import { appNameFull } from "@/lib/app-params";
 import { Button } from "@/components/ui/button";
 
+// TODO: รีเช็ก Privacy Policy ในรอบสุดท้าย — ตรวจสอบ GDPR / Thai PDPA compliance
+// (deferred until all other features are complete)
+
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-background">

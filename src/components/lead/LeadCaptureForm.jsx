@@ -44,6 +44,7 @@ const InputAny = /** @type {any} */ (Input);
  *   submitLabel?: string,
  *   className?: string,
  *   prefill?: LeadPrefill,
+ *   compact?: boolean,
  * }} props
  */
 export default function LeadCaptureForm({
@@ -74,7 +75,9 @@ export default function LeadCaptureForm({
     const nextErrors = {};
 
     if (!form.nickname.trim()) nextErrors.nickname = "กรุณากรอกชื่อเล่น";
-    if (!form.phone.trim()) nextErrors.phone = "กรุณากรอกเบอร์โทรศัพท์มือถือ";
+    if (!form.phone.trim()) {
+      nextErrors.phone = "กรุณากรอกเบอร์โทรศัพท์มือถือ";
+    }
     if (!form.email.trim()) nextErrors.email = "กรุณากรอกอีเมล";
 
     if (!form.consentAccepted) nextErrors.consentAccepted = "กรุณายินยอมก่อนดำเนินการต่อ";
@@ -155,9 +158,13 @@ export default function LeadCaptureForm({
             <LabelAny htmlFor="phone">เบอร์โทรศัพท์มือถือ <span className="text-destructive">*</span></LabelAny>
             <InputAny
               id="phone"
+              type="tel"
+              inputMode="numeric"
+              numericOnly
               value={form.phone}
               onChange={/** @param {React.ChangeEvent<HTMLInputElement>} e */ (e) => updateField("phone", e.target.value)}
               placeholder="เช่น 0812345678"
+              maxLength={10}
             />
             {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
           </div>

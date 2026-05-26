@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { appNameFull } from "@/lib/app-params";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, CheckCircle, GraduationCap, Sparkles, Target } from "lucide-react";
+import { ArrowRight, Clock, CheckCircle, Target, Brain, Filter, Users, ShieldCheck } from "lucide-react";
 
 import { createInitialProfile, getStoredLeadProfile, getStoredUserProfileId } from "@/lib/leadCaptureApi";
 
@@ -18,19 +18,19 @@ const LabelAny = /** @type {any} */ (Label);
 
 const features = [
   {
-    icon: Target,
-    title: "วิเคราะห์ตัวตนแม่นยำ",
-    desc: "ค้นหาจุดแข็งและอาชีพที่เหมาะกับคุณ ด้วยทฤษฎีจิตวิทยาระดับโลก (RIASEC)",
+    icon: Brain,
+    title: "หยุดวิกฤติตัวตน",
+    desc: "ค้นหาความถนัดที่ซ่อนอยู่ด้วยทฤษฎีจิตวิทยาระดับโลก (RIASEC) เลิกเลือกคณะตามกระแส แต่เลือกตามศักยภาพที่คุณมีจริงๆ",
   },
   {
-    icon: GraduationCap,
-    title: "จับคู่คณะ TCAS เป๊ะๆ",
-    desc: "บอกลาความสับสน! ระบบจะแนะนำสาขาวิชาและมหาวิทยาลัยในไทยที่ตรงกับผลลัพธ์ของคุณที่สุด",
+    icon: Filter,
+    title: "ตัดข้อมูลขยะทิ้ง",
+    desc: "ระบบคัดกรองมหาวิทยาลัยจากฐานข้อมูลนับพัน ให้เหลือเฉพาะตัวเลือกที่ตรงกับเงื่อนไข เกรด และเป้าหมายของคุณโดยอัตโนมัติ ไม่ต้องนั่งงมเว็บ ทปอ. เอง",
   },
   {
-    icon: Sparkles,
-    title: "เตรียมตัวตรงจุด",
-    desc: "รู้จุดแข็ง จุดอ่อน พร้อมแนวทางพัฒนาตัวเองให้โดดเด่นโดนใจกรรมการ",
+    icon: Users,
+    title: "คัมภีร์เคลียร์ใจที่บ้าน",
+    desc: "รับรายงานวิเคราะห์เชิงลึก สรุปโอกาสเติบโตของอาชีพและเงินเดือน เพื่อนำไปใช้พูดคุยกับผู้ปกครองด้วย 'เหตุผลและข้อมูลจริง' ลดปัญหาการถูกบังคับเรียนในสิ่งที่ไม่ชอบ",
   },
 ];
 
@@ -88,14 +88,16 @@ export default function Landing() {
             className="text-center"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6 tracking-wide">
-              <Sparkles className="w-4 h-4" />
-              {appNameFull}
+              <Target className="w-4 h-4" />
+              เครื่องมือตัดสินใจอนาคต สำหรับเด็ก ม.ปลาย
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-tight">
-              หาคณะที่ใช่ มหาลัยที่ชอบ... ด้วยบทวิเคราะห์ฉบับเจาะลึก!
+              อย่าปล่อยให้อนาคตเป็นเรื่องเดาใจ.{" "}
+              <span className="text-primary">ค้นหาคณะที่ 'รอด' และอาชีพที่ 'ใช่'</span>{" "}
+              ก่อนเสียเวลาซิ่วฟรี 1 ปี
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              ทำแบบทดสอบจิตวิทยาแค่ 3 นาที เพื่อค้นหาอาชีพที่เกิดมาเพื่อคุณ พร้อมจับคู่คณะในระบบ TCAS อัตโนมัติ
+              จบปัญหางงระบบ TCAS และข้อมูลท่วมหัว สแกนบุคลิกภาพลึกระดับ DNA ด้วยแบบประเมินมาตรฐานสากล พร้อมระบบคัดกรองมหาวิทยาลัยที่ตรงกับ 'เกรด' และ 'เป้าหมาย' ของคุณ ภายใน 3 นาที
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 mt-5 text-sm text-muted-foreground">
@@ -109,9 +111,13 @@ export default function Landing() {
 
             <div className="mt-10">
               <Button size="lg" className="text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all" onClick={handlePreQuizStart}>
-                เริ่มทำแบบทดสอบ
+                เริ่มสแกนตัวตน (ทำฟรี 100%)
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
+              <div className="mt-4 flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                <ShieldCheck className="w-4 h-4 text-primary/60" />
+                <span>อ้างอิงข้อมูลอาชีพจากฐานข้อมูลตลาดแรงงานจริง และระเบียบการ TCAS อัปเดตล่าสุด</span>
+              </div>
             </div>
           </motion.div>
         </div>

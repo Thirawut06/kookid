@@ -1,8 +1,8 @@
 import { createHmac } from "crypto";
 import { enforceRateLimit } from "../_lib/rateLimit.js";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || "";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD?.trim() || "";
+const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET?.trim() || "";
 const TOKEN_TTL_MS = 1000 * 60 * 60; // 1 hour
 
 function signToken(expiresAt) {

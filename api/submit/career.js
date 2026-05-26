@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   }
 
   if (!enforceRateLimit(req, res, {
-    keyPrefix: "submit_interest",
+    keyPrefix: "submit_career",
     limit: 30,
     windowMs: 60 * 1000,
   })) {
@@ -37,22 +37,21 @@ export default async function handler(req, res) {
 
     const records = items.map(item => ({
       user_profile_id: item.user_profile_id,
-      major_id: item.major_id,
-      university_id: item.university_id || null,
-      interest_level: item.interest_level || "request_info",
+      career_cluster_id: item.career_cluster_id,
+      interest_level: item.interest_level || 0,
     }));
 
-    const { data, error } = await supabase.from("program_interests").insert(records);
+    const { data, error } = await supabase.from("career_feedback").insert(records);
 
     if (error) {
-      console.error("/api/submit/interest supabase error", error);
+      console.error("/api/submit/career supabase error", error);
       res.status(500).json({ error: error.message || String(error) });
       return;
     }
 
     res.status(200).json({ data });
   } catch (err) {
-    console.error("/api/submit/interest error", err);
+    console.error("/api/submit/career error", err);
     res.status(500).json({ error: "Internal server error" });
   }
 }

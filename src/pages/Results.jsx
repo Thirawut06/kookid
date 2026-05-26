@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, RotateCcw, Sparkles, BarChart3, Briefcase, GraduationCap, Download } from "lucide-react";
+import { ArrowLeft, RotateCcw, Sparkles, BarChart3, Briefcase, GraduationCap, FileDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/analyticsApi";
@@ -21,6 +21,7 @@ import {
   hasLeadCapture,
   upsertQuizResult,
   getStoredLeadProfile,
+  getStoredQuizResult,
 } from "@/lib/leadCaptureApi";
 
 const DialogContentAny = /** @type {any} */ (DialogContent);
@@ -64,9 +65,22 @@ export default function Results() {
 
   useEffect(() => {
     const raw = sessionStorage.getItem("tcas_quiz_result");
-    if (!raw) { navigate("/"); return; }
-    setResult(JSON.parse(raw));
-  }, [navigate]);
+    let parsedResult = null;
+
+    if (raw) {
+      parsedResult = JSON.parse(raw);
+    } else if (leadProfileId) {
+      // Fallback: retrieve from localStorage (premium users who already completed the quiz)
+      parsedResult = getStoredQuizResult(leadProfileId);
+      if (parsedResult) {
+        // Re-populate sessionStorage so subsequent renders work
+        sessionStorage.setItem("tcas_quiz_result", JSON.stringify(parsedResult));
+      }
+    }
+
+    if (!parsedResult) { navigate("/"); return; }
+    setResult(parsedResult);
+  }, [navigate, leadProfileId]);
 
   useEffect(() => {
     if (!result || !leadProfileId || !hasLeadCapture(leadProfileId)) return;
@@ -228,6 +242,20 @@ export default function Results() {
           )}
           </motion.div>
 
+        {/* Download PDF Button */}
+        {unlocked && userProfileId && (
+          <div className="flex justify-center mb-8">
+            <Button
+              size="lg"
+              onClick={openReport}
+              className="rounded-xl gap-2 px-6 py-5 text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
+            >
+              <FileDown className="w-5 h-5" />
+              ดาวน์โหลดรายงานฉบับเต็ม (PDF)
+            </Button>
+          </div>
+        )}
+
         {/* Section 1: Identity */}
         <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
           <div className="flex items-center gap-2">
@@ -337,7 +365,7 @@ export default function Results() {
                   size="lg"
                   onClick={handleUnlockMajors}
                   disabled={isPaymentLoading}
-                  className="rounded-full px-8 py-6 text-base sm:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)] disabled:opacity-70 disabled:cursor-wait"
+                  className="w-full sm:w-auto rounded-full px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)] disabled:opacity-70 disabled:cursor-wait leading-snug whitespace-normal min-h-[56px]"
                 >
                   {isPaymentLoading ? "⏳ กำลังเชื่อมต่อ Payment Gateway..." : unlockButtonText}
                 </Button>

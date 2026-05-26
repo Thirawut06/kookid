@@ -6,8 +6,26 @@
 
 const STORAGE_KEY = "kookid_feedback";
 
-import { supabase } from "@/utils/supabase";
 import { ensureRemoteLeadProfile } from "@/lib/leadCaptureApi";
+
+async function postToServer(path, body) {
+  try {
+    const res = await fetch(`/api/submit/${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error || `Server responded ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    throw err;
+  }
+}
 
 function readStore() {
   if (typeof window === "undefined") return { career: [], major: [], result: [] };
@@ -38,14 +56,12 @@ export async function submitCareerFeedback(userProfileId, items) {
   store.career.push(...records);
   writeStore(store);
 
-  if (supabase) {
-    try {
-      await ensureRemoteLeadProfile(userProfileId);
-      const inserts = records.map(r => ({ user_profile_id: r.userProfileId, career_cluster_id: r.careerClusterId, interest_level: r.interestLevel }));
-      await supabase.from("career_feedback").insert(inserts);
-    } catch (err) {
-      console.error("Supabase submitCareerFeedback error:", err);
-    }
+  try {
+    await ensureRemoteLeadProfile(userProfileId);
+    const inserts = records.map(r => ({ user_profile_id: r.userProfileId, career_cluster_id: r.careerClusterId, interest_level: r.interestLevel }));
+    await postToServer("career", inserts);
+  } catch (err) {
+    console.error("Supabase submitCareerFeedback error:", err);
   }
 }
 
@@ -64,14 +80,12 @@ export async function submitMajorFeedback(userProfileId, items) {
   store.major.push(...records);
   writeStore(store);
 
-  if (supabase) {
-    try {
-      await ensureRemoteLeadProfile(userProfileId);
-      const inserts = records.map(r => ({ user_profile_id: r.userProfileId, major_id: r.majorId, interest_level: r.interestLevel }));
-      await supabase.from("program_interests").insert(inserts);
-    } catch (err) {
-      console.error("Supabase submitMajorFeedback error:", err);
-    }
+  try {
+    await ensureRemoteLeadProfile(userProfileId);
+    const inserts = records.map(r => ({ user_profile_id: r.userProfileId, major_id: r.majorId, interest_level: r.interestLevel }));
+    await postToServer("interest", inserts);
+  } catch (err) {
+    console.error("Supabase submitMajorFeedback error:", err);
   }
 }
 
@@ -93,14 +107,13 @@ export async function submitResultFeedback(userProfileId, overallFitScore, selec
   store.result.push(record);
   writeStore(store);
 
-  if (supabase) {
-    try {
-      await ensureRemoteLeadProfile(userProfileId);
-      await supabase
-        .from("quiz_results")
-        .upsert([{ user_profile_id: userProfileId, result: record }], { onConflict: "user_profile_id" });
-    } catch (err) {
-      console.error("Supabase submitResultFeedback error:", err);
-    }
+  try {
+    await ensureRemoteLeadProfile(userProfileId);
+    await postToServer("quiz", {
+      user_profile_id: userProfileId,
+      result: record,
+    });
+  } catch (err) {
+    console.error("Supabase submitResultFeedback error:", err);
   }
 }

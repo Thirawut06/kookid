@@ -13,8 +13,9 @@ function toCsvValue(value) {
 }
 
 function downloadCsv(filename, rows) {
+  const BOM = "\uFEFF";
   const csv = rows.map(row => row.map(toCsvValue).join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob([BOM + csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -53,15 +54,13 @@ export default function AdminDashboard() {
   const [isAuthed, setIsAuthed] = useState(false);
 
   const [profiles, setProfiles] = useState([]);
-  const [interests, setInterests] = useState([]);
   const [quizResults, setQuizResults] = useState([]);
   const [eventRows, setEventRows] = useState([]);
   const [quizCount, setQuizCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [universityFilter, setUniversityFilter] = useState("all");
-  const [majorFilter, setMajorFilter] = useState("all");
+
 
   // The client no longer relies on VITE_ADMIN_TOKEN. The serverless endpoints
   // require ADMIN_PASSWORD and ADMIN_JWT_SECRET (server-side only) and a
@@ -72,74 +71,7 @@ export default function AdminDashboard() {
     [profiles]
   );
 
-  const enrichedInterests = useMemo(() => {
-    return interests.map(row => {
-      const major = majorById[row.major_id] || null;
-      const cluster = major ? clusterById[major.clusterId] : null;
-      const profile = profileById[row.user_profile_id] || null;
-      const fallbackGradeAndSchool = splitGradeAndSchool(profile?.grade_and_school);
-      const gradeLevel = profile?.grade_level || profile?.gradeLevel || fallbackGradeAndSchool.gradeLevel || "-";
-      const schoolName = profile?.school_name || profile?.schoolName || fallbackGradeAndSchool.schoolName || "-";
-      const universityId = row.university_id || major?.universityId || "-";
-      const universityName = major?.universityNameTh || universityId;
 
-      return {
-        id: row.id,
-        createdAt: row.created_at,
-        userProfileId: row.user_profile_id,
-        nickname: profile?.nickname || "-",
-        gradeLevel,
-        schoolName,
-        schoolProvince: profile?.school_province || profile?.schoolProvince || "-",
-        contact: profile?.contact || "-",
-        email: profile?.email || "-",
-        majorId: row.major_id,
-        majorName: major?.nameTh || row.major_id,
-        clusterName: cluster?.nameTh || "-",
-        universityId,
-        universityName,
-      };
-    });
-  }, [interests, majorById, clusterById, profileById]);
-
-  const universities = useMemo(() => {
-    const map = new Map();
-    enrichedInterests.forEach(row => {
-      if (row.universityId !== "-") {
-        map.set(row.universityId, row.universityName);
-      }
-    });
-    return Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1], "th"));
-  }, [enrichedInterests]);
-
-  const filteredRows = useMemo(() => {
-    return enrichedInterests.filter(row => {
-      if (universityFilter !== "all" && row.universityId !== universityFilter) return false;
-      if (majorFilter !== "all" && row.majorId !== majorFilter) return false;
-      return true;
-    });
-  }, [enrichedInterests, universityFilter, majorFilter]);
-
-  const hasActiveFilters = universityFilter !== "all" || majorFilter !== "all";
-
-  const filteredProfileIds = useMemo(() => {
-    return new Set(filteredRows.map(row => row.userProfileId));
-  }, [filteredRows]);
-
-  const groupedStats = useMemo(() => {
-    const map = new Map();
-    filteredRows.forEach(row => {
-      const key = `${row.universityId}::${row.majorId}`;
-      const current = map.get(key) || {
-        universityName: row.universityName,
-        majorName: row.majorName,
-        count: 0,
-      };
-      current.count += 1;
-      map.set(key, current);
-    });
-    return Array.from(map.values()).sort((a, b) => b.count - a.count);
-  }, [filteredRows]);
 
   const eventSummary = useMemo(() => {
     const map = new Map();
@@ -153,11 +85,8 @@ export default function AdminDashboard() {
 
   const clusterSummary = useMemo(() => {
     const map = new Map();
-    const sourceQuizResults = hasActiveFilters
-      ? quizResults.filter(row => filteredProfileIds.has(row.user_profile_id))
-      : quizResults;
 
-    sourceQuizResults.forEach(row => {
+    quizResults.forEach(row => {
       const clustersFromResult = Array.isArray(row?.result?.clusters) ? row.result.clusters : [];
       clustersFromResult.forEach(cluster => {
         const clusterId = cluster.clusterId || cluster.id || cluster.nameTh;
@@ -179,17 +108,13 @@ export default function AdminDashboard() {
         count: data.profileIds.size,
       }))
       .sort((a, b) => b.count - a.count);
-  }, [quizResults, hasActiveFilters, filteredProfileIds, clusterById]);
+  }, [quizResults, clusterById]);
 
   const topCareers = useMemo(() => {
     const map = new Map();
 
     eventRows
       .filter(row => row.event_name === "career_viewed")
-      .filter(row => {
-        if (!hasActiveFilters) return true;
-        return filteredProfileIds.has(row.user_profile_id);
-      })
       .forEach(row => {
         const payload = row.payload || {};
         // Keep this payload contract flexible for future careers.json-based IDs.
@@ -204,7 +129,7 @@ export default function AdminDashboard() {
     return Array.from(map.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
-  }, [eventRows, hasActiveFilters, filteredProfileIds, clusterById]);
+  }, [eventRows, clusterById]);
 
   // ── Conversion Intent Metrics ──────────────────────────────────────
   const premiumClickerIds = useMemo(() => {
@@ -296,19 +221,18 @@ export default function AdminDashboard() {
 
         if (!resp.ok) {
           const body = await resp.json().catch(() => ({}));
-          throw new Error(body?.error || "Failed to load admin data");
+          throw new Error(body?.details || body?.error || "Failed to load admin data");
         }
 
         const body = await resp.json();
         setProfiles(body.profiles || []);
-        setInterests(body.interests || []);
         setQuizResults(body.quizResults || []);
         setEventRows(body.eventRows || []);
         setQuizCount(body.quizCount || 0);
       } catch (err) {
         console.error("AdminDashboard load error:", err);
         if (mounted) {
-          setError("โหลดข้อมูลไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า server-side และสิทธิ์ Supabase");
+          setError(`โหลดข้อมูลไม่สำเร็จ: ${err.message}`);
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -363,37 +287,7 @@ export default function AdminDashboard() {
     }
   }, []);
 
-  const handleExportCsv = () => {
-    const header = [
-      "created_at",
-      "user_profile_id",
-      "nickname",
-      "gradeLevel",
-      "schoolName",
-      "schoolProvince",
-      "contact",
-      "email",
-      "cluster",
-      "major",
-      "university",
-    ];
 
-    const rows = filteredRows.map(row => [
-      row.createdAt,
-      row.userProfileId,
-      row.nickname,
-      row.gradeLevel,
-      row.schoolName,
-      row.schoolProvince,
-      row.contact,
-      row.email,
-      row.clusterName,
-      row.majorName,
-      row.universityName,
-    ]);
-
-    downloadCsv(`kookid_program_interests_${Date.now()}.csv`, [header, ...rows]);
-  };
 
   const handleExportEventsCsv = () => {
     const header = ["created_at", "event_name", "session_id", "user_profile_id", "page"];
@@ -496,10 +390,7 @@ export default function AdminDashboard() {
             <p className="text-xs text-muted-foreground">โปรไฟล์ที่ทำแบบทดสอบเสร็จ</p>
             <p className="text-2xl font-bold text-foreground mt-1">{quizCount}</p>
           </Card>
-          <Card className="p-4">
-            <p className="text-xs text-muted-foreground">ความสนใจในคณะ/สาขาทั้งหมด</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{interests.length}</p>
-          </Card>
+
           <Card className="p-4">
             <p className="text-xs text-muted-foreground">โปรไฟล์นักเรียนในระบบ</p>
             <p className="text-2xl font-bold text-foreground mt-1">{profiles.length}</p>
@@ -507,40 +398,8 @@ export default function AdminDashboard() {
         </div>
 
         <Card className="p-4 sm:p-5 border border-border/60">
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-end sm:justify-between">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:max-w-2xl">
-              <div>
-                <label className="text-xs text-muted-foreground">กรองตามมหาวิทยาลัย</label>
-                <select
-                  className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
-                  value={universityFilter}
-                  onChange={(e) => setUniversityFilter(e.target.value)}
-                >
-                  <option value="all">ทั้งหมด</option>
-                  {universities.map(([id, name]) => (
-                    <option key={id} value={id}>{name}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">กรองตามสาขา</label>
-                <select
-                  className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
-                  value={majorFilter}
-                  onChange={(e) => setMajorFilter(e.target.value)}
-                >
-                  <option value="all">ทั้งหมด</option>
-                  {majors.map((m) => (
-                    <option key={m.id} value={m.id}>{m.nameTh}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-end justify-end">
             <div className="flex flex-col sm:flex-row gap-2">
-              <Button onClick={handleExportCsv} className="rounded-xl">
-                Export รายการที่สนใจ (CSV)
-              </Button>
               <Button onClick={handleExportEventsCsv} variant="outline" className="rounded-xl">
                 Export Event Logs (CSV)
               </Button>
@@ -599,34 +458,6 @@ export default function AdminDashboard() {
           </div>
         </Card>
 
-        <Card className="p-4 sm:p-5 border border-border/60">
-          <h2 className="text-base font-semibold text-foreground mb-3">ความสนใจแยกตามมหาวิทยาลัยและสาขา</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[520px] text-sm">
-              <thead>
-                <tr className="text-left border-b border-border">
-                  <th className="py-2 pr-2">มหาวิทยาลัย</th>
-                  <th className="py-2 pr-2">สาขา</th>
-                  <th className="py-2 pr-2">จำนวนความสนใจ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {groupedStats.map((row, idx) => (
-                  <tr key={`${row.universityName}_${row.majorName}_${idx}`} className="border-b border-border/50">
-                    <td className="py-2 pr-2">{row.universityName}</td>
-                    <td className="py-2 pr-2">{row.majorName}</td>
-                    <td className="py-2 pr-2 font-semibold">{row.count}</td>
-                  </tr>
-                ))}
-                {groupedStats.length === 0 && (
-                  <tr>
-                    <td className="py-3 text-muted-foreground" colSpan={3}>ยังไม่มีข้อมูลตามเงื่อนไขที่เลือก</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
 
         {/* ── Hot Schools (B2B Sales Target) ────────────────────────── */}
         <Card className="p-4 sm:p-5 border-2 border-emerald-400/60 bg-emerald-50/30">

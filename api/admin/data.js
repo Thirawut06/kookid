@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { createHmac } from "crypto";
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || "";
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL?.trim();
+const SUPABASE_SERVICE_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY)?.trim();
+const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET?.trim() || "";
 
 function verifyToken(tokenBase64) {
   if (!tokenBase64) return false;
@@ -24,7 +24,11 @@ function verifyToken(tokenBase64) {
 
 export default async function handler(req, res) {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-    res.status(500).json({ error: "Supabase not configured on server" });
+    console.error("Missing env vars in data.js:", {
+      hasUrl: !!SUPABASE_URL,
+      hasKey: !!SUPABASE_SERVICE_KEY,
+    });
+    res.status(500).json({ error: "Supabase not configured on server", details: "Check server logs" });
     return;
   }
 
@@ -61,7 +65,7 @@ export default async function handler(req, res) {
       quizCount: quizCountRes.count || 0,
     });
   } catch (err) {
-    console.error("/api/admin/data error", err);
-    res.status(500).json({ error: "Failed to load admin data" });
+    console.error("/api/admin/data error", err?.message || err);
+    res.status(500).json({ error: "Failed to load admin data", details: err?.message || err });
   }
 }
