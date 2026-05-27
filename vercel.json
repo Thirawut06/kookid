@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/quiz", "destination": "/index.html" },
+    { "source": "/results", "destination": "/index.html" },
+    { "source": "/report/(.*)", "destination": "/index.html" },
+    { "source": "/privacy", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" }
+  ]
+}

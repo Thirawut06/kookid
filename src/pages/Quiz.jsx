@@ -82,14 +82,14 @@ export default function Quiz() {
   const handleNext = () => {
     if (isInterests && interestPage < totalInterestPages - 1) {
       setInterestPage(page => page + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
       return;
     }
 
     if (sectionIndex < SECTIONS.length - 1) {
       setSectionIndex(index => index + 1);
       setInterestPage(0);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
       return;
     }
 
@@ -99,7 +99,7 @@ export default function Quiz() {
   const handleBack = () => {
     if (isInterests && interestPage > 0) {
       setInterestPage(page => page - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
       return;
     }
 
@@ -110,7 +110,7 @@ export default function Quiz() {
         const previousQuestions = getQuestionsBySection("interests");
         setInterestPage(Math.ceil(previousQuestions.length / INTEREST_PAGE_SIZE) - 1);
       }
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
     }
   };
 

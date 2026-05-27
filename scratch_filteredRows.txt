@@ -1,0 +1,738 @@
+﻿commit 1dcf4b64bdc554ad3640e0195a11d99f4bc0bd23
+Author: Thirawut <tthirawut06@gmail.com>
+Date:   Tue May 26 19:35:46 2026 +0700
+
+    feat: implement lead capture, admin authentication, and dynamic result reporting with Supabase integration
+
+diff --git a/src/pages/AdminDashboard.jsx b/src/pages/AdminDashboard.jsx
+index e2b624f..9e76e13 100644
+--- a/src/pages/AdminDashboard.jsx
++++ b/src/pages/AdminDashboard.jsx
+@@ -13,8 +13,9 @@ function toCsvValue(value) {
+ }
+ 
+ function downloadCsv(filename, rows) {
++  const BOM = "\uFEFF";
+   const csv = rows.map(row => row.map(toCsvValue).join(",")).join("\n");
+-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
++  const blob = new Blob([BOM + csv], { type: "text/csv;charset=utf-8;" });
+   const url = URL.createObjectURL(blob);
+   const a = document.createElement("a");
+   a.href = url;
+@@ -53,15 +54,13 @@ export default function AdminDashboard() {
+   const [isAuthed, setIsAuthed] = useState(false);
+ 
+   const [profiles, setProfiles] = useState([]);
+-  const [interests, setInterests] = useState([]);
+   const [quizResults, setQuizResults] = useState([]);
+   const [eventRows, setEventRows] = useState([]);
+   const [quizCount, setQuizCount] = useState(0);
+   const [isLoading, setIsLoading] = useState(false);
+   const [error, setError] = useState("");
+ 
+-  const [universityFilter, setUniversityFilter] = useState("all");
+-  const [majorFilter, setMajorFilter] = useState("all");
++
+ 
+   // The client no longer relies on VITE_ADMIN_TOKEN. The serverless endpoints
+   // require ADMIN_PASSWORD and ADMIN_JWT_SECRET (server-side only) and a
+@@ -72,74 +71,7 @@ export default function AdminDashboard() {
+     [profiles]
+   );
+ 
+-  const enrichedInterests = useMemo(() => {
+-    return interests.map(row => {
+-      const major = majorById[row.major_id] || null;
+-      const cluster = major ? clusterById[major.clusterId] : null;
+-      const profile = profileById[row.user_profile_id] || null;
+-      const fallbackGradeAndSchool = splitGradeAndSchool(profile?.grade_and_school);
+-      const gradeLevel = profile?.grade_level || profile?.gradeLevel || fallbackGradeAndSchool.gradeLevel || "-";
+-      const schoolName = profile?.school_name || profile?.schoolName || fallbackGradeAndSchool.schoolName || "-";
+-      const universityId = row.university_id || major?.universityId || "-";
+-      const universityName = major?.universityNameTh || universityId;
+-
+-      return {
+-        id: row.id,
+-        createdAt: row.created_at,
+-        userProfileId: row.user_profile_id,
+-        nickname: profile?.nickname || "-",
+-        gradeLevel,
+-        schoolName,
+-        schoolProvince: profile?.school_province || profile?.schoolProvince || "-",
+-        contact: profile?.contact || "-",
+-        email: profile?.email || "-",
+-        majorId: row.major_id,
+-        majorName: major?.nameTh || row.major_id,
+-        clusterName: cluster?.nameTh || "-",
+-        universityId,
+-        universityName,
+-      };
+-    });
+-  }, [interests, majorById, clusterById, profileById]);
+-
+-  const universities = useMemo(() => {
+-    const map = new Map();
+-    enrichedInterests.forEach(row => {
+-      if (row.universityId !== "-") {
+-        map.set(row.universityId, row.universityName);
+-      }
+-    });
+-    return Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1], "th"));
+-  }, [enrichedInterests]);
+-
+-  const filteredRows = useMemo(() => {
+-    return enrichedInterests.filter(row => {
+-      if (universityFilter !== "all" && row.universityId !== universityFilter) return false;
+-      if (majorFilter !== "all" && row.majorId !== majorFilter) return false;
+-      return true;
+-    });
+-  }, [enrichedInterests, universityFilter, majorFilter]);
+-
+-  const hasActiveFilters = universityFilter !== "all" || majorFilter !== "all";
+ 
+-  const filteredProfileIds = useMemo(() => {
+-    return new Set(filteredRows.map(row => row.userProfileId));
+-  }, [filteredRows]);
+-
+-  const groupedStats = useMemo(() => {
+-    const map = new Map();
+-    filteredRows.forEach(row => {
+-      const key = `${row.universityId}::${row.majorId}`;
+-      const current = map.get(key) || {
+-        universityName: row.universityName,
+-        majorName: row.majorName,
+-        count: 0,
+-      };
+-      current.count += 1;
+-      map.set(key, current);
+-    });
+-    return Array.from(map.values()).sort((a, b) => b.count - a.count);
+-  }, [filteredRows]);
+ 
+   const eventSummary = useMemo(() => {
+     const map = new Map();
+@@ -153,11 +85,8 @@ export default function AdminDashboard() {
+ 
+   const clusterSummary = useMemo(() => {
+     const map = new Map();
+-    const sourceQuizResults = hasActiveFilters
+-      ? quizResults.filter(row => filteredProfileIds.has(row.user_profile_id))
+-      : quizResults;
+ 
+-    sourceQuizResults.forEach(row => {
++    quizResults.forEach(row => {
+       const clustersFromResult = Array.isArray(row?.result?.clusters) ? row.result.clusters : [];
+       clustersFromResult.forEach(cluster => {
+         const clusterId = cluster.clusterId || cluster.id || cluster.nameTh;
+@@ -179,17 +108,13 @@ export default function AdminDashboard() {
+         count: data.profileIds.size,
+       }))
+       .sort((a, b) => b.count - a.count);
+-  }, [quizResults, hasActiveFilters, filteredProfileIds, clusterById]);
++  }, [quizResults, clusterById]);
+ 
+   const topCareers = useMemo(() => {
+     const map = new Map();
+ 
+     eventRows
+       .filter(row => row.event_name === "career_viewed")
+-      .filter(row => {
+-        if (!hasActiveFilters) return true;
+-        return filteredProfileIds.has(row.user_profile_id);
+-      })
+       .forEach(row => {
+         const payload = row.payload || {};
+         // Keep this payload contract flexible for future careers.json-based IDs.
+@@ -204,7 +129,7 @@ export default function AdminDashboard() {
+     return Array.from(map.values())
+       .sort((a, b) => b.count - a.count)
+       .slice(0, 10);
+-  }, [eventRows, hasActiveFilters, filteredProfileIds, clusterById]);
++  }, [eventRows, clusterById]);
+ 
+   // โ”€โ”€ Conversion Intent Metrics โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€
+   const premiumClickerIds = useMemo(() => {
+@@ -296,19 +221,18 @@ export default function AdminDashboard() {
+ 
+         if (!resp.ok) {
+           const body = await resp.json().catch(() => ({}));
+-          throw new Error(body?.error || "Failed to load admin data");
++          throw new Error(body?.details || body?.error || "Failed to load admin data");
+         }
+ 
+         const body = await resp.json();
+         setProfiles(body.profiles || []);
+-        setInterests(body.interests || []);
+         setQuizResults(body.quizResults || []);
+         setEventRows(body.eventRows || []);
+         setQuizCount(body.quizCount || 0);
+       } catch (err) {
+         console.error("AdminDashboard load error:", err);
+         if (mounted) {
+-          setError("เนเธซเธฅเธ”เธเนเธญเธกเธนเธฅเนเธกเนเธชเธณเน€เธฃเนเธ เธเธฃเธธเธ“เธฒเธ•เธฃเธงเธเธชเธญเธเธเธฒเธฃเธ•เธฑเนเธเธเนเธฒ server-side เนเธฅเธฐเธชเธดเธ—เธเธดเน Supabase");
++          setError(`เนเธซเธฅเธ”เธเนเธญเธกเธนเธฅเนเธกเนเธชเธณเน€เธฃเนเธ: ${err.message}`);
+         }
+       } finally {
+         if (mounted) setIsLoading(false);
+@@ -363,37 +287,7 @@ export default function AdminDashboard() {
+     }
+   }, []);
+ 
+-  const handleExportCsv = () => {
+-    const header = [
+-      "created_at",
+-      "user_profile_id",
+-      "nickname",
+-      "gradeLevel",
+-      "schoolName",
+-      "schoolProvince",
+-      "contact",
+-      "email",
+-      "cluster",
+-      "major",
+-      "university",
+-    ];
+-
+-    const rows = filteredRows.map(row => [
+-      row.createdAt,
+-      row.userProfileId,
+-      row.nickname,
+-      row.gradeLevel,
+-      row.schoolName,
+-      row.schoolProvince,
+-      row.contact,
+-      row.email,
+-      row.clusterName,
+-      row.majorName,
+-      row.universityName,
+-    ]);
+ 
+-    downloadCsv(`kookid_program_interests_${Date.now()}.csv`, [header, ...rows]);
+-  };
+ 
+   const handleExportEventsCsv = () => {
+     const header = ["created_at", "event_name", "session_id", "user_profile_id", "page"];
+@@ -496,10 +390,7 @@ export default function AdminDashboard() {
+             <p className="text-xs text-muted-foreground">เนเธเธฃเนเธเธฅเนเธ—เธตเนเธ—เธณเนเธเธเธ—เธ”เธชเธญเธเน€เธชเธฃเนเธ</p>
+             <p className="text-2xl font-bold text-foreground mt-1">{quizCount}</p>
+           </Card>
+-          <Card className="p-4">
+-            <p className="text-xs text-muted-foreground">เธเธงเธฒเธกเธชเธเนเธเนเธเธเธ“เธฐ/เธชเธฒเธเธฒเธ—เธฑเนเธเธซเธกเธ”</p>
+-            <p className="text-2xl font-bold text-foreground mt-1">{interests.length}</p>
+-          </Card>
++
+           <Card className="p-4">
+             <p className="text-xs text-muted-foreground">เนเธเธฃเนเธเธฅเนเธเธฑเธเน€เธฃเธตเธขเธเนเธเธฃเธฐเธเธ</p>
+             <p className="text-2xl font-bold text-foreground mt-1">{profiles.length}</p>
+@@ -507,40 +398,8 @@ export default function AdminDashboard() {
+         </div>
+ 
+         <Card className="p-4 sm:p-5 border border-border/60">
+-          <div className="flex flex-col sm:flex-row gap-3 sm:items-end sm:justify-between">
+-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:max-w-2xl">
+-              <div>
+-                <label className="text-xs text-muted-foreground">เธเธฃเธญเธเธ•เธฒเธกเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธข</label>
+-                <select
+-                  className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+-                  value={universityFilter}
+-                  onChange={(e) => setUniversityFilter(e.target.value)}
+-                >
+-                  <option value="all">เธ—เธฑเนเธเธซเธกเธ”</option>
+-                  {universities.map(([id, name]) => (
+-                    <option key={id} value={id}>{name}</option>
+-                  ))}
+-                </select>
+-              </div>
+-              <div>
+-                <label className="text-xs text-muted-foreground">เธเธฃเธญเธเธ•เธฒเธกเธชเธฒเธเธฒ</label>
+-                <select
+-                  className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+-                  value={majorFilter}
+-                  onChange={(e) => setMajorFilter(e.target.value)}
+-                >
+-                  <option value="all">เธ—เธฑเนเธเธซเธกเธ”</option>
+-                  {majors.map((m) => (
+-                    <option key={m.id} value={m.id}>{m.nameTh}</option>
+-                  ))}
+-                </select>
+-              </div>
+-            </div>
+-
++          <div className="flex flex-col sm:flex-row gap-3 sm:items-end justify-end">
+             <div className="flex flex-col sm:flex-row gap-2">
+-              <Button onClick={handleExportCsv} className="rounded-xl">
+-                Export เธฃเธฒเธขเธเธฒเธฃเธ—เธตเนเธชเธเนเธ (CSV)
+-              </Button>
+               <Button onClick={handleExportEventsCsv} variant="outline" className="rounded-xl">
+                 Export Event Logs (CSV)
+               </Button>
+@@ -599,34 +458,6 @@ export default function AdminDashboard() {
+           </div>
+         </Card>
+ 
+-        <Card className="p-4 sm:p-5 border border-border/60">
+-          <h2 className="text-base font-semibold text-foreground mb-3">เธเธงเธฒเธกเธชเธเนเธเนเธขเธเธ•เธฒเธกเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธฅเธฐเธชเธฒเธเธฒ</h2>
+-          <div className="overflow-x-auto">
+-            <table className="w-full min-w-[520px] text-sm">
+-              <thead>
+-                <tr className="text-left border-b border-border">
+-                  <th className="py-2 pr-2">เธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธข</th>
+-                  <th className="py-2 pr-2">เธชเธฒเธเธฒ</th>
+-                  <th className="py-2 pr-2">เธเธณเธเธงเธเธเธงเธฒเธกเธชเธเนเธ</th>
+-                </tr>
+-              </thead>
+-              <tbody>
+-                {groupedStats.map((row, idx) => (
+-                  <tr key={`${row.universityName}_${row.majorName}_${idx}`} className="border-b border-border/50">
+-                    <td className="py-2 pr-2">{row.universityName}</td>
+-                    <td className="py-2 pr-2">{row.majorName}</td>
+-                    <td className="py-2 pr-2 font-semibold">{row.count}</td>
+-                  </tr>
+-                ))}
+-                {groupedStats.length === 0 && (
+-                  <tr>
+-                    <td className="py-3 text-muted-foreground" colSpan={3}>เธขเธฑเธเนเธกเนเธกเธตเธเนเธญเธกเธนเธฅเธ•เธฒเธกเน€เธเธทเนเธญเธเนเธเธ—เธตเนเน€เธฅเธทเธญเธ</td>
+-                  </tr>
+-                )}
+-              </tbody>
+-            </table>
+-          </div>
+-        </Card>
+ 
+         {/* โ”€โ”€ Hot Schools (B2B Sales Target) โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€โ”€ */}
+         <Card className="p-4 sm:p-5 border-2 border-emerald-400/60 bg-emerald-50/30">
+
+commit 6873f0ff592fda106283675ba5207dcd49a7e98a
+Author: Thirawut <tthirawut06@gmail.com>
+Date:   Sat May 16 18:03:18 2026 +0700
+
+    feat: add admin dashboard and analytics tracking
+    
+    - Introduced AdminDashboard component for managing user profiles and program interests.
+    - Added event logging functionality to track user interactions across the application.
+    - Updated various components to include analytics tracking for quiz starts, report views, and program interest submissions.
+    - Enhanced LeadCaptureForm with additional information regarding data usage.
+    - Modified Results and MajorList components to handle requested majors and display relevant information.
+    - Updated Supabase schema to include event logs and university_id in program interests.
+
+diff --git a/src/pages/AdminDashboard.jsx b/src/pages/AdminDashboard.jsx
+new file mode 100644
+index 0000000..7565ce6
+--- /dev/null
++++ b/src/pages/AdminDashboard.jsx
+@@ -0,0 +1,415 @@
++import React, { useEffect, useMemo, useState } from "react";
++import { Card } from "@/components/ui/card";
++import { Button } from "@/components/ui/button";
++import { supabase } from "@/utils/supabase";
++import { getMajors, getCareerClusters } from "@/lib/dataLoader";
++
++function toCsvValue(value) {
++  const raw = value == null ? "" : String(value);
++  if (raw.includes(",") || raw.includes("\n") || raw.includes("\"")) {
++    return `"${raw.replace(/\"/g, '""')}"`;
++  }
++  return raw;
++}
++
++function downloadCsv(filename, rows) {
++  const csv = rows.map(row => row.map(toCsvValue).join(",")).join("\n");
++  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
++  const url = URL.createObjectURL(blob);
++  const a = document.createElement("a");
++  a.href = url;
++  a.download = filename;
++  document.body.appendChild(a);
++  a.click();
++  document.body.removeChild(a);
++  URL.revokeObjectURL(url);
++}
++
++export default function AdminDashboard() {
++  const majors = useMemo(() => getMajors(), []);
++  const clusters = useMemo(() => getCareerClusters(), []);
++  const majorById = useMemo(() => Object.fromEntries(majors.map(m => [m.id, m])), [majors]);
++  const clusterById = useMemo(() => Object.fromEntries(clusters.map(c => [c.id, c])), [clusters]);
++
++  const [token, setToken] = useState("");
++  const [isAuthed, setIsAuthed] = useState(false);
++
++  const [profiles, setProfiles] = useState([]);
++  const [interests, setInterests] = useState([]);
++  const [eventRows, setEventRows] = useState([]);
++  const [quizCount, setQuizCount] = useState(0);
++  const [isLoading, setIsLoading] = useState(false);
++  const [error, setError] = useState("");
++
++  const [universityFilter, setUniversityFilter] = useState("all");
++  const [majorFilter, setMajorFilter] = useState("all");
++
++  const expectedToken = import.meta.env.VITE_ADMIN_TOKEN || "";
++
++  const profileById = useMemo(
++    () => Object.fromEntries(profiles.map(p => [p.id, p])),
++    [profiles]
++  );
++
++  const enrichedInterests = useMemo(() => {
++    return interests.map(row => {
++      const major = majorById[row.major_id] || null;
++      const cluster = major ? clusterById[major.clusterId] : null;
++      const profile = profileById[row.user_profile_id] || null;
++      const universityId = row.university_id || major?.universityId || "-";
++      const universityName = major?.universityNameTh || universityId;
++
++      return {
++        id: row.id,
++        createdAt: row.created_at,
++        userProfileId: row.user_profile_id,
++        nickname: profile?.nickname || "-",
++        gradeAndSchool: profile?.grade_and_school || "-",
++        schoolProvince: profile?.school_province || "-",
++        contact: profile?.contact || "-",
++        email: profile?.email || "-",
++        majorId: row.major_id,
++        majorName: major?.nameTh || row.major_id,
++        clusterName: cluster?.nameTh || "-",
++        universityId,
++        universityName,
++      };
++    });
++  }, [interests, majorById, clusterById, profileById]);
++
++  const universities = useMemo(() => {
++    const map = new Map();
++    enrichedInterests.forEach(row => {
++      if (row.universityId !== "-") {
++        map.set(row.universityId, row.universityName);
++      }
++    });
++    return Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1], "th"));
++  }, [enrichedInterests]);
++
++  const filteredRows = useMemo(() => {
++    return enrichedInterests.filter(row => {
++      if (universityFilter !== "all" && row.universityId !== universityFilter) return false;
++      if (majorFilter !== "all" && row.majorId !== majorFilter) return false;
++      return true;
++    });
++  }, [enrichedInterests, universityFilter, majorFilter]);
++
++  const groupedStats = useMemo(() => {
++    const map = new Map();
++    filteredRows.forEach(row => {
++      const key = `${row.universityId}::${row.majorId}`;
++      const current = map.get(key) || {
++        universityName: row.universityName,
++        majorName: row.majorName,
++        count: 0,
++      };
++      current.count += 1;
++      map.set(key, current);
++    });
++    return Array.from(map.values()).sort((a, b) => b.count - a.count);
++  }, [filteredRows]);
++
++  const eventSummary = useMemo(() => {
++    const map = new Map();
++    eventRows.forEach(row => {
++      map.set(row.event_name, (map.get(row.event_name) || 0) + 1);
++    });
++    return Array.from(map.entries())
++      .map(([eventName, count]) => ({ eventName, count }))
++      .sort((a, b) => b.count - a.count);
++  }, [eventRows]);
++
++  useEffect(() => {
++    if (!isAuthed) return;
++    if (!supabase) {
++      setError("เธขเธฑเธเนเธกเนเนเธ”เนเธ•เธฑเนเธเธเนเธฒ Supabase เนเธ environment เธเธตเน");
++      return;
++    }
++
++    let mounted = true;
++    async function loadData() {
++      setIsLoading(true);
++      setError("");
++      try {
++        const [profilesRes, interestsRes, eventsRes, quizCountRes] = await Promise.all([
++          supabase.from("user_profiles").select("id,nickname,grade_and_school,contact,email,school_province,created_at"),
++          supabase.from("program_interests").select("id,user_profile_id,major_id,university_id,created_at").order("created_at", { ascending: false }),
++          supabase.from("event_logs").select("event_name,created_at").order("created_at", { ascending: false }).limit(5000),
++          supabase.from("quiz_results").select("id", { count: "exact", head: true }),
++        ]);
++
++        const errors = [profilesRes.error, interestsRes.error, eventsRes.error, quizCountRes.error].filter(Boolean);
++        if (errors.length > 0) {
++          throw errors[0];
++        }
++
++        if (!mounted) return;
++        setProfiles(profilesRes.data || []);
++        setInterests(interestsRes.data || []);
++        setEventRows(eventsRes.data || []);
++        setQuizCount(quizCountRes.count || 0);
++      } catch (err) {
++        console.error("AdminDashboard load error:", err);
++        if (mounted) {
++          setError("เนเธซเธฅเธ”เธเนเธญเธกเธนเธฅเนเธกเนเธชเธณเน€เธฃเนเธ เธเธฃเธธเธ“เธฒเธ•เธฃเธงเธเธชเธญเธเธชเธดเธ—เธเธดเนเธ•เธฒเธฃเธฒเธเนเธฅเธฐเธเนเธขเธเธฒเธข RLS");
++        }
++      } finally {
++        if (mounted) setIsLoading(false);
++      }
++    }
++
++    loadData();
++    return () => {
++      mounted = false;
++    };
++  }, [isAuthed]);
++
++  const handleLogin = (event) => {
++    event.preventDefault();
++    if (token.trim() === expectedToken) {
++      setIsAuthed(true);
++      setError("");
++      return;
++    }
++    setError("เธฃเธซเธฑเธชเธเนเธฒเธเธเธนเนเธ”เธนเนเธฅเนเธกเนเธ–เธนเธเธ•เนเธญเธ");
++  };
++
++  const handleExportCsv = () => {
++    const header = [
++      "created_at",
++      "user_profile_id",
++      "nickname",
++      "grade_and_school",
++      "school_province",
++      "contact",
++      "email",
++      "cluster",
++      "major",
++      "university",
++    ];
++
++    const rows = filteredRows.map(row => [
++      row.createdAt,
++      row.userProfileId,
++      row.nickname,
++      row.gradeAndSchool,
++      row.schoolProvince,
++      row.contact,
++      row.email,
++      row.clusterName,
++      row.majorName,
++      row.universityName,
++    ]);
++
++    downloadCsv(`kookid_program_interests_${Date.now()}.csv`, [header, ...rows]);
++  };
++
++  const handleExportEventsCsv = () => {
++    const header = ["created_at", "event_name", "session_id", "user_profile_id", "page"];
++    const rows = eventRows.map(row => [
++      row.created_at,
++      row.event_name,
++      row.session_id || "",
++      row.user_profile_id || "",
++      row.page || "",
++    ]);
++
++    downloadCsv(`kookid_event_logs_${Date.now()}.csv`, [header, ...rows]);
++  };
++
++  if (!isAuthed) {
++    return (
++      <div className="min-h-screen bg-background px-4 py-8">
++        <div className="max-w-md mx-auto">
++          <Card className="p-5 sm:p-6 border border-border/60">
++            <h1 className="text-xl font-bold text-foreground">KooKid Admin</h1>
++            <form className="mt-4 space-y-3" onSubmit={handleLogin}>
++              <input
++                id="adminToken"
++                type="password"
++                value={token}
++                onChange={(e) => setToken(e.target.value)}
++                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
++                placeholder="password"
++              />
++              {error && <p className="text-xs text-destructive">{error}</p>}
++              <Button type="submit" className="w-full rounded-xl">
++                เน€เธเนเธฒเธชเธนเนเนเธ”เธเธเธญเธฃเนเธ”
++              </Button>
++            </form>
++          </Card>
++        </div>
++      </div>
++    );
++  }
++
++  return (
++    <div className="min-h-screen bg-background px-4 py-6 sm:py-8">
++      <div className="max-w-6xl mx-auto space-y-5">
++        <div>
++          <h1 className="text-2xl font-bold text-foreground">KooKid Admin Dashboard</h1>
++          <p className="text-sm text-muted-foreground mt-1">เธชเธฃเธธเธเธเธนเนเธ—เธณเนเธเธเธ—เธ”เธชเธญเธ เธเธณเธเธญเธเนเธญเธกเธนเธฅเนเธเธงเธ•เนเธฒ/เธ—เธธเธ เนเธฅเธฐ event เธเธทเนเธเธเธฒเธเธเธญเธเธฃเธฐเธเธ</p>
++        </div>
++
++        {error && <p className="text-sm text-destructive">{error}</p>}
++
++        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
++          <Card className="p-4">
++            <p className="text-xs text-muted-foreground">เนเธเธฃเนเธเธฅเนเธ—เธตเนเธ—เธณเนเธเธเธ—เธ”เธชเธญเธเน€เธชเธฃเนเธ</p>
++            <p className="text-2xl font-bold text-foreground mt-1">{quizCount}</p>
++          </Card>
++          <Card className="p-4">
++            <p className="text-xs text-muted-foreground">เธเธณเธเธญเธเนเธญเธกเธนเธฅเนเธเธงเธ•เนเธฒ/เธ—เธธเธเธ—เธฑเนเธเธซเธกเธ”</p>
++            <p className="text-2xl font-bold text-foreground mt-1">{interests.length}</p>
++          </Card>
++          <Card className="p-4">
++            <p className="text-xs text-muted-foreground">เนเธเธฃเนเธเธฅเนเธเธฑเธเน€เธฃเธตเธขเธเนเธเธฃเธฐเธเธ</p>
++            <p className="text-2xl font-bold text-foreground mt-1">{profiles.length}</p>
++          </Card>
++        </div>
++
++        <Card className="p-4 sm:p-5 border border-border/60">
++          <div className="flex flex-col sm:flex-row gap-3 sm:items-end sm:justify-between">
++            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:max-w-2xl">
++              <div>
++                <label className="text-xs text-muted-foreground">Filter by University</label>
++                <select
++                  className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
++                  value={universityFilter}
++                  onChange={(e) => setUniversityFilter(e.target.value)}
++                >
++                  <option value="all">เธ—เธฑเนเธเธซเธกเธ”</option>
++                  {universities.map(([id, name]) => (
++                    <option key={id} value={id}>{name}</option>
++                  ))}
++                </select>
++              </div>
++              <div>
++                <label className="text-xs text-muted-foreground">เธเธฃเธญเธเธ•เธฒเธกเธชเธฒเธเธฒ</label>
++                <select
++                  className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
++                  value={majorFilter}
++                  onChange={(e) => setMajorFilter(e.target.value)}
++                >
++                  <option value="all">เธ—เธฑเนเธเธซเธกเธ”</option>
++                  {majors.map((m) => (
++                    <option key={m.id} value={m.id}>{m.nameTh}</option>
++                  ))}
++                </select>
++              </div>
++            </div>
++
++            <div className="flex flex-col sm:flex-row gap-2">
++              <Button onClick={handleExportCsv} className="rounded-xl">
++                Export program interests CSV
++              </Button>
++              <Button onClick={handleExportEventsCsv} variant="outline" className="rounded-xl">
++                Export event logs CSV
++              </Button>
++            </div>
++          </div>
++        </Card>
++
++        <Card className="p-4 sm:p-5 border border-border/60">
++          <h2 className="text-base font-semibold text-foreground mb-3">เธเธณเธเธญเธเนเธญเธกเธนเธฅเนเธขเธเธ•เธฒเธกเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธฅเธฐเธชเธฒเธเธฒ</h2>
++          <div className="overflow-x-auto">
++            <table className="w-full min-w-[520px] text-sm">
++              <thead>
++                <tr className="text-left border-b border-border">
++                  <th className="py-2 pr-2">เธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธข</th>
++                  <th className="py-2 pr-2">เธชเธฒเธเธฒ</th>
++                  <th className="py-2 pr-2">เธเธณเธเธงเธเธเธณเธเธญ</th>
++                </tr>
++              </thead>
++              <tbody>
++                {groupedStats.map((row, idx) => (
++                  <tr key={`${row.universityName}_${row.majorName}_${idx}`} className="border-b border-border/50">
++                    <td className="py-2 pr-2">{row.universityName}</td>
++                    <td className="py-2 pr-2">{row.majorName}</td>
++                    <td className="py-2 pr-2 font-semibold">{row.count}</td>
++                  </tr>
++                ))}
++                {groupedStats.length === 0 && (
++                  <tr>
++                    <td className="py-3 text-muted-foreground" colSpan={3}>เธขเธฑเธเนเธกเนเธกเธตเธเนเธญเธกเธนเธฅเธ•เธฒเธกเน€เธเธทเนเธญเธเนเธเธ—เธตเนเน€เธฅเธทเธญเธ</td>
++                  </tr>
++                )}
++              </tbody>
++            </table>
++          </div>
++        </Card>
++
++        <Card className="p-4 sm:p-5 border border-border/60">
++          <h2 className="text-base font-semibold text-foreground mb-3">Event Tracking เธเธทเนเธเธเธฒเธ</h2>
++          <div className="overflow-x-auto">
++            <table className="w-full min-w-[420px] text-sm">
++              <thead>
++                <tr className="text-left border-b border-border">
++                  <th className="py-2 pr-2">Event</th>
++                  <th className="py-2 pr-2">เธเธณเธเธงเธ</th>
++                </tr>
++              </thead>
++              <tbody>
++                {eventSummary.map((row) => (
++                  <tr key={row.eventName} className="border-b border-border/50">
++                    <td className="py-2 pr-2">{row.eventName}</td>
++                    <td className="py-2 pr-2 font-semibold">{row.count}</td>
++                  </tr>
++                ))}
++                {eventSummary.length === 0 && (
++                  <tr>
++                    <td className="py-3 text-muted-foreground" colSpan={2}>เธขเธฑเธเนเธกเนเธกเธต event เนเธเธฃเธฐเธเธ (เธ•เธฃเธงเธเธชเธญเธเธงเนเธฒเนเธ”เนเธฃเธฑเธ schema เธฅเนเธฒเธชเธธเธ”เธซเธฃเธทเธญเธขเธฑเธ)</td>
++                  </tr>
++                )}
++              </tbody>
++            </table>
++          </div>
++        </Card>
++
++        <Card className="p-4 sm:p-5 border border-border/60">
++          <h2 className="text-base font-semibold text-foreground mb-3">เธฃเธฒเธขเธเธฒเธฃเธเธณเธเธญ (เธ•เธฒเธกเธ•เธฑเธงเธเธฃเธญเธเธเธฑเธเธเธธเธเธฑเธ)</h2>
++          <div className="overflow-x-auto">
++            <table className="w-full min-w-[860px] text-sm">
++              <thead>
++                <tr className="text-left border-b border-border">
++                  <th className="py-2 pr-2">เน€เธงเธฅเธฒ</th>
++                  <th className="py-2 pr-2">เธเธฑเธเน€เธฃเธตเธขเธ</th>
++                  <th className="py-2 pr-2">เนเธฃเธเน€เธฃเธตเธขเธ/เธฃเธฐเธ”เธฑเธเธเธฑเนเธ</th>
++                  <th className="py-2 pr-2">เธเธฑเธเธซเธงเธฑเธ”</th>
++                  <th className="py-2 pr-2">เน€เธเธญเธฃเนเนเธ—เธฃ/เธ•เธดเธ”เธ•เนเธญ</th>
++                  <th className="py-2 pr-2">เธญเธตเน€เธกเธฅ</th>
++                  <th className="py-2 pr-2">เธเธฅเธธเนเธกเธญเธฒเธเธตเธ</th>
++                  <th className="py-2 pr-2">เธชเธฒเธเธฒ</th>
++                  <th className="py-2 pr-2">เธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธข</th>
++                </tr>
++              </thead>
++              <tbody>
++                {filteredRows.map((row) => (
++                  <tr key={row.id} className="border-b border-border/50">
++                    <td className="py-2 pr-2 whitespace-nowrap">{new Date(row.createdAt).toLocaleString("th-TH")}</td>
++                    <td className="py-2 pr-2">{row.nickname}</td>
++                    <td className="py-2 pr-2">{row.gradeAndSchool}</td>
++                    <td className="py-2 pr-2">{row.schoolProvince}</td>
++                    <td className="py-2 pr-2">{row.contact}</td>
++                    <td className="py-2 pr-2">{row.email}</td>
++                    <td className="py-2 pr-2">{row.clusterName}</td>
++                    <td className="py-2 pr-2">{row.majorName}</td>
++                    <td className="py-2 pr-2">{row.universityName}</td>
++                  </tr>
++                ))}
++                {filteredRows.length === 0 && (
++                  <tr>
++                    <td className="py-3 text-muted-foreground" colSpan={9}>เนเธกเนเธเธเธฃเธฒเธขเธเธฒเธฃเธเธณเธเธญเธ•เธฒเธกเธ•เธฑเธงเธเธฃเธญเธเธ—เธตเนเน€เธฅเธทเธญเธ</td>
++                  </tr>
++                )}
++              </tbody>
++            </table>
++          </div>
++        </Card>
++
++        {isLoading && <p className="text-sm text-muted-foreground">เธเธณเธฅเธฑเธเนเธซเธฅเธ”เธเนเธญเธกเธนเธฅ...</p>}
++      </div>
++    </div>
++  );
++}

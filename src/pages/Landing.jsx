@@ -113,12 +113,12 @@ export default function Landing() {
                 เริ่มทำควิซ (ฟรี 100%)
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <div className="mt-4 flex items-center justify-center gap-4 text-sm font-medium text-muted-foreground">
-                <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> ⏱️ ใช้เวลาแค่ 3 นาที</span>
-                <span className="text-border">|</span>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-sm font-medium text-muted-foreground">
+                <span className="flex items-center gap-1.5">⏱️ ใช้เวลาแค่ 3 นาที</span>
+                <span className="text-border hidden sm:inline">|</span>
                 <span className="flex items-center gap-1.5">📝 30 คำถาม</span>
-                <span className="text-border">|</span>
-                <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4" /> ⚡ รู้ผลทันที</span>
+                <span className="text-border hidden sm:inline">|</span>
+                <span className="flex items-center gap-1.5">⚡ รู้ผลทันที</span>
               </div>
             </div>
           </motion.div>

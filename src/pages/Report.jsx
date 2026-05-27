@@ -1,21 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Download, Sparkles, BarChart3, Briefcase, GraduationCap, Target } from "lucide-react";
 
-import { getStoredQuizResult, getStoredLeadProfile, hasLeadCapture } from "@/lib/leadCaptureApi";
+import { getStoredQuizResult, hasLeadCapture } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
-import { appName, appNameFull } from "@/lib/app-params";
-import { buildHollandCode } from "@/lib/scoringEngine";
+import { appName } from "@/lib/app-params";
 
-import RIASECChart from "../components/results/RIASECChart.jsx";
-import CareerCard from "@/components/results/CareerCard";
-import MajorList from "../components/results/MajorList.jsx";
-import LeadCaptureForm from "@/components/lead/LeadCaptureForm";
-import reportContent from "@/data/reportContent.json";
+// --- ACTION PLAN RULES (from original) ---
+const ACTION_RULES = [
+  { check: () => true, text: "เลือก 2–3 สาขาที่สนใจจากลิสต์ด้านบน แล้วเข้าไปอ่านรายละเอียดหลักสูตรในเว็บมหาวิทยาลัย" },
+  { check: (c, t) => c.includes("CLUSTER_IT_ENGINEERING") || t.includes("R") || t.includes("I"), text: "ฝึกทักษะการคิดเป็นระบบและทำโปรเจกต์เล็ก ๆ เช่น Coding เบื้องต้น หรือการทดลองแก้ปัญหาจริง" },
+  { check: (c, t) => c.includes("CLUSTER_BUSINESS") || t.includes("E") || t.includes("C"), text: "ลองศึกษาเรื่องการจัดการ การเงินพื้นฐาน หรือทำ Mini Project ที่สะท้อนความเป็นผู้นำและการจัดระบบ" },
+  { check: (c) => c.includes("CLUSTER_HEALTH"), text: "ลองอาสาสมัครงานด้านสุขภาพ หรือคุยกับพยาบาล/แพทย์ในครอบครัวหรือชุมชน เพื่อเข้าใจงานจริง" },
+  { check: (c) => c.includes("CLUSTER_SCIENCE"), text: "ฝึกทักษะการคิดแบบวิทยาศาสตร์ เช่น ทำ Project ทดลองง่าย ๆ หรืออ่านบทความวิทย์ภาษาไทย" },
+  { check: (c) => c.includes("CLUSTER_MEDIA") || c.includes("CLUSTER_LAW"), text: "ลองฝึกทักษะการพูดและการเขียน เช่น เข้าร่วมชมรมโต้วาที ทำ Content บน Social Media หรืออาสาสมัครในชุมชน" },
+  { check: (c) => c.includes("CLUSTER_EDUCATION"), text: "ลองสอนพิเศษน้อง ๆ หรือเป็นผู้ช่วยสอนในโรงเรียน เพื่อทดสอบว่าชอบงานสอนจริงหรือเปล่า" },
+  { check: (c) => c.includes("CLUSTER_HOSPITALITY"), text: "ลองฝึกงานในโรงแรม ร้านอาหาร หรือฟาร์ม/สวนเกษตรช่วงปิดเทอม เพื่อสัมผัสบรรยากาศงานจริง" },
+  { check: () => true, text: "เข้าไปอ่านข้อมูลรับสมัครล่าสุดที่ mytcas.com และปรึกษาครูแนะแนวหรือผู้ปกครองก่อนตัดสินใจ" },
+];
 
-const { ARCHETYPE_MAP, SALARY_ESTIMATES, SKILL_SUGGESTIONS, PAINPOINT_ADVICE } = reportContent;
+const RIASEC_META = {
+  R: { en: "Realistic", color: "#EF4444" },
+  I: { en: "Investigative", color: "#3B82F6" },
+  A: { en: "Artistic", color: "#8B5CF6" },
+  S: { en: "Social", color: "#10B981" },
+  E: { en: "Enterprising", color: "#F59E0B" },
+  C: { en: "Conventional", color: "#06B6D4" },
+};
 
 export default function Report() {
   const navigate = useNavigate();
@@ -23,285 +33,196 @@ export default function Report() {
   const [result, setResult] = useState(null);
   const [leadUnlocked, setLeadUnlocked] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const leadProfile = profileId ? getStoredLeadProfile(profileId) : null;
 
   useEffect(() => {
     const sessionRaw = sessionStorage.getItem("tcas_quiz_result");
     let parsedResult = null;
-
     if (sessionRaw) {
       parsedResult = JSON.parse(sessionRaw);
     } else if (profileId) {
       parsedResult = getStoredQuizResult(profileId);
     }
-
-    if (!parsedResult) {
-      navigate("/results");
-      return;
-    }
-
+    if (!parsedResult) { navigate("/results"); return; }
     setResult(parsedResult);
     setLeadUnlocked(Boolean(profileId && hasLeadCapture(profileId)));
     setIsReady(true);
-
-    trackEvent("report_viewed", {
-      page: "report",
-      userProfileId: profileId || null,
-      hasLead: Boolean(profileId && hasLeadCapture(profileId)),
-    });
+    trackEvent("report_viewed", { page: "report", userProfileId: profileId || null, hasLead: Boolean(profileId && hasLeadCapture(profileId)) });
   }, [navigate, profileId]);
 
   if (!isReady || !result) return null;
 
-  const typedResult = /** @type {any} */ (result);
-
+  // ── Lead gate ──
   if (!leadUnlocked) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-10">
-        <Card className="w-full max-w-2xl p-5 sm:p-7 border-border/60 shadow-sm">
-          <div className="text-center mb-6">
-            <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-2">{appNameFull}</div>
-            <h1 className="text-2xl font-bold text-foreground">🚨 รายงานนี้สงวนสิทธิ์เฉพาะผู้ใช้ Premium (59 บาท)</h1>
-            <p className="mt-3 text-sm text-muted-foreground">
-              ขออภัย ระบบชำระเงินกำลังปิดปรับปรุงชั่วคราว เราจึงเปิดให้คุณลงทะเบียนเพื่อรับสิทธิ์ดู Report ฉบับเต็มได้ <strong>ฟรี</strong> ด้านล่างนี้
-            </p>
-          </div>
-          <LeadCaptureForm
-            onSubmitSuccess={() => {
-              setLeadUnlocked(true);
-              trackEvent("lead_submitted", { page: "report", userProfileId: profileId || null });
-            }}
-            submitLabel="ยืนยันและดูรายงาน"
-            prefill={leadProfile || undefined}
-            compact
-            className="space-y-5"
-          />
-          <div className="mt-4 text-center">
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/results">กลับไปหน้าผลการทดสอบ</Link>
-            </Button>
-          </div>
-        </Card>
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4 py-10">
+        <h1 className="text-2xl font-bold mb-4">รายงานนี้สงวนสิทธิ์เฉพาะผู้ใช้ที่ลงทะเบียน</h1>
+        <p className="mb-6 text-slate-600">กรุณากลับไปหน้าผลลัพธ์เพื่อกรอกข้อมูลก่อนเข้าดู PDF</p>
+        <Link to="/results" className="text-blue-600 underline">กลับไปหน้าผลลัพธ์</Link>
       </div>
     );
   }
 
-  const { profile, clusters, careers, majors, summary, answers = {} } = typedResult;
-  const topClusters = (clusters ?? careers ?? []).slice(0, 5);
-  const hollandCode = typedResult.hollandCode || profile.hollandCode || buildHollandCode(profile.traitScores || []);
-  const leading = String(hollandCode || "").charAt(0).toUpperCase();
-  const archetype = ARCHETYPE_MAP[leading] || { label: "The Explorer", emoji: "🌍", desc: "คุณคือนักสำรวจ พร้อมเปิดรับโอกาสใหม่ๆ เสมอ" };
+  // ── Extract Data ──
+  const typedResult = /** @type {any} */ (result);
+  const { profile, clusters, careers, majors, summary } = typedResult;
   
-  // Painpoint
-  const painpointAnswer = answers?.Q_CON_PAINPOINT;
-  const painKeys = Array.isArray(painpointAnswer) ? painpointAnswer : painpointAnswer ? [painpointAnswer] : [];
-  const topCareerName = topClusters[0]?.nameTh || "อาชีพอันดับ 1 ของคุณ";
-  const painAdvice = painKeys.map(key => {
-    const rawAdvice = PAINPOINT_ADVICE[key];
-    if (!rawAdvice) return null;
-    return {
-      title: rawAdvice.title.replace(/\{careerName\}/g, topCareerName),
-      items: rawAdvice.items.map(item => item.replace(/\{careerName\}/g, topCareerName))
-    };
-  }).filter(Boolean);
+  const topClusters = (clusters ?? careers ?? []).slice(0, 3);
+  const clusterIds = topClusters.map(c => c.clusterId);
+  const topDims = profile?.traitScores ? profile.traitScores.slice(0, 3).map(t => t.dimension) : [];
+  
+  // Sort traits by score
+  const sortedTraits = [...(profile?.traitScores || [])]
+    .filter(t => ["R","I","A","S","E","C"].includes(t.dimension))
+    .sort((a, b) => (b.normalizedScore || 0) - (a.normalizedScore || 0));
 
-  const handlePrint = () => window.print();
+  // Top Trait details
+  const leadingTrait = sortedTraits[0] || { dimension: "I", label: "Investigative (นักวิเคราะห์)" };
+  const leadingFull = leadingTrait.label || `${leadingTrait.dimension} - ${RIASEC_META[leadingTrait.dimension]?.en}`;
+
+  // Action rules
+  const seen = new Set();
+  const actionBullets = ACTION_RULES.filter(rule => {
+    if (!rule.check(clusterIds, topDims)) return false;
+    if (seen.has(rule.text)) return false;
+    seen.add(rule.text);
+    return true;
+  }).slice(0, 4).map(r => r.text);
+
+  // Date
+  const reportDate = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* ── Screen header (Hidden when printing) ────────────────── */}
-      <div className="no-print bg-gradient-to-r from-blue-50 to-indigo-50 px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-blue-100">
-        <span className="text-sm font-medium text-blue-800">
-          <span className="font-bold mr-2">{appNameFull}</span>รายงานวิเคราะห์ฉบับเต็ม
-        </span>
-        <div className="flex items-center gap-3">
-          <Button size="sm" onClick={handlePrint} className="rounded-xl gap-2">
-            <Download className="w-4 h-4" />
-            ดาวน์โหลด PDF
-          </Button>
-          <button onClick={() => window.close()} className="text-xs underline text-blue-600 opacity-70 hover:opacity-100">ปิดหน้าต่าง</button>
-        </div>
+    <div className="min-h-screen bg-slate-100 flex justify-center py-8 print:py-0 print:bg-white overflow-x-hidden">
+      
+      {/* Screen Toolbar */}
+      <div className="fixed top-4 right-4 no-print flex gap-2">
+        <button onClick={() => window.print()} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-semibold shadow hover:bg-blue-700">พิมพ์ / บันทึก PDF</button>
+        <button onClick={() => window.close()} className="px-4 py-2 bg-white border border-slate-300 text-slate-600 rounded text-sm hover:bg-slate-50">ปิดหน้าต่าง</button>
       </div>
 
-      <div id="report-root" className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-10 bg-white">
+      {/* A4 Document */}
+      <div className="document-a4 bg-white relative">
         
-        {/* Report Header */}
-        <div className="text-center mb-10 pb-6 border-b border-slate-200">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            <Sparkles className="w-4 h-4" />
-            รายงานวิเคราะห์เชิงลึก (Premium)
+        {/* HEADER */}
+        <div className="flex justify-between items-end pb-3 mb-5 border-b-[2px] border-blue-800">
+          <div>
+            <h1 className="text-[18px] font-bold text-blue-900 leading-none mb-2">ผลการวิเคราะห์บุคลิกภาพและแนวทางการเรียนในอนาคต</h1>
+            <p className="text-[10px] text-slate-500">ผู้จัดทำ {appName} · อ้างอิง TCAS67-68 · วันที่ {reportDate}</p>
           </div>
-          <div className="text-xs font-semibold tracking-widest text-primary/60 uppercase mb-1">{appName}</div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">สรุปผลการวิเคราะห์ตัวตนแบบละเอียด</h1>
-          {leadProfile?.nickname && leadProfile?.gradeAndSchool && (
-            <p className="mt-2 text-sm text-muted-foreground">
-              ของ {leadProfile.nickname} จาก {leadProfile.gradeAndSchool}
-            </p>
-          )}
+          <div className="text-right">
+            <p className="text-[9px] text-slate-500 mb-1">บุคลิกของคุณ</p>
+            <p className="text-[14px] font-bold text-blue-800">{leadingFull}</p>
+          </div>
         </div>
 
-        {/* Section 1: Executive Identity */}
-        <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-primary" />
-            <h2 className="text-2xl font-bold text-foreground">1. บทสรุปตัวตน (Executive Identity)</h2>
-          </div>
-          <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr] items-start">
-            <div className="space-y-4">
-              <div>
-                <p className="text-xs uppercase tracking-widest text-primary/70 font-semibold">Holland Code</p>
-                <p className="mt-1 text-4xl font-bold tracking-[0.2em] text-primary">{hollandCode}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-widest text-primary/70 font-semibold">Archetype</p>
-                <p className="mt-1 text-xl font-bold text-foreground">{archetype.label} {archetype.emoji}</p>
-                <p className="text-sm text-muted-foreground mt-1">{archetype.desc}</p>
-              </div>
-              <p className="text-sm sm:text-base text-foreground/80 leading-relaxed mt-4">{summary.summaryText}</p>
-              {summary.bulletPoints?.length > 0 && (
-                <ul className="space-y-1.5">
-                  {summary.bulletPoints.map((bp, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-foreground/75">
-                      <span className="mt-0.5 text-primary">•</span>
-                      {bp}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div className="flex flex-wrap gap-2 mt-2">
-                {summary.topTraits?.map((t) => (
-                  <span key={t.dimension} className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                    {t.label}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4">
-              <RIASECChart traitScores={profile.traitScores} hollandCode={hollandCode} />
-            </div>
-          </div>
-        </section>
+        {/* SECTION 1: บุคลิกภาพหลัก */}
+        <div className="mb-6">
+          <h2 className="text-[13px] font-bold text-blue-800 mb-3">บุคลิกภาพหลัก</h2>
+          <p className="text-[11.5px] text-slate-700 leading-relaxed mb-3">{summary?.summaryText}</p>
+          <ul className="space-y-1.5 pl-1">
+            {summary?.bulletPoints?.map((bp, i) => (
+              <li key={i} className="text-[11px] text-slate-700 flex items-start gap-2">
+                <span className="text-blue-500 font-bold mt-[-1px]">•</span>
+                {bp}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        {/* Section 2: Deep Match */}
-        <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200 print-break-inside-avoid">
-          <div className="flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-primary" />
-            <h2 className="text-2xl font-bold text-foreground">2. อาชีพที่เหมาะสมที่สุด 5 อันดับ (Deep Match)</h2>
-          </div>
-          
-          <div className="flex flex-col gap-8">
-            {topClusters.map((career, index) => {
-              const salary = SALARY_ESTIMATES[career.clusterId] || "ขึ้นอยู่กับประสบการณ์และองค์กร";
-              const skills = SKILL_SUGGESTIONS[career.clusterId] || { hard: [], soft: [] };
-
+        {/* SECTION 2: คะแนน RIASEC */}
+        <div className="mb-6">
+          <h2 className="text-[13px] font-bold text-blue-800 mb-4">คะแนน RIASEC</h2>
+          <div className="w-[60%]">
+            {sortedTraits.map(t => {
+              const meta = RIASEC_META[t.dimension];
+              const score = Math.round(t.normalizedScore || 0);
               return (
-                <div key={career.careerId || `${career.clusterId}-${index}`} className="flex flex-col gap-4">
-                  <h3 className="text-lg font-bold text-slate-800">อันดับ {index + 1}: {career.nameTh}</h3>
-                  <CareerCard
-                    career={career}
-                    rank={index}
-                    feedbackValue={undefined}
-                    onFeedback={() => {}}
-                    onCareerViewed={() => {}}
-                    showMatchScore={false}
-                    showFeedback={false}
-                  />
-                  
-                  {/* Add Salary & Skills details for the report */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <Card className="p-3 bg-slate-50/50 shadow-sm border-slate-200">
-                      <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1">💰 เงินเดือนเฉลี่ย (เริ่มต้น)</p>
-                      <p className="text-sm font-semibold text-foreground">{salary}</p>
-                    </Card>
-                    <Card className="p-3 bg-slate-50/50 shadow-sm border-slate-200">
-                      <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1">🛠 Hard Skills</p>
-                      <p className="text-sm text-foreground/80">{skills.hard.join(", ") || "-"}</p>
-                    </Card>
-                    <Card className="p-3 bg-slate-50/50 shadow-sm border-slate-200">
-                      <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1">🤝 Soft Skills</p>
-                      <p className="text-sm text-foreground/80">{skills.soft.join(", ") || "-"}</p>
-                    </Card>
+                <div key={t.dimension} className="flex items-center gap-3 mb-2.5">
+                  <span className="w-[110px] text-[10.5px] font-semibold text-slate-700 shrink-0">
+                    {t.dimension} — {meta?.en}
+                  </span>
+                  <div className="flex-1 h-[7px] bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${score}%`, backgroundColor: meta?.color || '#3B82F6' }} />
                   </div>
+                  <span className="w-[20px] text-right text-[10.5px] font-bold text-slate-800">{score}</span>
                 </div>
               );
             })}
           </div>
-        </section>
+        </div>
 
-        {/* Section 3: Target Lock */}
-        <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-primary" />
-            <h2 className="text-2xl font-bold text-foreground">3. ลายแทงคณะและมหาวิทยาลัย (Target Lock)</h2>
+        {/* SECTION 3: อาชีพ */}
+        <div className="mb-6">
+          <h2 className="text-[13px] font-bold text-blue-800 mb-3">กลุ่มอาชีพที่เหมาะสม (Top 3)</h2>
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            {topClusters.map((career, idx) => (
+              <div key={idx} className="border border-blue-100 rounded-lg p-3 relative bg-blue-50/30">
+                <div className="absolute -top-2 -left-2 w-5 h-5 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-[10px] font-bold">
+                  {idx + 1}
+                </div>
+                <h3 className="text-[11.5px] font-bold text-blue-900 mb-2 mt-1">{career.nameTh}</h3>
+                <p className="text-[10px] text-slate-600 leading-[1.5] line-clamp-4">{career.descriptionTh || career.description}</p>
+              </div>
+            ))}
           </div>
-          <p className="text-sm text-muted-foreground mb-2">สาขาวิชาและมหาวิทยาลัยที่รองรับอาชีพทั้ง 5 อันดับของคุณ</p>
-          <MajorList
-            majors={majors}
-            topCareers={topClusters}
-            hasCapturedLead={true}
-            hideFeedback={true}
-          />
-        </section>
 
-        {/* Section 4: Painkiller */}
-        <section className="flex flex-col gap-6 mb-12 print-break-inside-avoid">
-          <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-primary" />
-            <h2 className="text-2xl font-bold text-foreground">4. กลยุทธ์แก้ปัญหาเฉพาะคุณ (Painkiller)</h2>
+          {/* Majors for Top 1 */}
+          {topClusters[0] && majors && majors.length > 0 && (
+            <div className="pl-1">
+              <h3 className="text-[11px] font-bold text-slate-800 mb-2">ตัวอย่างคณะ/สาขาเป้าหมาย (สำหรับอันดับ 1)</h3>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                {majors.filter(m => m.clusterId === topClusters[0].clusterId).slice(0, 6).map(m => (
+                  <div key={m.id} className="text-[10px] text-slate-600 flex items-start gap-1.5">
+                    <span className="text-slate-400 mt-[-1px]">-</span>
+                    <span>
+                      <span className="font-semibold text-slate-700">{m.nameTh}</span> 
+                      {m.universityNameTh && <span className="text-slate-500">, {m.universityNameTh}</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* SECTION 4: Action Plan */}
+        <div>
+          <h2 className="text-[13px] font-bold text-blue-800 mb-3">แผนการต่อไป</h2>
+          <div className="space-y-2.5">
+            {actionBullets.map((text, i) => (
+              <div key={i} className="flex items-start gap-2.5">
+                <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-[9px] font-bold shrink-0 mt-[1px]">
+                  {i + 1}
+                </span>
+                <span className="text-[11px] text-slate-700 leading-snug">{text}</span>
+              </div>
+            ))}
           </div>
-          
-          <div className="space-y-4">
-            {painAdvice.length > 0 ? (
-              painAdvice.map((advice, idx) => (
-                <Card key={idx} className="p-5 bg-amber-50/40 border-amber-200/60 shadow-sm">
-                  <h3 className="text-base font-bold text-amber-800 mb-3">{advice.title}</h3>
-                  <ol className="space-y-2.5">
-                    {advice.items.map((item, j) => (
-                      <li key={j} className="flex items-start gap-2.5 text-sm text-slate-700">
-                        <span className="shrink-0 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center mt-0.5 bg-amber-200 text-amber-800">
-                          {j + 1}
-                        </span>
-                        <span className="leading-relaxed">{item}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </Card>
-              ))
-            ) : (
-              <Card className="p-5 bg-blue-50/40 border-blue-200/60 shadow-sm">
-                <h3 className="text-base font-bold text-blue-800 mb-3">📌 คำแนะนำทั่วไปสำหรับเตรียมสอบ TCAS</h3>
-                <ol className="space-y-2.5">
-                  <li className="flex items-start gap-2.5 text-sm text-slate-700">
-                    <span className="shrink-0 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center mt-0.5 bg-blue-200 text-blue-800">1</span>
-                    เข้า mytcas.com ดู TCAS Calendar ล่าสุด จด deadline รอบ 1–4 ลงปฏิทิน
-                  </li>
-                  <li className="flex items-start gap-2.5 text-sm text-slate-700">
-                    <span className="shrink-0 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center mt-0.5 bg-blue-200 text-blue-800">2</span>
-                    ตรวจสอบเกณฑ์ขั้นต่ำ (GPAX, คะแนนสอบ) ของคณะที่สนใจ เทียบกับคะแนนตัวเอง
-                  </li>
-                  <li className="flex items-start gap-2.5 text-sm text-slate-700">
-                    <span className="shrink-0 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center mt-0.5 bg-blue-200 text-blue-800">3</span>
-                    สมัครอย่างน้อย 3 อันดับ กระจายรอบ TCAS เพื่อเพิ่มโอกาสติด
-                  </li>
-                </ol>
-              </Card>
-            )}
-          </div>
-        </section>
+        </div>
+
+        {/* FOOTER */}
+        <div className="absolute bottom-[20px] left-[30px] right-[30px] border-t border-slate-200 pt-2 text-[8px] text-slate-400 flex justify-between">
+          <span>ผู้จัดทำ {appName} · เอกสารนี้เป็นเพียงแนวทางเบื้องต้น ควรปรึกษาผู้เชี่ยวชาญก่อนตัดสินใจ</span>
+          <span>หน้า 1/1</span>
+        </div>
 
       </div>
-      
-      {/* Print styles */}
+
+      {/* STYLES */}
       <style>{`
+        .document-a4 {
+          width: 210mm;
+          min-height: 297mm;
+          padding: 30mm 20mm; /* A4 standard margins */
+          box-sizing: border-box;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
         @media print {
-          @page { size: A4 portrait; margin: 10mm; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          @page { size: A4 portrait; margin: 0; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white; margin: 0; padding: 0; }
           .no-print { display: none !important; }
-          #report-root { padding: 0 !important; max-width: 100% !important; }
-          .print-break-inside-avoid { page-break-inside: avoid; }
-          
-          /* Hide animations when printing */
-          * { animation: none !important; transition: none !important; }
+          .document-a4 { box-shadow: none; padding: 15mm 20mm; min-height: auto; }
         }
       `}</style>
     </div>

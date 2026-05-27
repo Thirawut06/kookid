@@ -255,11 +255,10 @@ export default function Results() {
         {/* Download PDF Button */}
         <div className="flex justify-center mb-8">
           <Button
-            size="lg"
             onClick={openReport}
-            className="rounded-xl gap-2 px-6 py-5 text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
+            className="rounded-xl gap-2 px-5 py-2.5 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/30 transition-all"
           >
-            <FileDown className="w-5 h-5" />
+            <FileDown className="w-4 h-4" />
             ดาวน์โหลดรายงานฉบับเต็ม (PDF)
           </Button>
         </div>

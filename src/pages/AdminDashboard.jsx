@@ -54,6 +54,7 @@ export default function AdminDashboard() {
   const [isAuthed, setIsAuthed] = useState(false);
 
   const [profiles, setProfiles] = useState([]);
+  const [interests, setInterests] = useState([]);
   const [quizResults, setQuizResults] = useState([]);
   const [eventRows, setEventRows] = useState([]);
   const [quizCount, setQuizCount] = useState(0);
@@ -70,6 +71,36 @@ export default function AdminDashboard() {
     () => Object.fromEntries(profiles.map(p => [p.id, p])),
     [profiles]
   );
+
+  const filteredRows = useMemo(() => {
+    return interests.map(row => {
+      const major = majorById[row.major_id] || null;
+      const cluster = major ? clusterById[major.clusterId] : null;
+      const profile = profileById[row.user_profile_id] || null;
+      const fallbackGradeAndSchool = splitGradeAndSchool(profile?.grade_and_school);
+      const gradeLevel = profile?.grade_level || profile?.gradeLevel || fallbackGradeAndSchool.gradeLevel || "-";
+      const schoolName = profile?.school_name || profile?.schoolName || fallbackGradeAndSchool.schoolName || "-";
+      const universityId = row.university_id || major?.universityId || "-";
+      const universityName = major?.universityNameTh || universityId;
+
+      return {
+        id: row.id,
+        createdAt: row.created_at,
+        userProfileId: row.user_profile_id,
+        nickname: profile?.nickname || "-",
+        gradeLevel,
+        schoolName,
+        schoolProvince: profile?.school_province || profile?.schoolProvince || "-",
+        contact: profile?.contact || "-",
+        email: profile?.email || "-",
+        majorId: row.major_id,
+        majorName: major?.nameTh || row.major_id,
+        clusterName: cluster?.nameTh || "-",
+        universityId,
+        universityName,
+      };
+    });
+  }, [interests, majorById, clusterById, profileById]);
 
 
 
@@ -226,6 +257,7 @@ export default function AdminDashboard() {
 
         const body = await resp.json();
         setProfiles(body.profiles || []);
+        setInterests(body.interests || []);
         setQuizResults(body.quizResults || []);
         setEventRows(body.eventRows || []);
         setQuizCount(body.quizCount || 0);
