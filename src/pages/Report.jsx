@@ -277,27 +277,6 @@ export default function Report() {
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
           }
         }
-
-        @media print {
-          @page { size: A4 portrait; margin: 0; }
-          body { 
-            -webkit-print-color-adjust: exact !important; 
-            print-color-adjust: exact !important; 
-            background: white !important; 
-            margin: 0 !important; 
-            padding: 0 !important; 
-            width: 210mm !important;
-          }
-          .no-print { display: none !important; }
-          .document-a4 { 
-            width: 210mm !important;
-            max-width: 210mm !important;
-            box-shadow: none !important; 
-            margin: 0 !important; 
-            border: none !important;
-            padding: 15mm !important;
-          }
-        }
       `}</style>
     </div>
   );

@@ -104,7 +104,7 @@
     display: none !important;
   }
   
-  /* Force exact A4 dimensions so mobile browsers don't collapse columns or spill to page 2 */
+  /* Force exact dimensions to prevent mobile browsers from spilling to page 2 */
   html, body {
     -webkit-print-color-adjust: exact !important; 
     print-color-adjust: exact !important;
@@ -112,16 +112,15 @@
     color: #111 !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 210mm !important;
-    height: 275mm !important; /* Shorter than 297mm to leave room for iOS forced headers */
-    overflow: hidden !important;
   }
 
+  /* Make the document slightly shorter than A4 (297mm) to leave room for iOS Safari forced headers/footers */
   .document-a4 {
     width: 210mm !important;
     max-width: 210mm !important;
-    height: 275mm !important;
-    max-height: 275mm !important;
+    height: 270mm !important; 
+    min-height: 270mm !important;
+    max-height: 270mm !important;
     margin: 0 !important;
     padding: 10mm !important; 
     box-shadow: none !important;
