@@ -100,16 +100,20 @@ export default function Report() {
   const reportDate = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
   return (
-    <div className="min-h-screen bg-slate-100 flex justify-center py-8 print:py-0 print:bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 print:bg-white flex flex-col items-center">
       
-      {/* Screen Toolbar */}
-      <div className="fixed top-4 right-4 no-print flex gap-2">
-        <button onClick={() => window.print()} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-semibold shadow hover:bg-blue-700">พิมพ์ / บันทึก PDF</button>
-        <button onClick={() => window.close()} className="px-4 py-2 bg-white border border-slate-300 text-slate-600 rounded text-sm hover:bg-slate-50">ปิดหน้าต่าง</button>
+      {/* Screen Toolbar (Standard Sticky Top Bar) */}
+      <div className="w-full bg-white border-b border-slate-200 p-3 sm:p-4 sticky top-0 z-50 no-print flex justify-center sm:justify-between items-center shadow-sm">
+        <div className="text-sm font-bold text-slate-800 hidden sm:block pl-2">รายงานผล KooKid</div>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button onClick={() => window.close()} className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">ปิดหน้าต่าง</button>
+          <button onClick={() => window.print()} className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow hover:bg-blue-700">พิมพ์ / บันทึก PDF</button>
+        </div>
       </div>
 
-      {/* A4 Document */}
-      <div className="document-a4 bg-white relative">
+      <div className="w-full flex justify-center p-0 sm:p-8 print:p-0">
+        {/* A4 Document */}
+        <div className="document-a4 bg-white relative">
         
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end pb-4 mb-4 border-b-[2px] border-blue-800 gap-4 sm:gap-0">
@@ -211,8 +215,8 @@ export default function Report() {
             <div className="pl-1 mt-4">
               <h3 className="text-[13px] font-bold text-slate-800 mb-2.5">ตัวอย่างคณะ/สาขาเป้าหมายที่เกี่ยวข้อง</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-                {displayMajors.map(m => (
-                  <div key={m.id} className="text-[11.5px] text-slate-600 flex items-start gap-1.5">
+                {displayMajors.map((m, idx) => (
+                  <div key={`${m.id}-${idx}`} className="text-[11.5px] text-slate-600 flex items-start gap-1.5">
                     <span className="text-slate-400 font-bold mt-[0px]">-</span>
                     <span className="leading-snug">
                       <span className="font-semibold text-slate-700">{m.nameTh}</span> 
@@ -246,6 +250,7 @@ export default function Report() {
           <span>© {new Date().getFullYear()} {appName} · เอกสารนี้เป็นเพียงแนวทางเบื้องต้น ผู้ใช้งานต้องตรวจสอบระเบียบการรับสมัครอย่างเป็นทางการของมหาวิทยาลัยอีกครั้งก่อนตัดสินใจ</span>
         </div>
 
+        </div>
       </div>
 
       {/* STYLES */}
@@ -254,16 +259,17 @@ export default function Report() {
           width: 100%;
           max-width: 210mm;
           min-height: 297mm;
-          padding: 20px; 
+          padding: 24px; 
           padding-bottom: 80px;
           box-sizing: border-box;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          box-shadow: none;
           margin: 0 auto;
         }
 
         @media (min-width: 640px) {
           .document-a4 {
             padding: 15mm; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
           }
         }
 
