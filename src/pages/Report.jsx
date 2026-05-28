@@ -37,10 +37,14 @@ export default function Report() {
         await document.fonts.ready;
       }
       
+      const originalScrollY = window.scrollY;
+      window.scrollTo(0, 0);
+      
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         windowWidth: 1024,
+        scrollY: 0,
         onclone: (documentClone) => {
           const clonedElement = documentClone.getElementById("report-pdf-content");
           if (clonedElement) {
@@ -49,9 +53,21 @@ export default function Report() {
             clonedElement.style.maxWidth = "794px";
             clonedElement.style.margin = "0"; // Override 'margin: 0 auto'
             clonedElement.style.boxShadow = "none";
+            
+            // Fix Thai font baseline offset by overriding font-family and line-height during snapshot
+            const style = documentClone.createElement("style");
+            style.innerHTML = `
+              #report-pdf-content, #report-pdf-content * {
+                font-family: Tahoma, "Sarabun", sans-serif !important;
+                line-height: 1.5 !important;
+              }
+            `;
+            documentClone.head.appendChild(style);
           }
         }
       });
+      
+      window.scrollTo(0, originalScrollY);
       
       const imgData = canvas.toDataURL("image/jpeg", 0.95);
       const pdf = new jsPDF({
@@ -68,8 +84,10 @@ export default function Report() {
       const pdfBlob = pdf.output("blob");
       const fileName = `KooKid-Report.pdf`;
 
-      // Use Web Share API on mobile to open the Share Sheet (Save to Files / Line)
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: 'application/pdf' })] })) {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      // Use Web Share API only on mobile devices
+      if (isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: 'application/pdf' })] })) {
         try {
           await navigator.share({
             files: [new File([pdfBlob], fileName, { type: 'application/pdf' })],
