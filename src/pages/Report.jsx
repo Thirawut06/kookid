@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
 import { getStoredQuizResult, hasLeadCapture, getStoredLeadProfile } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
@@ -21,6 +24,40 @@ export default function Report() {
   const [result, setResult] = useState(null);
   const [leadUnlocked, setLeadUnlocked] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const element = document.getElementById("report-pdf-content");
+      if (!element) return;
+      
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        windowWidth: 1024,
+      });
+      
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("KooKid-Report.pdf");
+      
+    } catch (error) {
+      console.error("PDF generation failed", error);
+      alert("เกิดข้อผิดพลาดในการสร้าง PDF");
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   useEffect(() => {
     const sessionRaw = sessionStorage.getItem("tcas_quiz_result");
@@ -107,13 +144,26 @@ export default function Report() {
         <div className="text-sm font-bold text-slate-800 hidden sm:block pl-2">รายงานผล KooKid</div>
         <div className="flex gap-2 w-full sm:w-auto">
           <button onClick={() => window.close()} className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">ปิดหน้าต่าง</button>
-          <button onClick={() => window.print()} className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow hover:bg-blue-700">พิมพ์ / บันทึก PDF</button>
+          <button 
+            onClick={handleDownloadPDF} 
+            disabled={isGeneratingPdf}
+            className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow hover:bg-blue-700 disabled:opacity-70 flex items-center justify-center"
+          >
+            {isGeneratingPdf ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                กำลังสร้าง PDF...
+              </>
+            ) : (
+              "ดาวน์โหลด PDF"
+            )}
+          </button>
         </div>
       </div>
 
       <div className="w-full flex justify-center p-0 sm:p-8 print:p-0">
         {/* A4 Document */}
-        <div className="document-a4 bg-white relative">
+        <div id="report-pdf-content" className="document-a4 bg-white relative">
         
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row print:flex-row justify-between items-start sm:items-end print:items-end pb-4 mb-4 border-b-[2px] border-blue-800 gap-4 sm:gap-0 print:gap-0">
