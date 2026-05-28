@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Loader2 } from "lucide-react";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { getStoredQuizResult, hasLeadCapture, getStoredLeadProfile } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
@@ -24,88 +31,14 @@ export default function Report() {
   const [result, setResult] = useState(null);
   const [leadUnlocked, setLeadUnlocked] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [showMobilePrintDialog, setShowMobilePrintDialog] = useState(false);
 
-  const handleDownloadPDF = async () => {
-    setIsGeneratingPdf(true);
-    try {
-      const element = document.getElementById("report-pdf-content");
-      if (!element) return;
-      
-      // Ensure fonts are loaded before capturing
-      if (document.fonts) {
-        await document.fonts.ready;
-      }
-      
-      const originalScrollY = window.scrollY;
-      window.scrollTo(0, 0);
-      
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        windowWidth: 1024,
-        scrollY: 0,
-        onclone: (documentClone) => {
-          const clonedElement = documentClone.getElementById("report-pdf-content");
-          if (clonedElement) {
-            // Force exact A4 width and align left to prevent right-side cropping
-            clonedElement.style.width = "794px";
-            clonedElement.style.maxWidth = "794px";
-            clonedElement.style.margin = "0"; // Override 'margin: 0 auto'
-            clonedElement.style.boxShadow = "none";
-            
-            // Fix Thai font baseline offset by overriding font-family and line-height during snapshot
-            const style = documentClone.createElement("style");
-            style.innerHTML = `
-              #report-pdf-content, #report-pdf-content * {
-                font-family: Tahoma, "Sarabun", sans-serif !important;
-                line-height: 1.5 !important;
-              }
-            `;
-            documentClone.head.appendChild(style);
-          }
-        }
-      });
-      
-      window.scrollTo(0, originalScrollY);
-      
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-      
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-      
-      const pdfBlob = pdf.output("blob");
-      const fileName = `KooKid-Report.pdf`;
-
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-      // Use Web Share API only on mobile devices
-      if (isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: 'application/pdf' })] })) {
-        try {
-          await navigator.share({
-            files: [new File([pdfBlob], fileName, { type: 'application/pdf' })],
-            title: 'KooKid Report',
-          });
-        } catch (shareError) {
-          console.log("Share cancelled or failed", shareError);
-          // Fallback if share fails but was initiated
-        }
-      } else {
-        pdf.save(fileName);
-      }
-      
-    } catch (error) {
-      console.error("PDF generation failed", error);
-      alert("เกิดข้อผิดพลาดในการสร้าง PDF กรุณาลองใหม่อีกครั้ง");
-    } finally {
-      setIsGeneratingPdf(false);
+  const handlePrintClick = () => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      setShowMobilePrintDialog(true);
+    } else {
+      window.print();
     }
   };
 
@@ -195,18 +128,10 @@ export default function Report() {
         <div className="flex gap-2 w-full sm:w-auto">
           <button onClick={() => window.close()} className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">ปิดหน้าต่าง</button>
           <button 
-            onClick={handleDownloadPDF} 
-            disabled={isGeneratingPdf}
-            className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow hover:bg-blue-700 disabled:opacity-70 flex items-center justify-center"
+            onClick={handlePrintClick} 
+            className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow hover:bg-blue-700 flex items-center justify-center print-keep"
           >
-            {isGeneratingPdf ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                กำลังสร้าง PDF...
-              </>
-            ) : (
-              "ดาวน์โหลด PDF"
-            )}
+            ดาวน์โหลด / พิมพ์ PDF
           </button>
         </div>
       </div>
@@ -379,8 +304,9 @@ export default function Report() {
             -webkit-print-color-adjust: exact !important; 
             print-color-adjust: exact !important; 
             background: white !important; 
-            margin: 0; 
-            padding: 0; 
+            margin: 0 !important; 
+            padding: 0 !important; 
+            width: 210mm !important;
           }
           .no-print { display: none !important; }
           .document-a4 { 
@@ -393,6 +319,34 @@ export default function Report() {
           }
         }
       `}</style>
+
+      {/* Mobile Print Guide Dialog */}
+      <AlertDialog open={showMobilePrintDialog} onOpenChange={setShowMobilePrintDialog}>
+        <AlertDialogContent className="w-[90vw] rounded-xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-left">คำแนะนำในการเซฟ PDF บนมือถือ</AlertDialogTitle>
+            <AlertDialogDescription className="text-left space-y-3 text-slate-600">
+              <p>ระบบมือถือไม่มีปุ่มกดดาวน์โหลดไฟล์ตรงๆ แต่คุณสามารถเซฟได้จาก <b>หน้าจอ Print</b> ดังนี้ครับ:</p>
+              
+              <div className="bg-slate-50 p-3 rounded-lg text-sm space-y-3">
+                <p>🍎 <b>iOS (iPhone/iPad)</b><br />ในหน้าต่าง Print ให้ใช้ 2 นิ้ว <b>"ถ่างขยายรูปตัวอย่างกระดาษ (Pinch-to-zoom)"</b> รูปจะถูกแปลงเป็น PDF ให้กดแชร์และเลือก Save to Files (บันทึกไปยังแอปไฟล์)</p>
+                <p>🤖 <b>Android</b><br />ในหน้าต่าง Print ให้เลือกชื่อเครื่องพิมพ์ด้านบนสุดเป็น <b>"Save as PDF (บันทึกเป็น PDF)"</b></p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2 mt-2">
+            <AlertDialogCancel className="mt-0">ยกเลิก</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                setShowMobilePrintDialog(false);
+                setTimeout(() => window.print(), 300);
+              }}
+            >
+              ตกลง, เปิดหน้าต่างพิมพ์
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

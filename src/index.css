@@ -91,20 +91,36 @@
 
 /* ── Print / PDF styles ─────────────────────────────────────────── */
 @media print {
-  /* Hide navigation, buttons, feedback panel, stepper, toast */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  
+  /* Hide UI elements that shouldn't be printed */
   nav, header, footer,
   [data-no-print],
   .fixed,
   button:not(.print-keep) {
     display: none !important;
   }
+  
+  /* Force a desktop-like width for the body so mobile browsers don't collapse columns */
   body {
+    -webkit-print-color-adjust: exact !important; 
+    print-color-adjust: exact !important;
     background: white !important;
     color: #111 !important;
-    font-size: 11pt;
-  }
-  .max-w-3xl {
-    max-width: 100% !important;
+    margin: 0 !important;
     padding: 0 !important;
+    width: 210mm !important; /* Force A4 width explicitly */
+  }
+
+  .document-a4 {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 15mm !important; /* Proper print margins */
+    box-shadow: none !important;
+    border: none !important;
   }
 }
