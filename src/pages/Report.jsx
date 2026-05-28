@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 import { getStoredQuizResult, hasLeadCapture, getStoredLeadProfile } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
@@ -31,16 +21,6 @@ export default function Report() {
   const [result, setResult] = useState(null);
   const [leadUnlocked, setLeadUnlocked] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [showMobilePrintDialog, setShowMobilePrintDialog] = useState(false);
-
-  const handlePrintClick = () => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      setShowMobilePrintDialog(true);
-    } else {
-      window.print();
-    }
-  };
 
   useEffect(() => {
     const sessionRaw = sessionStorage.getItem("tcas_quiz_result");
@@ -128,7 +108,7 @@ export default function Report() {
         <div className="flex gap-2 w-full sm:w-auto">
           <button onClick={() => window.close()} className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">ปิดหน้าต่าง</button>
           <button 
-            onClick={handlePrintClick} 
+            onClick={() => window.print()} 
             className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow hover:bg-blue-700 flex items-center justify-center print-keep"
           >
             ดาวน์โหลด / พิมพ์ PDF
@@ -319,34 +299,6 @@ export default function Report() {
           }
         }
       `}</style>
-
-      {/* Mobile Print Guide Dialog */}
-      <AlertDialog open={showMobilePrintDialog} onOpenChange={setShowMobilePrintDialog}>
-        <AlertDialogContent className="w-[90vw] rounded-xl max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-left">คำแนะนำในการเซฟ PDF บนมือถือ</AlertDialogTitle>
-            <AlertDialogDescription className="text-left space-y-3 text-slate-600">
-              <p>ระบบมือถือไม่มีปุ่มกดดาวน์โหลดไฟล์ตรงๆ แต่คุณสามารถเซฟได้จาก <b>หน้าจอ Print</b> ดังนี้ครับ:</p>
-              
-              <div className="bg-slate-50 p-3 rounded-lg text-sm space-y-3">
-                <p>🍎 <b>iOS (iPhone/iPad)</b><br />ในหน้าต่าง Print ให้ใช้ 2 นิ้ว <b>"ถ่างขยายรูปตัวอย่างกระดาษ (Pinch-to-zoom)"</b> รูปจะถูกแปลงเป็น PDF ให้กดแชร์และเลือก Save to Files (บันทึกไปยังแอปไฟล์)</p>
-                <p>🤖 <b>Android</b><br />ในหน้าต่าง Print ให้เลือกชื่อเครื่องพิมพ์ด้านบนสุดเป็น <b>"Save as PDF (บันทึกเป็น PDF)"</b></p>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2 mt-2">
-            <AlertDialogCancel className="mt-0">ยกเลิก</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => {
-                setShowMobilePrintDialog(false);
-                setTimeout(() => window.print(), 300);
-              }}
-            >
-              ตกลง, เปิดหน้าต่างพิมพ์
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

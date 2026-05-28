@@ -93,7 +93,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 0mm !important;
   }
   
   /* Hide UI elements that shouldn't be printed */
@@ -104,23 +104,29 @@
     display: none !important;
   }
   
-  /* Force a desktop-like width for the body so mobile browsers don't collapse columns */
-  body {
+  /* Force exact A4 dimensions so mobile browsers don't collapse columns or spill to page 2 */
+  html, body {
     -webkit-print-color-adjust: exact !important; 
     print-color-adjust: exact !important;
     background: white !important;
     color: #111 !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 210mm !important; /* Force A4 width explicitly */
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
   }
 
   .document-a4 {
     width: 210mm !important;
     max-width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
     margin: 0 !important;
-    padding: 15mm !important; /* Proper print margins */
+    padding: 10mm !important; 
     box-shadow: none !important;
     border: none !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
   }
 }
