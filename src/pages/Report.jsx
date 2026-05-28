@@ -112,12 +112,12 @@ export default function Report() {
       <div className="document-a4 bg-white relative">
         
         {/* HEADER */}
-        <div className="flex justify-between items-end pb-4 mb-4 border-b-[2px] border-blue-800">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end pb-4 mb-4 border-b-[2px] border-blue-800 gap-4 sm:gap-0">
           <div>
             <h1 className="text-[19px] font-bold text-blue-900 leading-tight mb-2">ผลการวิเคราะห์บุคลิกภาพและแนวทางการเรียนในอนาคต</h1>
             <p className="text-[11.5px] text-slate-500 font-medium">ผู้จัดทำ {appName} · อ้างอิงรายชื่อคณะและสาขาจากระบบ TCAS · วันที่ {reportDate}</p>
           </div>
-          <div className="text-right shrink-0">
+          <div className="text-left sm:text-right shrink-0">
             {userName ? (
               <>
                 <p className="text-[13px] font-bold text-blue-800 mb-0.5">คุณ {userName}</p>
@@ -128,7 +128,7 @@ export default function Report() {
         </div>
 
         {/* SECTION 1: บุคลิกภาพหลัก */}
-        <div className="mb-4 border-b border-slate-100 pb-4 flex gap-6">
+        <div className="mb-4 border-b border-slate-100 pb-4 flex flex-col sm:flex-row gap-6">
           <div className="flex-1">
             <h2 className="text-[14.5px] font-bold text-blue-800 mb-2.5 flex items-center gap-2">
               <span className="w-1.5 h-3.5 bg-blue-600 rounded-full"></span>
@@ -144,7 +144,7 @@ export default function Report() {
               ))}
             </ul>
           </div>
-          <div className="w-[30%] shrink-0 border-l-[2px] border-slate-100 pl-6 py-1 flex flex-col justify-center">
+          <div className="w-full sm:w-[30%] shrink-0 sm:border-l-[2px] border-slate-100 sm:pl-6 py-1 flex flex-col justify-center">
             <p className="text-[10px] text-slate-500 mb-1.5 uppercase tracking-wider font-bold">Holland Code</p>
             <p className="text-[36px] font-black text-blue-900 mb-0.5 tracking-[0.1em] leading-none">{hollandCode3}</p>
             <p className="text-[13.5px] font-bold text-blue-600 mb-2.5">{getArchetypeLabel(hollandCode3)}</p>
@@ -161,7 +161,7 @@ export default function Report() {
             <span className="w-1.5 h-3.5 bg-blue-600 rounded-full"></span>
             ผลคะแนนความถนัด RIASEC
           </h2>
-          <div className="grid grid-cols-2 gap-x-12 gap-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-3">
             {sortedTraits.map(t => {
               const meta = RIASEC_META[t.dimension];
               const score = Math.round(t.normalizedScore || 0);
@@ -186,7 +186,7 @@ export default function Report() {
             <span className="w-1.5 h-3.5 bg-blue-600 rounded-full"></span>
             กลุ่มอาชีพที่เหมาะสมกับคุณ (Top 3)
           </h2>
-          <div className="grid grid-cols-3 gap-5 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-4">
             {topClusters.map((career, idx) => (
               <div key={idx} className="border border-slate-200 rounded-lg p-3.5 relative flex flex-col justify-between">
                 <div className="absolute -top-2.5 -left-2.5 w-6 h-6 bg-slate-800 text-white rounded-full flex items-center justify-center text-[11.5px] font-bold shadow-sm">
@@ -210,7 +210,7 @@ export default function Report() {
           {displayMajors.length > 0 && (
             <div className="pl-1 mt-4">
               <h3 className="text-[13px] font-bold text-slate-800 mb-2.5">ตัวอย่างคณะ/สาขาเป้าหมายที่เกี่ยวข้อง</h3>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                 {displayMajors.map(m => (
                   <div key={m.id} className="text-[11.5px] text-slate-600 flex items-start gap-1.5">
                     <span className="text-slate-400 font-bold mt-[0px]">-</span>
@@ -242,7 +242,7 @@ export default function Report() {
         </div>
 
         {/* FOOTER */}
-        <div className="absolute bottom-[15mm] left-[15mm] right-[15mm] border-t-2 border-slate-100 pt-3 flex justify-center text-[10px] text-slate-500">
+        <div className="absolute bottom-[20px] sm:bottom-[15mm] left-[20px] sm:left-[15mm] right-[20px] sm:right-[15mm] border-t-2 border-slate-100 pt-3 flex justify-center text-center text-[10px] text-slate-500">
           <span>© {new Date().getFullYear()} {appName} · เอกสารนี้เป็นเพียงแนวทางเบื้องต้น ผู้ใช้งานต้องตรวจสอบระเบียบการรับสมัครอย่างเป็นทางการของมหาวิทยาลัยอีกครั้งก่อนตัดสินใจ</span>
         </div>
 
@@ -251,11 +251,20 @@ export default function Report() {
       {/* STYLES */}
       <style>{`
         .document-a4 {
-          width: 210mm;
+          width: 100%;
+          max-width: 210mm;
           min-height: 297mm;
-          padding: 15mm; 
+          padding: 20px; 
+          padding-bottom: 80px;
           box-sizing: border-box;
           box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          margin: 0 auto;
+        }
+
+        @media (min-width: 640px) {
+          .document-a4 {
+            padding: 15mm; 
+          }
         }
 
         @media print {
@@ -269,6 +278,8 @@ export default function Report() {
           }
           .no-print { display: none !important; }
           .document-a4 { 
+            width: 210mm !important;
+            max-width: 210mm !important;
             box-shadow: none !important; 
             margin: 0 !important; 
             border: none !important;
