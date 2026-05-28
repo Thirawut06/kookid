@@ -121,6 +121,7 @@
     width: 210mm !important;
     max-width: 210mm !important;
     height: 275mm !important;
+    min-height: 275mm !important; /* Overrides inline min-height: 297mm */
     max-height: 275mm !important;
     margin: 0 !important;
     padding: 10mm !important; 
