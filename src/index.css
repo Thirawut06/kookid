@@ -98,6 +98,7 @@
   
   /* Hide UI elements that shouldn't be printed */
   nav, header, footer,
+  .no-print,
   [data-no-print],
   .fixed,
   button:not(.print-keep) {
