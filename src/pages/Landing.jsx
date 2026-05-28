@@ -87,26 +87,9 @@ export default function Landing() {
               หา <span className="text-primary">"อาชีพที่ใช่"</span> ก่อนลงสนาม TCAS
             </h1>
             
-            <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              สแกนความถนัดด้วยทฤษฎีสากล (RIASEC) พร้อมจับคู่คณะและมหาวิทยาลัย
-              ที่ "รอด" สำหรับคุณ ภายใน 3 นาที โดยไม่ต้องงมระเบียบการเอง
+            <p className="mt-8 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              ค้นหาจุดแข็งและจับคู่คณะที่ 'รอด' สำหรับคุณโดยอัตโนมัติ เลิกงมระเบียบการและข้อมูลขยะให้ปวดหัว
             </p>
-
-            {/* Trust Badges */}
-            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 mt-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span>ประเมินด้วยทฤษฎีสากล (RIASEC)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span>อิงฐานข้อมูลเงินเดือนตลาดแรงงาน</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span>อัปเดตเกณฑ์รับสมัคร TCAS ล่าสุด</span>
-              </div>
-            </div>
 
             <div className="mt-10">
               <Button size="lg" className="text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all" onClick={handlePreQuizStart}>
@@ -119,6 +102,19 @@ export default function Landing() {
                 <span className="flex items-center gap-1.5">📝 30 คำถาม</span>
                 <span className="text-border hidden sm:inline">|</span>
                 <span className="flex items-center gap-1.5">⚡ รู้ผลทันที</span>
+              </div>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 mt-12">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full text-xs text-slate-600 font-medium">
+                <span>✅ มาตรฐานสากล RIASEC</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full text-xs text-slate-600 font-medium">
+                <span>✅ อิง Data ตลาดแรงงาน</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full text-xs text-slate-600 font-medium">
+                <span>✅ อ้างอิงสาขาจาก TCAS</span>
               </div>
             </div>
           </motion.div>
@@ -153,8 +149,8 @@ export default function Landing() {
             &copy; 2026 KooKid. เครื่องมือแนะแนวสำหรับนักเรียน ม.4–ม.6
           </p>
           
-          <p className="text-xs text-muted-foreground/70 leading-relaxed max-w-3xl mx-auto">
-            <span className="font-semibold">Beta Version:</span> แพลตฟอร์มนี้อยู่ในช่วงการพัฒนาและทดสอบ ข้อมูลอาชีพและเกณฑ์รับสมัครอ้างอิงจากฐานข้อมูลสาธารณะและสถิติตลาดแรงงาน ผลลัพธ์ที่ได้จัดทำขึ้นเพื่อเป็น "แนวทางเบื้องต้น" ในการสำรวจตัวเองเท่านั้น ผู้ใช้งานควรตรวจสอบระเบียบการทางการของแต่ละมหาวิทยาลัยประกอบการตัดสินใจเสมอ
+          <p className="text-xs text-muted-foreground/70 leading-relaxed max-w-4xl mx-auto text-balance">
+            <span className="font-semibold">Beta Version:</span> แพลตฟอร์มนี้อยู่ในช่วงการพัฒนาและทดสอบ ข้อมูลอาชีพ เงินเดือน และหลักสูตร ถูกรวบรวมและประมวลผลจากฐานข้อมูลสาธารณะ (สถิติตลาดแรงงานและระเบียบการ TCAS) โดยระบบอัลกอริทึมของ KooKid ข้อมูลและรายงานทั้งหมดจัดทำขึ้นเพื่อเป็น "แนวทางเบื้องต้น" ในการสำรวจตัวเองและการตั้งเป้าหมายเท่านั้น ระบบอาจไม่ครอบคลุมเงื่อนไขพิเศษของบางสถาบัน ผู้ใช้งานต้องตรวจสอบระเบียบการทางการของเว็บไซต์มหาวิทยาลัยหรือ ทปอ. (mytcas.com) เพื่อประกอบการตัดสินใจขั้นสุดท้ายเสมอ
           </p>
 
           <div className="text-sm text-foreground/70 flex flex-wrap justify-center gap-2 sm:gap-4 items-center pt-2">

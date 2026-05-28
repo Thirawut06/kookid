@@ -62,6 +62,7 @@ export default function Results() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [intentToDownloadPdf, setIntentToDownloadPdf] = useState(false);
+  const [highlightUnlock, setHighlightUnlock] = useState(false);
   const hasTrackedResultsViewRef = useRef(false);
 
   useEffect(() => {
@@ -125,7 +126,11 @@ export default function Results() {
 
     if (!userProfileId || !hasCapturedLead) {
       setIntentToDownloadPdf(true);
-      document.getElementById("unlock-section")?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("unlock-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      
+      setHighlightUnlock(false);
+      setTimeout(() => setHighlightUnlock(true), 150);
+      setTimeout(() => setHighlightUnlock(false), 2150);
       return;
     }
     window.open(`/report/${userProfileId}`, "_blank");
@@ -308,7 +313,7 @@ export default function Results() {
         <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
           <div className="flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-primary" />
-            <h2 className="text-2xl font-bold">🌟 อันดับ 1: {topMatch?.nameTh || "-"}</h2>
+            <h2 className="text-2xl font-bold">🌟 {topMatch?.nameTh || "-"}</h2>
           </div>
 
           {topMatch && (
@@ -359,7 +364,7 @@ export default function Results() {
                       className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-4 text-left shadow-sm"
                     >
                       <div className="space-y-2 blur-[2px] opacity-55">
-                        <p className="text-sm font-semibold text-slate-700">อันดับ {index + 2}: {career.nameTh}</p>
+                        <p className="text-sm font-semibold text-slate-700">{career.nameTh}</p>
                         <p className="text-sm text-slate-500">{career.descriptionTh}</p>
                       </div>
                       <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white via-white/95 to-transparent" aria-hidden="true" />
@@ -368,15 +373,25 @@ export default function Results() {
                   ))}
                 </div>
                 <div id="unlock-section" className="w-full flex justify-center pt-2">
-                  <Button
-                    type="button"
-                    size="lg"
-                    onClick={handleUnlockMajors}
-                    disabled={isPaymentLoading}
-                    className="w-full sm:w-auto rounded-full px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)] disabled:opacity-70 disabled:cursor-wait leading-snug whitespace-normal min-h-[56px]"
+                  <motion.div
+                    animate={
+                      highlightUnlock
+                        ? { scale: [1, 1.05, 1, 1.05, 1], y: [0, -10, 0, -10, 0] }
+                        : { scale: 1, y: 0 }
+                    }
+                    transition={{ duration: 1, ease: "easeInOut" }}
+                    className="w-full sm:w-auto"
                   >
-                    {isPaymentLoading ? "⏳ กำลังเชื่อมต่อ Payment Gateway..." : unlockButtonText}
-                  </Button>
+                    <Button
+                      type="button"
+                      size="lg"
+                      onClick={handleUnlockMajors}
+                      disabled={isPaymentLoading}
+                      className="w-full sm:w-auto rounded-full px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_18px_50px_rgba(245,158,11,0.35)] disabled:opacity-70 disabled:cursor-wait leading-snug whitespace-normal min-h-[56px]"
+                    >
+                      {isPaymentLoading ? "⏳ กำลังเชื่อมต่อ Payment Gateway..." : unlockButtonText}
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
             </div>
@@ -393,7 +408,7 @@ export default function Results() {
 
                 return (
                   <div key={careerKey} className="flex flex-col gap-4 pb-8 border-b border-slate-200 last:border-b-0 last:pb-0">
-                    <h3 className="text-xl font-bold text-slate-800 mt-8">อันดับ {index + 2}: {career.nameTh}</h3>
+                    <h3 className="text-xl font-bold text-slate-800 mt-8">{career.nameTh}</h3>
                     <CareerCard
                       career={career}
                       rank={index + 1}
@@ -411,7 +426,7 @@ export default function Results() {
                         onClick={() => toggleCareerMajors(careerKey)}
                         aria-expanded={isMajorsOpen}
                       >
-                        <span>{isMajorsOpen ? "🔽" : "▶️"} ดูสาขาวิชาและมหาวิทยาลัยที่รองรับ ของอันดับนี้</span>
+                        <span>{isMajorsOpen ? "🔽" : "▶️"} ดูสาขาวิชาและมหาวิทยาลัยที่เกี่ยวข้อง</span>
                         <span className="text-xs font-medium text-muted-foreground">
                           {isMajorsOpen ? "ซ่อน" : "แสดง"}
                         </span>
@@ -470,9 +485,9 @@ export default function Results() {
       <Dialog open={leadDialogOpen} onOpenChange={setLeadDialogOpen}>
         <DialogContentAny className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeaderAny>
-            <DialogTitleAny className="text-xl">🚨 ขออภัย ระบบชำระเงินกำลังปิดปรับปรุง!</DialogTitleAny>
+            <DialogTitleAny className="text-xl">🎁 โปรโมชันพิเศษเฉพาะคุณ!</DialogTitleAny>
             <DialogDescriptionAny>
-              แต่คุณคือผู้โชคดี! เนื่องจากระบบขัดข้อง เราขอมอบสิทธิ์รับ Report ฉบับเต็มให้คุณ ฟรี ทันทีที่ระบบใช้งานได้ กรุณาทิ้งข้อมูลติดต่อไว้ด้านล่าง
+              รับสิทธิ์ปลดล็อกรายงานวิเคราะห์เชิงลึกและอาชีพทั้งหมด ฟรี! เพียงกรอกข้อมูลด้านล่าง
             </DialogDescriptionAny>
           </DialogHeaderAny>
           <LeadCaptureForm

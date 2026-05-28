@@ -1,22 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { getStoredQuizResult, hasLeadCapture } from "@/lib/leadCaptureApi";
+import { getStoredQuizResult, hasLeadCapture, getStoredLeadProfile } from "@/lib/leadCaptureApi";
 import { trackEvent } from "@/lib/analyticsApi";
 import { appName } from "@/lib/app-params";
-
-// --- ACTION PLAN RULES (from original) ---
-const ACTION_RULES = [
-  { check: () => true, text: "เลือก 2–3 สาขาที่สนใจจากลิสต์ด้านบน แล้วเข้าไปอ่านรายละเอียดหลักสูตรในเว็บมหาวิทยาลัย" },
-  { check: (c, t) => c.includes("CLUSTER_IT_ENGINEERING") || t.includes("R") || t.includes("I"), text: "ฝึกทักษะการคิดเป็นระบบและทำโปรเจกต์เล็ก ๆ เช่น Coding เบื้องต้น หรือการทดลองแก้ปัญหาจริง" },
-  { check: (c, t) => c.includes("CLUSTER_BUSINESS") || t.includes("E") || t.includes("C"), text: "ลองศึกษาเรื่องการจัดการ การเงินพื้นฐาน หรือทำ Mini Project ที่สะท้อนความเป็นผู้นำและการจัดระบบ" },
-  { check: (c) => c.includes("CLUSTER_HEALTH"), text: "ลองอาสาสมัครงานด้านสุขภาพ หรือคุยกับพยาบาล/แพทย์ในครอบครัวหรือชุมชน เพื่อเข้าใจงานจริง" },
-  { check: (c) => c.includes("CLUSTER_SCIENCE"), text: "ฝึกทักษะการคิดแบบวิทยาศาสตร์ เช่น ทำ Project ทดลองง่าย ๆ หรืออ่านบทความวิทย์ภาษาไทย" },
-  { check: (c) => c.includes("CLUSTER_MEDIA") || c.includes("CLUSTER_LAW"), text: "ลองฝึกทักษะการพูดและการเขียน เช่น เข้าร่วมชมรมโต้วาที ทำ Content บน Social Media หรืออาสาสมัครในชุมชน" },
-  { check: (c) => c.includes("CLUSTER_EDUCATION"), text: "ลองสอนพิเศษน้อง ๆ หรือเป็นผู้ช่วยสอนในโรงเรียน เพื่อทดสอบว่าชอบงานสอนจริงหรือเปล่า" },
-  { check: (c) => c.includes("CLUSTER_HOSPITALITY"), text: "ลองฝึกงานในโรงแรม ร้านอาหาร หรือฟาร์ม/สวนเกษตรช่วงปิดเทอม เพื่อสัมผัสบรรยากาศงานจริง" },
-  { check: () => true, text: "เข้าไปอ่านข้อมูลรับสมัครล่าสุดที่ mytcas.com และปรึกษาครูแนะแนวหรือผู้ปกครองก่อนตัดสินใจ" },
-];
+import reportContent from "@/data/reportContent.json";
 
 const RIASEC_META = {
   R: { en: "Realistic", color: "#EF4444" },
@@ -65,28 +53,48 @@ export default function Report() {
   // ── Extract Data ──
   const typedResult = /** @type {any} */ (result);
   const { profile, clusters, careers, majors, summary } = typedResult;
+  const leadProfile = profileId ? getStoredLeadProfile(profileId) : null;
+  const userName = leadProfile?.nickname;
+  const userSchool = leadProfile?.gradeAndSchool;
   
   const topClusters = (clusters ?? careers ?? []).slice(0, 3);
   const clusterIds = topClusters.map(c => c.clusterId);
-  const topDims = profile?.traitScores ? profile.traitScores.slice(0, 3).map(t => t.dimension) : [];
   
-  // Sort traits by score
+  // Sort traits by score from actual data
   const sortedTraits = [...(profile?.traitScores || [])]
     .filter(t => ["R","I","A","S","E","C"].includes(t.dimension))
     .sort((a, b) => (b.normalizedScore || 0) - (a.normalizedScore || 0));
 
+  const topDims = sortedTraits.slice(0, 3).map(t => t.dimension);
+  const hollandCode3 = typedResult.hollandCode || profile?.hollandCode || topDims.join("");
+  
   // Top Trait details
   const leadingTrait = sortedTraits[0] || { dimension: "I", label: "Investigative (นักวิเคราะห์)" };
   const leadingFull = leadingTrait.label || `${leadingTrait.dimension} - ${RIASEC_META[leadingTrait.dimension]?.en}`;
 
-  // Action rules
-  const seen = new Set();
-  const actionBullets = ACTION_RULES.filter(rule => {
-    if (!rule.check(clusterIds, topDims)) return false;
-    if (seen.has(rule.text)) return false;
-    seen.add(rule.text);
-    return true;
-  }).slice(0, 4).map(r => r.text);
+  // Balanced Majors for Top 3
+  const displayMajors = [];
+  if (majors && topClusters.length > 0) {
+    topClusters.forEach(cluster => {
+      const clusterMajors = majors.filter(m => m.clusterId === cluster.clusterId);
+      displayMajors.push(...clusterMajors.slice(0, 2));
+    });
+    if (displayMajors.length < 6) {
+      const existingIds = new Set(displayMajors.map(m => m.id));
+      const extra = majors.filter(m => clusterIds.includes(m.clusterId) && !existingIds.has(m.id));
+      displayMajors.push(...extra.slice(0, 6 - displayMajors.length));
+    }
+  }
+
+  // Action rules (from PAINPOINT_ADVICE)
+  const topCareerName = topClusters[0]?.nameTh || "สาขาที่คุณสนใจ";
+  const actionBullets = [];
+  if (reportContent.PAINPOINT_ADVICE) {
+    const adv = reportContent.PAINPOINT_ADVICE;
+    if (adv.portfolio) actionBullets.push(adv.portfolio.items[0].replace(/{careerName}/g, topCareerName));
+    if (adv.interview) actionBullets.push(adv.interview.items[0].replace(/{careerName}/g, topCareerName));
+    if (adv.finding_info) actionBullets.push(adv.finding_info.items[0].replace(/{careerName}/g, topCareerName));
+  }
 
   // Date
   const reportDate = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -104,47 +112,68 @@ export default function Report() {
       <div className="document-a4 bg-white relative">
         
         {/* HEADER */}
-        <div className="flex justify-between items-end pb-3 mb-5 border-b-[2px] border-blue-800">
+        <div className="flex justify-between items-end pb-4 mb-4 border-b-[2px] border-blue-800">
           <div>
-            <h1 className="text-[18px] font-bold text-blue-900 leading-none mb-2">ผลการวิเคราะห์บุคลิกภาพและแนวทางการเรียนในอนาคต</h1>
-            <p className="text-[10px] text-slate-500">ผู้จัดทำ {appName} · อ้างอิง TCAS67-68 · วันที่ {reportDate}</p>
+            <h1 className="text-[19px] font-bold text-blue-900 leading-tight mb-2">ผลการวิเคราะห์บุคลิกภาพและแนวทางการเรียนในอนาคต</h1>
+            <p className="text-[11.5px] text-slate-500 font-medium">ผู้จัดทำ {appName} · อ้างอิงรายชื่อคณะและสาขาจากระบบ TCAS · วันที่ {reportDate}</p>
           </div>
-          <div className="text-right">
-            <p className="text-[9px] text-slate-500 mb-1">บุคลิกของคุณ</p>
-            <p className="text-[14px] font-bold text-blue-800">{leadingFull}</p>
+          <div className="text-right shrink-0">
+            {userName ? (
+              <>
+                <p className="text-[13px] font-bold text-blue-800 mb-0.5">คุณ {userName}</p>
+                {userSchool && <p className="text-[11px] font-medium text-slate-600">{userSchool}</p>}
+              </>
+            ) : null}
           </div>
         </div>
 
         {/* SECTION 1: บุคลิกภาพหลัก */}
-        <div className="mb-6">
-          <h2 className="text-[13px] font-bold text-blue-800 mb-3">บุคลิกภาพหลัก</h2>
-          <p className="text-[11.5px] text-slate-700 leading-relaxed mb-3">{summary?.summaryText}</p>
-          <ul className="space-y-1.5 pl-1">
-            {summary?.bulletPoints?.map((bp, i) => (
-              <li key={i} className="text-[11px] text-slate-700 flex items-start gap-2">
-                <span className="text-blue-500 font-bold mt-[-1px]">•</span>
-                {bp}
-              </li>
-            ))}
-          </ul>
+        <div className="mb-4 border-b border-slate-100 pb-4 flex gap-6">
+          <div className="flex-1">
+            <h2 className="text-[14.5px] font-bold text-blue-800 mb-2.5 flex items-center gap-2">
+              <span className="w-1.5 h-3.5 bg-blue-600 rounded-full"></span>
+              สรุปบุคลิกภาพหลักของคุณ
+            </h2>
+            <p className="text-[13px] text-slate-700 leading-relaxed mb-3">{summary?.summaryText}</p>
+            <ul className="space-y-2 pl-2">
+              {summary?.bulletPoints?.map((bp, i) => (
+                <li key={i} className="text-[12.5px] text-slate-700 flex items-start gap-2">
+                  <span className="text-blue-500 font-bold mt-[1px]">•</span>
+                  {bp}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="w-[30%] shrink-0 border-l-[2px] border-slate-100 pl-6 py-1 flex flex-col justify-center">
+            <p className="text-[10px] text-slate-500 mb-1.5 uppercase tracking-wider font-bold">Holland Code</p>
+            <p className="text-[36px] font-black text-blue-900 mb-0.5 tracking-[0.1em] leading-none">{hollandCode3}</p>
+            <p className="text-[13.5px] font-bold text-blue-600 mb-2.5">{getArchetypeLabel(hollandCode3)}</p>
+            <div className="pt-2 border-t border-slate-100">
+              <p className="text-[10.5px] text-slate-500 mb-0.5 font-medium">บุคลิกภาพหลักที่โดดเด่นที่สุด</p>
+              <p className="text-[12px] font-bold text-slate-800">{leadingFull}</p>
+            </div>
+          </div>
         </div>
 
         {/* SECTION 2: คะแนน RIASEC */}
-        <div className="mb-6">
-          <h2 className="text-[13px] font-bold text-blue-800 mb-4">คะแนน RIASEC</h2>
-          <div className="w-[60%]">
+        <div className="mb-4 border-b border-slate-100 pb-4">
+          <h2 className="text-[14.5px] font-bold text-blue-800 mb-3 flex items-center gap-2">
+            <span className="w-1.5 h-3.5 bg-blue-600 rounded-full"></span>
+            ผลคะแนนความถนัด RIASEC
+          </h2>
+          <div className="grid grid-cols-2 gap-x-12 gap-y-3">
             {sortedTraits.map(t => {
               const meta = RIASEC_META[t.dimension];
               const score = Math.round(t.normalizedScore || 0);
               return (
-                <div key={t.dimension} className="flex items-center gap-3 mb-2.5">
-                  <span className="w-[110px] text-[10.5px] font-semibold text-slate-700 shrink-0">
+                <div key={t.dimension} className="flex items-center gap-3">
+                  <span className="w-[130px] text-[12px] font-semibold text-slate-700 shrink-0">
                     {t.dimension} — {meta?.en}
                   </span>
-                  <div className="flex-1 h-[7px] bg-slate-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-[6px] bg-slate-100 rounded-full overflow-hidden">
                     <div className="h-full rounded-full" style={{ width: `${score}%`, backgroundColor: meta?.color || '#3B82F6' }} />
                   </div>
-                  <span className="w-[20px] text-right text-[10.5px] font-bold text-slate-800">{score}</span>
+                  <span className="w-[24px] text-right text-[12.5px] font-bold text-slate-800">{score}</span>
                 </div>
               );
             })}
@@ -152,29 +181,40 @@ export default function Report() {
         </div>
 
         {/* SECTION 3: อาชีพ */}
-        <div className="mb-6">
-          <h2 className="text-[13px] font-bold text-blue-800 mb-3">กลุ่มอาชีพที่เหมาะสม (Top 3)</h2>
-          <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="mb-4 border-b border-slate-100 pb-4">
+          <h2 className="text-[14.5px] font-bold text-blue-800 mb-3 flex items-center gap-2">
+            <span className="w-1.5 h-3.5 bg-blue-600 rounded-full"></span>
+            กลุ่มอาชีพที่เหมาะสมกับคุณ (Top 3)
+          </h2>
+          <div className="grid grid-cols-3 gap-5 mb-4">
             {topClusters.map((career, idx) => (
-              <div key={idx} className="border border-blue-100 rounded-lg p-3 relative bg-blue-50/30">
-                <div className="absolute -top-2 -left-2 w-5 h-5 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-[10px] font-bold">
+              <div key={idx} className="border border-slate-200 rounded-lg p-3.5 relative flex flex-col justify-between">
+                <div className="absolute -top-2.5 -left-2.5 w-6 h-6 bg-slate-800 text-white rounded-full flex items-center justify-center text-[11.5px] font-bold shadow-sm">
                   {idx + 1}
                 </div>
-                <h3 className="text-[11.5px] font-bold text-blue-900 mb-2 mt-1">{career.nameTh}</h3>
-                <p className="text-[10px] text-slate-600 leading-[1.5] line-clamp-4">{career.descriptionTh || career.description}</p>
+                <div>
+                  <h3 className="text-[13px] font-bold text-slate-900 mb-1.5 mt-0.5 leading-tight break-words">{career.nameTh}</h3>
+                  <div className="text-[10.5px] font-bold text-emerald-700 mb-1.5 flex items-start gap-1">
+                    <span className="mt-[1px]">💰</span> <span className="leading-tight">{reportContent.SALARY_ESTIMATES?.[career.clusterId] || "ตามประสบการณ์"}</span>
+                  </div>
+                  <p className="text-[10.5px] text-slate-600 leading-snug break-words">
+                    <span className="font-semibold text-slate-700">Skills: </span> 
+                    {reportContent.SKILL_SUGGESTIONS?.[career.clusterId]?.hard?.join(", ") || "-"}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Majors for Top 1 */}
-          {topClusters[0] && majors && majors.length > 0 && (
-            <div className="pl-1">
-              <h3 className="text-[11px] font-bold text-slate-800 mb-2">ตัวอย่างคณะ/สาขาเป้าหมาย (สำหรับอันดับ 1)</h3>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                {majors.filter(m => m.clusterId === topClusters[0].clusterId).slice(0, 6).map(m => (
-                  <div key={m.id} className="text-[10px] text-slate-600 flex items-start gap-1.5">
-                    <span className="text-slate-400 mt-[-1px]">-</span>
-                    <span>
+          {/* Balanced Majors */}
+          {displayMajors.length > 0 && (
+            <div className="pl-1 mt-4">
+              <h3 className="text-[13px] font-bold text-slate-800 mb-2.5">ตัวอย่างคณะ/สาขาเป้าหมายที่เกี่ยวข้อง</h3>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                {displayMajors.map(m => (
+                  <div key={m.id} className="text-[11.5px] text-slate-600 flex items-start gap-1.5">
+                    <span className="text-slate-400 font-bold mt-[0px]">-</span>
+                    <span className="leading-snug">
                       <span className="font-semibold text-slate-700">{m.nameTh}</span> 
                       {m.universityNameTh && <span className="text-slate-500">, {m.universityNameTh}</span>}
                     </span>
@@ -186,24 +226,24 @@ export default function Report() {
         </div>
 
         {/* SECTION 4: Action Plan */}
-        <div>
-          <h2 className="text-[13px] font-bold text-blue-800 mb-3">แผนการต่อไป</h2>
-          <div className="space-y-2.5">
+        <div className="mb-2">
+          <h2 className="text-[14.5px] font-bold text-blue-800 mb-2.5 flex items-center gap-2">
+            <span className="w-1.5 h-3.5 bg-blue-600 rounded-full"></span>
+            แผนการเตรียมตัวต่อไป (Action Plan)
+          </h2>
+          <div className="space-y-2 pl-1">
             {actionBullets.map((text, i) => (
-              <div key={i} className="flex items-start gap-2.5">
-                <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center text-[9px] font-bold shrink-0 mt-[1px]">
-                  {i + 1}
-                </span>
-                <span className="text-[11px] text-slate-700 leading-snug">{text}</span>
+              <div key={i} className="flex items-start gap-2">
+                <span className="text-blue-600 font-bold mt-[1px]">{i + 1}.</span>
+                <span className="text-[12px] text-slate-700 leading-relaxed">{text}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* FOOTER */}
-        <div className="absolute bottom-[20px] left-[30px] right-[30px] border-t border-slate-200 pt-2 text-[8px] text-slate-400 flex justify-between">
-          <span>ผู้จัดทำ {appName} · เอกสารนี้เป็นเพียงแนวทางเบื้องต้น ควรปรึกษาผู้เชี่ยวชาญก่อนตัดสินใจ</span>
-          <span>หน้า 1/1</span>
+        <div className="absolute bottom-[15mm] left-[15mm] right-[15mm] border-t-2 border-slate-100 pt-3 flex justify-center text-[10px] text-slate-500">
+          <span>© {new Date().getFullYear()} {appName} · เอกสารนี้เป็นเพียงแนวทางเบื้องต้น ผู้ใช้งานต้องตรวจสอบระเบียบการรับสมัครอย่างเป็นทางการของมหาวิทยาลัยอีกครั้งก่อนตัดสินใจ</span>
         </div>
 
       </div>
@@ -213,18 +253,42 @@ export default function Report() {
         .document-a4 {
           width: 210mm;
           min-height: 297mm;
-          padding: 30mm 20mm; /* A4 standard margins */
+          padding: 15mm; 
           box-sizing: border-box;
           box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         @media print {
           @page { size: A4 portrait; margin: 0; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white; margin: 0; padding: 0; }
+          body { 
+            -webkit-print-color-adjust: exact !important; 
+            print-color-adjust: exact !important; 
+            background: white !important; 
+            margin: 0; 
+            padding: 0; 
+          }
           .no-print { display: none !important; }
-          .document-a4 { box-shadow: none; padding: 15mm 20mm; min-height: auto; }
+          .document-a4 { 
+            box-shadow: none !important; 
+            margin: 0 !important; 
+            border: none !important;
+            padding: 15mm !important;
+          }
         }
       `}</style>
     </div>
   );
+}
+
+function getArchetypeLabel(hollandCode) {
+  const leading = String(hollandCode || "").charAt(0).toUpperCase();
+  const archetypes = {
+    E: "The Leader",
+    I: "The Thinker",
+    A: "The Creator",
+    S: "The Helper",
+    R: "The Builder",
+    C: "The Organizer",
+  };
+  return archetypes[leading] || "The Explorer";
 }
