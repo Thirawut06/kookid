@@ -32,13 +32,28 @@ export default function Report() {
       const element = document.getElementById("report-pdf-content");
       if (!element) return;
       
+      // Ensure fonts are loaded before capturing
+      if (document.fonts) {
+        await document.fonts.ready;
+      }
+      
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         windowWidth: 1024,
+        onclone: (documentClone) => {
+          const clonedElement = documentClone.getElementById("report-pdf-content");
+          if (clonedElement) {
+            // Force exact A4 width and align left to prevent right-side cropping
+            clonedElement.style.width = "794px";
+            clonedElement.style.maxWidth = "794px";
+            clonedElement.style.margin = "0"; // Override 'margin: 0 auto'
+            clonedElement.style.boxShadow = "none";
+          }
+        }
       });
       
-      const imgData = canvas.toDataURL("image/png");
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
@@ -48,12 +63,29 @@ export default function Report() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("KooKid-Report.pdf");
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+      
+      const pdfBlob = pdf.output("blob");
+      const fileName = `KooKid-Report.pdf`;
+
+      // Use Web Share API on mobile to open the Share Sheet (Save to Files / Line)
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: 'application/pdf' })] })) {
+        try {
+          await navigator.share({
+            files: [new File([pdfBlob], fileName, { type: 'application/pdf' })],
+            title: 'KooKid Report',
+          });
+        } catch (shareError) {
+          console.log("Share cancelled or failed", shareError);
+          // Fallback if share fails but was initiated
+        }
+      } else {
+        pdf.save(fileName);
+      }
       
     } catch (error) {
       console.error("PDF generation failed", error);
-      alert("เกิดข้อผิดพลาดในการสร้าง PDF");
+      alert("เกิดข้อผิดพลาดในการสร้าง PDF กรุณาลองใหม่อีกครั้ง");
     } finally {
       setIsGeneratingPdf(false);
     }
