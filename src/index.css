@@ -113,15 +113,15 @@
     margin: 0 !important;
     padding: 0 !important;
     width: 210mm !important;
-    height: 297mm !important;
+    height: 275mm !important; /* Shorter than 297mm to leave room for iOS forced headers */
     overflow: hidden !important;
   }
 
   .document-a4 {
     width: 210mm !important;
     max-width: 210mm !important;
-    height: 297mm !important;
-    max-height: 297mm !important;
+    height: 275mm !important;
+    max-height: 275mm !important;
     margin: 0 !important;
     padding: 10mm !important; 
     box-shadow: none !important;
