@@ -24,7 +24,6 @@ import { motion } from "framer-motion";
  *   majors: MajorItem[],
  *   topCareers: any[],
  *   hasCapturedLead?: boolean,
- *   hideFeedback?: boolean,
  *   onUnlockLead?: () => void,
  * }} props
  */
@@ -33,7 +32,6 @@ export default function MajorList({
   majors,
   topCareers,
   hasCapturedLead = false,
-  hideFeedback = false,
   onUnlockLead,
 }) {
   /** @type {Record<string, MajorGroup>} */
@@ -49,7 +47,6 @@ export default function MajorList({
 
   const groups = Object.values(clusterMap).slice(0, 3);
   const visibleSlots = hasCapturedLead ? Infinity : 2;
-  let renderedCount = 0;
 
   return (
     <div className="space-y-5">

@@ -334,7 +334,6 @@ export default function Results() {
                   majors={majors}
                   topCareers={[topMatch]}
                   hasCapturedLead={true}
-                  hideFeedback={true}
                 />
               </div>
             </div>
@@ -439,7 +438,6 @@ export default function Results() {
                             majors={majors}
                             topCareers={[career]}
                             hasCapturedLead={true}
-                            hideFeedback={true}
                           />
                         </div>
                       )}

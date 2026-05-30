@@ -176,7 +176,7 @@ export default function Quiz() {
 
         <div className="mt-8 space-y-4">
           <AnimatePresence>
-            {visibleQuestions.map((question, visibleIndex) => {
+            {visibleQuestions.map((question, _visibleIndex) => {
               const globalIndex = allQuestions.findIndex(allQuestion => allQuestion.id === question.id);
               const questionIndex = globalIndex; // use global index so numbering is sequential across pages
               const answer = answers[question.id];

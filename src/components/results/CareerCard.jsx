@@ -8,7 +8,9 @@ export default function CareerCard({
   rank,
   feedbackValue,
   onFeedback,
+  // eslint-disable-next-line no-unused-vars
   onCareerViewed, // รับค่าไว้ไม่ให้ React แจ้งเตือน
+  // eslint-disable-next-line no-unused-vars
   showMatchScore = true, // รับค่าไว้ไม่ให้ React แจ้งเตือน
   showFeedback = true,
 }) {
