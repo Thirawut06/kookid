@@ -111,26 +111,7 @@ export default function AdminDashboard() {
       .sort((a, b) => b.count - a.count);
   }, [quizResults, clusterById]);
 
-  const topCareers = useMemo(() => {
-    const map = new Map();
 
-    eventRows
-      .filter(row => row.event_name === "career_viewed")
-      .forEach(row => {
-        const payload = row.payload || {};
-        // Keep this payload contract flexible for future careers.json-based IDs.
-        const careerId = payload.careerId || payload.career_id || payload.clusterId || payload.cluster_id || "unknown";
-        const careerName = payload.careerName || payload.career_name || payload.clusterName || payload.cluster_name || clusterById[payload.clusterId]?.nameTh || "ไม่ระบุอาชีพ";
-        const key = `${careerId}::${careerName}`;
-        const current = map.get(key) || { careerName, count: 0 };
-        current.count += 1;
-        map.set(key, current);
-      });
-
-    return Array.from(map.values())
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
-  }, [eventRows, clusterById]);
 
   // ── Conversion Intent Metrics ──────────────────────────────────────
   const premiumClickerIds = useMemo(() => {
@@ -416,32 +397,7 @@ export default function AdminDashboard() {
           </div>
         </Card>
 
-        <Card className="p-4 sm:p-5 border border-border/60">
-          <h2 className="text-base font-semibold text-foreground mb-3">อาชีพที่ได้รับความสนใจมากที่สุด</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[420px] text-sm">
-              <thead>
-                <tr className="text-left border-b border-border">
-                  <th className="py-2 pr-2">Career name</th>
-                  <th className="py-2 pr-2">Count</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topCareers.map((row, idx) => (
-                  <tr key={`${row.careerName}_${idx}`} className="border-b border-border/50">
-                    <td className="py-2 pr-2">{row.careerName}</td>
-                    <td className="py-2 pr-2 font-semibold">{row.count}</td>
-                  </tr>
-                ))}
-                {topCareers.length === 0 && (
-                  <tr>
-                    <td className="py-3 text-muted-foreground" colSpan={2}>ยังไม่มี event career_viewed ตามตัวกรองที่เลือก</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+
 
 
 
