@@ -13,7 +13,7 @@ const BINARY_OPTIONS = [
 export default function MajorFeedbackButton({ majorId, value, onChange }) {
   return (
     <div className="flex items-center gap-2 mt-2">
-      <span className="text-[10px] text-muted-foreground">สาขานี้น่าสนใจไหม?</span>
+      <span className="text-[10px] text-muted-foreground">คณะที่แนะนำนี้ น่าสนใจไหมเอ่ย?</span>
       {BINARY_OPTIONS.map(opt => (
         <button
           key={opt.value}

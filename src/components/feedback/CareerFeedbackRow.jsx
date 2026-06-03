@@ -15,7 +15,7 @@ const INTEREST_OPTIONS = [
 export default function CareerFeedbackRow({ clusterId, value, onChange }) {
   return (
     <div className="mt-3 pt-3 border-t border-border/30" onClick={e => e.stopPropagation()}>
-      <p className="text-xs text-muted-foreground mb-2">คุณสนใจสายอาชีพนี้แค่ไหน?</p>
+      <p className="text-xs text-muted-foreground mb-2">น้องๆ สนใจสายอาชีพนี้ไหม? (ช่วยพี่ๆ กดหน่อยน้า)</p>
       <div className="flex gap-2 flex-wrap">
         {INTEREST_OPTIONS.map(opt => (
           <button

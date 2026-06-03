@@ -41,23 +41,33 @@ export default function OverallFeedbackPanel({ onSubmit, isSubmitting, submitted
 
   if (submitted) {
     return (
-      <Card className="p-5 sm:p-6 border-2 border-primary/20 text-center">
-        <p className="text-2xl mb-2">🎉</p>
-        <p className="font-semibold text-foreground">ขอบคุณสำหรับ Feedback!</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          สิ่งที่คุณให้มาจะช่วยให้ระบบดีขึ้นสำหรับรุ่นน้องต่อไป
+      <Card className="p-5 sm:p-6 border-2 border-primary/20 text-center bg-gradient-to-br from-primary/5 to-card">
+        <p className="text-3xl mb-3">💖</p>
+        <p className="font-semibold text-foreground text-lg">ขอบคุณที่ช่วยเป็น Beta Tester ให้พี่ๆ น้า!</p>
+        <p className="text-sm text-muted-foreground mt-1.5">
+          Feedback ของน้องมีค่ามาก พี่ๆ จะรีบเอาไปปรับปรุงเว็บให้เป๊ะขึ้นไปอีก
         </p>
       </Card>
     );
   }
 
   return (
-    <Card className="p-5 sm:p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-card">
-      <h2 className="text-lg font-semibold text-foreground mb-1 flex items-center gap-2">
+    <Card className="p-5 sm:p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-card relative overflow-hidden">
+      <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+      
+      <div className="mb-4 bg-white/60 dark:bg-black/20 border border-primary/20 rounded-xl p-3.5">
+        <p className="text-sm font-bold text-primary flex items-center gap-2">
+          <span className="text-lg">🛠️</span> เว็บนี้พี่ๆ เพิ่งทำมาช่วยน้องๆ เลย!
+        </p>
+        <p className="text-xs text-foreground/80 mt-1.5 leading-relaxed">
+          ผลลัพธ์ตรงหรือไม่ตรง กด Feedback บอกกันได้เลยน้า พี่ๆ จะได้เอาไปพัฒนาต่อให้แม่นยำขึ้น ถือซะว่ามาเป็น Beta Tester ให้พวกเรานะ 😊
+        </p>
+      </div>
+
+      <h2 className="text-[15px] sm:text-base font-semibold text-foreground mb-4 flex items-center gap-2">
         <Heart className="w-5 h-5 text-primary" />
-        ผลลัพธ์โดยรวม ตรงกับตัวเองแค่ไหน?
+        แล้วผลลัพธ์ที่ได้ ตรงกับตัวเองแค่ไหนเอ่ย?
       </h2>
-      <p className="text-xs text-muted-foreground mb-4">บอกเราเพื่อปรับปรุงระบบให้ดีขึ้น</p>
 
       {/* 1–5 fit score */}
       <div className="flex gap-2 sm:gap-3 justify-center mb-4">
@@ -91,7 +101,7 @@ export default function OverallFeedbackPanel({ onSubmit, isSubmitting, submitted
             className="overflow-hidden"
           >
             <p className="text-sm font-medium text-foreground mb-2">
-              ถ้ารู้สึกไม่ค่อยตรง คิดว่าส่วนไหนไม่ตรงที่สุด?
+              กระซิบหน่อย คิดว่าส่วนไหนที่ระบบวิเคราะห์พลาดไป? 🤫
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
               {ISSUE_OPTIONS.map(opt => (
