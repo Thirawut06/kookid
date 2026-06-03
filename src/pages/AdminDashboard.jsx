@@ -72,36 +72,6 @@ export default function AdminDashboard() {
     [profiles]
   );
 
-  const filteredRows = useMemo(() => {
-    return interests.map(row => {
-      const major = majorById[row.major_id] || null;
-      const cluster = major ? clusterById[major.clusterId] : null;
-      const profile = profileById[row.user_profile_id] || null;
-      const fallbackGradeAndSchool = splitGradeAndSchool(profile?.grade_and_school);
-      const gradeLevel = profile?.grade_level || profile?.gradeLevel || fallbackGradeAndSchool.gradeLevel || "-";
-      const schoolName = profile?.school_name || profile?.schoolName || fallbackGradeAndSchool.schoolName || "-";
-      const universityId = row.university_id || major?.universityId || "-";
-      const universityName = major?.universityNameTh || universityId;
-
-      return {
-        id: row.id,
-        createdAt: row.created_at,
-        userProfileId: row.user_profile_id,
-        nickname: profile?.nickname || "-",
-        gradeLevel,
-        schoolName,
-        schoolProvince: profile?.school_province || profile?.schoolProvince || "-",
-        contact: profile?.contact || "-",
-        email: profile?.email || "-",
-        majorId: row.major_id,
-        majorName: major?.nameTh || row.major_id,
-        clusterName: cluster?.nameTh || "-",
-        universityId,
-        universityName,
-      };
-    });
-  }, [interests, majorById, clusterById, profileById]);
-
 
 
   const eventSummary = useMemo(() => {
@@ -203,24 +173,7 @@ export default function AdminDashboard() {
     return { premiumClicks, totalPageViews, conversionRate, painPoints };
   }, [eventRows, quizResults, premiumClickerIds]);
 
-  // ── Hot Schools (B2B Sales) ────────────────────────────────────────
-  const hotSchools = useMemo(() => {
-    const map = new Map();
-    profiles.forEach(p => {
-      const parsed = splitGradeAndSchool(p.grade_and_school);
-      const school = parsed.schoolName || p.school_name || p.schoolName;
-      if (!school || school === "-") return;
-      const province = p.school_province || p.schoolProvince || "-";
-      const key = `${school}::${province}`;
-      const current = map.get(key) || { school, province, count: 0, hasPremiumClick: false };
-      current.count += 1;
-      if (premiumClickerIds.has(p.id)) current.hasPremiumClick = true;
-      map.set(key, current);
-    });
-    return Array.from(map.values())
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 20);
-  }, [profiles, premiumClickerIds]);
+
 
   // Attempt to load data from the protected server endpoint. The endpoint
   // validates the token and queries Supabase with a service role key on the server.
@@ -491,47 +444,7 @@ export default function AdminDashboard() {
         </Card>
 
 
-        {/* ── Hot Schools (B2B Sales Target) ────────────────────────── */}
-        <Card className="p-4 sm:p-5 border-2 border-emerald-400/60 bg-emerald-50/30">
-          <h2 className="text-base font-bold text-emerald-700 mb-3 flex items-center gap-2">
-            🏫 Hot Schools — B2B Sales Target
-          </h2>
-          <p className="text-xs text-muted-foreground mb-3">โรงเรียนที่มีนักเรียนใช้งานมากที่สุด สำหรับวางแผนเข้าถึง B2B</p>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[520px] text-sm">
-              <thead>
-                <tr className="text-left border-b border-emerald-200">
-                  <th className="py-2 pr-2">#</th>
-                  <th className="py-2 pr-2">โรงเรียน</th>
-                  <th className="py-2 pr-2">จังหวัด</th>
-                  <th className="py-2 pr-2">จำนวนนักเรียน</th>
-                  <th className="py-2 pr-2">มี Premium Click?</th>
-                </tr>
-              </thead>
-              <tbody>
-                {hotSchools.map((row, idx) => (
-                  <tr key={`${row.school}_${idx}`} className="border-b border-border/50">
-                    <td className="py-2 pr-2 text-muted-foreground">{idx + 1}</td>
-                    <td className="py-2 pr-2 font-medium">{row.school}</td>
-                    <td className="py-2 pr-2">{row.province}</td>
-                    <td className="py-2 pr-2 font-semibold">{row.count}</td>
-                    <td className="py-2 pr-2">
-                      {row.hasPremiumClick
-                        ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">🔥 YES</span>
-                        : <span className="text-muted-foreground text-xs">—</span>
-                      }
-                    </td>
-                  </tr>
-                ))}
-                {hotSchools.length === 0 && (
-                  <tr>
-                    <td className="py-3 text-muted-foreground" colSpan={5}>ยังไม่มีข้อมูลโรงเรียน (จะปรากฏเมื่อนักเรียนกรอก grade_and_school)</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+
 
         <Card className="p-4 sm:p-5 border border-border/60">
           <h2 className="text-base font-semibold text-foreground mb-3">Event Tracking พื้นฐาน</h2>
@@ -553,56 +466,6 @@ export default function AdminDashboard() {
                 {eventSummary.length === 0 && (
                   <tr>
                     <td className="py-3 text-muted-foreground" colSpan={2}>ยังไม่มี event ในระบบ (ตรวจสอบว่าได้รัน schema ล่าสุดหรือยัง)</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-
-        <Card className="p-4 sm:p-5 border border-border/60">
-          <h2 className="text-base font-semibold text-foreground mb-3">รายการความสนใจ (ตามตัวกรองปัจจุบัน)</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[1080px] text-sm">
-              <thead>
-                <tr className="text-left border-b border-border">
-                  <th className="py-2 pr-2">เวลา</th>
-                  <th className="py-2 pr-2">นักเรียน</th>
-                  <th className="py-2 pr-2">ระดับชั้น</th>
-                  <th className="py-2 pr-2">โรงเรียน</th>
-                  <th className="py-2 pr-2">จังหวัด</th>
-                  <th className="py-2 pr-2">เบอร์โทร/LINE</th>
-                  <th className="py-2 pr-2">อีเมล</th>
-                  <th className="py-2 pr-2">กลุ่มอาชีพ</th>
-                  <th className="py-2 pr-2">สาขา</th>
-                  <th className="py-2 pr-2">มหาวิทยาลัย</th>
-                  <th className="py-2 pr-2">Premium Click</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRows.map((row) => (
-                  <tr key={row.id} className={`border-b border-border/50 ${premiumClickerIds.has(row.userProfileId) ? "bg-amber-50/50" : ""}`}>
-                    <td className="py-2 pr-2 whitespace-nowrap">{new Date(row.createdAt).toLocaleString("th-TH")}</td>
-                    <td className="py-2 pr-2">{row.nickname}</td>
-                    <td className="py-2 pr-2">{row.gradeLevel}</td>
-                    <td className="py-2 pr-2">{row.schoolName}</td>
-                    <td className="py-2 pr-2">{row.schoolProvince}</td>
-                    <td className="py-2 pr-2">{row.contact}</td>
-                    <td className="py-2 pr-2">{row.email}</td>
-                    <td className="py-2 pr-2">{row.clusterName}</td>
-                    <td className="py-2 pr-2">{row.majorName}</td>
-                    <td className="py-2 pr-2">{row.universityName}</td>
-                    <td className="py-2 pr-2">
-                      {premiumClickerIds.has(row.userProfileId)
-                        ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">🔥 YES</span>
-                        : <span className="text-xs text-muted-foreground">no</span>
-                      }
-                    </td>
-                  </tr>
-                ))}
-                {filteredRows.length === 0 && (
-                  <tr>
-                    <td className="py-3 text-muted-foreground" colSpan={11}>ไม่พบรายการความสนใจตามตัวกรองที่เลือก</td>
                   </tr>
                 )}
               </tbody>

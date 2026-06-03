@@ -86,16 +86,24 @@ function buildGradeAndSchool(gradeLevel, schoolName) {
 export async function ensureRemoteLeadProfile(userProfileId) {
   if (!userProfileId) return false;
 
-  const profile = getStoredProfile(userProfileId);
-  if (!profile) return false;
+  let profile = getStoredProfile(userProfileId);
+  if (!profile) {
+    // Create an anonymous stub to satisfy the foreign key constraint
+    profile = {
+      nickname: "Anonymous",
+      userType: "unknown",
+      consentAccepted: false,
+      updatedAt: new Date().toISOString(),
+    };
+  }
 
   // Server-only: require server endpoint to accept writes.
   try {
     await postToServer("profile", {
       id: userProfileId,
-      nickname: profile.nickname,
-      grade_and_school: profile.gradeAndSchool,
-      contact: profile.contact,
+      nickname: profile.nickname || null,
+      grade_and_school: profile.gradeAndSchool || null,
+      contact: profile.contact || null,
       email: profile.email || null,
       school_province: profile.schoolProvince || null,
       consent_accepted: Boolean(profile.consentAccepted),

@@ -37,9 +37,26 @@ export default async function handler(req, res) {
       linked_at: payload.linked_at || new Date().toISOString(),
     };
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("quiz_results")
       .upsert([record], { onConflict: "user_profile_id" });
+
+    // Handle foreign key constraint error if profile doesn't exist yet
+    if (error && (error.code === "23503" || String(error.message).includes("foreign key"))) {
+      await supabase.from("user_profiles").insert([{
+        id: payload.user_profile_id,
+        nickname: "Anonymous",
+        consent_accepted: false,
+        updated_at: new Date().toISOString(),
+      }]);
+      
+      const retry = await supabase
+        .from("quiz_results")
+        .upsert([record], { onConflict: "user_profile_id" });
+        
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       console.error("/api/submit/quiz supabase error", error);
