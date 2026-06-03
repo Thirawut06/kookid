@@ -6,6 +6,7 @@ import { ArrowLeft, RotateCcw, Sparkles, BarChart3, Briefcase, GraduationCap, Fi
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/analyticsApi";
+import { useFeatureFlagVariantKey } from 'posthog-js/react';
 
 import RIASECChart from "../components/results/RIASECChart.jsx";
 import CareerCard from "@/components/results/CareerCard";
@@ -49,8 +50,22 @@ function getOrCreateSessionProfileId() {
 
 export default function Results() {
   const navigate = useNavigate();
-  const [result, setResult] = useState(/** @type {QuizResultData | null} */ (null));
   const [leadProfileId, setLeadProfileId] = useState(() => getStoredUserProfileId());
+  const [result, setResult] = useState(/** @type {QuizResultData | null} */ () => {
+    if (typeof window === "undefined") return null;
+    const raw = sessionStorage.getItem("tcas_quiz_result");
+    if (raw) return JSON.parse(raw);
+    
+    const storedProfileId = getStoredUserProfileId();
+    if (storedProfileId) {
+      const parsedResult = getStoredQuizResult(storedProfileId);
+      if (parsedResult) {
+        sessionStorage.setItem("tcas_quiz_result", JSON.stringify(parsedResult));
+        return parsedResult;
+      }
+    }
+    return null;
+  });
   const [sessionProfileId] = useState(() => getOrCreateSessionProfileId());
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
@@ -64,25 +79,14 @@ export default function Results() {
   const [intentToDownloadPdf, setIntentToDownloadPdf] = useState(false);
   const [highlightUnlock, setHighlightUnlock] = useState(false);
   const hasTrackedResultsViewRef = useRef(false);
+  const hasAutoPoppedRef = useRef(false);
+
+  const leadCaptureTimingFlag = useFeatureFlagVariantKey('lead-capture-timing') || 'test_c_button';
+  const feedbackPositionFlag = useFeatureFlagVariantKey('feedback-position') || 'test_a_bottom';
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("tcas_quiz_result");
-    let parsedResult = null;
-
-    if (raw) {
-      parsedResult = JSON.parse(raw);
-    } else if (leadProfileId) {
-      // Fallback: retrieve from localStorage (premium users who already completed the quiz)
-      parsedResult = getStoredQuizResult(leadProfileId);
-      if (parsedResult) {
-        // Re-populate sessionStorage so subsequent renders work
-        sessionStorage.setItem("tcas_quiz_result", JSON.stringify(parsedResult));
-      }
-    }
-
-    if (!parsedResult) { navigate("/"); return; }
-    setResult(parsedResult);
-  }, [navigate, leadProfileId]);
+    if (!result) { navigate("/"); }
+  }, [navigate, result]);
 
   useEffect(() => {
     if (!result || !leadProfileId || !hasLeadCapture(leadProfileId)) return;
@@ -105,6 +109,37 @@ export default function Results() {
     });
     hasTrackedResultsViewRef.current = true;
   }, [leadProfileId]);
+
+  useEffect(() => {
+    const hasLead = Boolean(leadProfileId && hasLeadCapture(leadProfileId));
+    if (isUnlocked || hasLead || hasAutoPoppedRef.current) return;
+    
+    let timer;
+    if (leadCaptureTimingFlag === 'test_a_3s') {
+      timer = setTimeout(() => {
+        setLeadDialogOpen((prev) => {
+          if (!prev && !hasAutoPoppedRef.current) {
+            trackEvent("lead_form_opened", { source: "auto_popup_3s" });
+            hasAutoPoppedRef.current = true;
+            return true;
+          }
+          return prev;
+        });
+      }, 3000);
+    } else if (leadCaptureTimingFlag === 'test_b_15s') {
+      timer = setTimeout(() => {
+        setLeadDialogOpen((prev) => {
+          if (!prev && !hasAutoPoppedRef.current) {
+            trackEvent("lead_form_opened", { source: "auto_popup_15s" });
+            hasAutoPoppedRef.current = true;
+            return true;
+          }
+          return prev;
+        });
+      }, 15000);
+    }
+    return () => clearTimeout(timer);
+  }, [leadCaptureTimingFlag, isUnlocked, leadProfileId]);
 
   if (!result) return null;
 
@@ -145,11 +180,19 @@ export default function Results() {
     setIsPaymentLoading(true);
     setTimeout(() => {
       setIsPaymentLoading(false);
-      setLeadDialogOpen(true);
+      setLeadDialogOpen((prev) => {
+        if (!prev) {
+          trackEvent("lead_form_opened", { source: "paywall_button" });
+          hasAutoPoppedRef.current = true;
+          return true;
+        }
+        return prev;
+      });
     }, 1800);
   };
 
   const handleLeadSubmitSuccess = () => {
+    trackEvent("lead_form_submitted");
     setIsUnlocked(true);
     setLeadDialogOpen(false);
     const newProfileId = getStoredUserProfileId();
@@ -230,10 +273,14 @@ export default function Results() {
 
   /** @param {string} careerId */
   const toggleCareerMajors = (careerId) => {
-    setExpandedCareerMajors((prev) => ({
-      ...prev,
-      [careerId]: !prev[careerId],
-    }));
+    setExpandedCareerMajors((prev) => {
+      const isExpanding = !prev[careerId];
+      trackEvent("career_majors_toggled", { careerId, action: isExpanding ? "expand" : "collapse" });
+      return {
+        ...prev,
+        [careerId]: isExpanding,
+      };
+    });
   };
 
   return (
@@ -308,6 +355,16 @@ export default function Results() {
             </div>
           </div>
         </section>
+
+        {feedbackPositionFlag === 'test_b_middle' && (
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-12 pb-8 border-b border-slate-200">
+            <OverallFeedbackPanel
+              onSubmit={handleFeedbackSubmit}
+              isSubmitting={isSubmitting}
+              submitted={feedbackSubmitted}
+            />
+          </motion.div>
+        )}
 
         {/* Section 2: Top Match Hook */}
         <section className="flex flex-col gap-6 mb-12 pb-8 border-b border-slate-200">
@@ -456,13 +513,15 @@ export default function Results() {
           />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }} className="mb-10">
-          <OverallFeedbackPanel
-            onSubmit={handleFeedbackSubmit}
-            isSubmitting={isSubmitting}
-            submitted={feedbackSubmitted}
-          />
-        </motion.div>
+        {feedbackPositionFlag !== 'test_b_middle' && (
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }} className="mb-10">
+            <OverallFeedbackPanel
+              onSubmit={handleFeedbackSubmit}
+              isSubmitting={isSubmitting}
+              submitted={feedbackSubmitted}
+            />
+          </motion.div>
+        )}
 
         <div className="flex flex-wrap items-center justify-center gap-3 pb-10">
           <Link to="/">
@@ -480,7 +539,10 @@ export default function Results() {
         </div>
       </div>
 
-      <Dialog open={leadDialogOpen} onOpenChange={setLeadDialogOpen}>
+      <Dialog open={leadDialogOpen} onOpenChange={(open) => {
+        if (!open) trackEvent("lead_form_closed");
+        setLeadDialogOpen(open);
+      }}>
         <DialogContentAny className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeaderAny>
             <DialogTitleAny className="text-xl">🎁 โปรโมชันพิเศษเฉพาะคุณ!</DialogTitleAny>
@@ -490,7 +552,10 @@ export default function Results() {
           </DialogHeaderAny>
           <LeadCaptureForm
             onSubmitSuccess={handleLeadSubmitSuccess}
-            onCancel={() => setLeadDialogOpen(false)}
+            onCancel={() => {
+              trackEvent("lead_form_closed");
+              setLeadDialogOpen(false);
+            }}
             submitLabel="ยืนยัน"
             prefill={leadProfile || undefined}
             className="space-y-4"

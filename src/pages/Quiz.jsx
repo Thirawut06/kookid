@@ -40,6 +40,7 @@ export default function Quiz() {
   const [interestPage, setInterestPage] = useState(0);
   const [answers, setAnswers] = useState(/** @type {QuizAnswerMap} */ ({}));
   const [computing, setComputing] = useState(false);
+  const [pageStartTime, setPageStartTime] = useState(() => Date.now());
 
   React.useEffect(() => {
     trackEvent("quiz_started", {
@@ -80,6 +81,15 @@ export default function Quiz() {
   });
 
   const handleNext = () => {
+    const timeSpentMs = Date.now() - pageStartTime;
+    trackEvent("quiz_page_completed", {
+      section_index: sectionIndex,
+      interest_page: interestPage,
+      time_spent_ms: timeSpentMs,
+      question_count: visibleQuestions.length,
+    });
+    setPageStartTime(Date.now());
+
     if (isInterests && interestPage < totalInterestPages - 1) {
       setInterestPage(page => page + 1);
       window.scrollTo(0, 0);
@@ -97,6 +107,7 @@ export default function Quiz() {
   };
 
   const handleBack = () => {
+    setPageStartTime(Date.now()); // reset timer when going back
     if (isInterests && interestPage > 0) {
       setInterestPage(page => page - 1);
       window.scrollTo(0, 0);

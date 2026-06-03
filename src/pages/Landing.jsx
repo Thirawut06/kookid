@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { ArrowRight, Brain, Filter, Users } from "lucide-react";
+import { useFeatureFlagVariantKey } from 'posthog-js/react';
 
 import { createInitialProfile, getStoredLeadProfile, getStoredUserProfileId } from "@/lib/leadCaptureApi";
 
@@ -43,6 +44,11 @@ export default function Landing() {
     userType: storedProfile?.userType || "",
   }));
   const [preQuizError, setPreQuizError] = useState("");
+
+  const landingCtaFlag = useFeatureFlagVariantKey('landing-cta-wording') || 'test_a_speed';
+  const ctaText = landingCtaFlag === 'test_b_emotion' 
+    ? "ค้นหาคณะที่ใช่เลย!" 
+    : "เริ่มทำแบบทดสอบ (3 นาที)";
 
   const handlePreQuizStart = () => {
     setPreQuizModalOpen(true);
@@ -92,7 +98,7 @@ export default function Landing() {
 
             <div className="mt-10">
               <Button size="lg" className="text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all" onClick={handlePreQuizStart}>
-                เริ่มทำควิซ (ฟรี 100%)
+                {ctaText}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-sm font-medium text-muted-foreground">

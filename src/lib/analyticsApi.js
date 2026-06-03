@@ -1,5 +1,6 @@
 import { supabase } from "@/utils/supabase";
 import { ensureRemoteLeadProfile } from "@/lib/leadCaptureApi";
+import posthog from 'posthog-js';
 
 async function postToServer(path, body) {
   try {
@@ -102,6 +103,21 @@ export async function trackEvent(eventName, payload = {}) {
   const localEvents = readLocalEvents();
   localEvents.push(localRecord);
   writeLocalEvents(localEvents);
+
+  // Send to PostHog
+  if (typeof window !== "undefined") {
+    posthog.capture(eventName, {
+      ...payload,
+      $current_url: page,
+      session_id: sessionId,
+      user_profile_id: userProfileId
+    });
+    
+    // If we have a userProfileId, we can also identify them in PostHog
+    if (userProfileId) {
+      posthog.identify(userProfileId);
+    }
+  }
 
   if (!supabase) return;
 

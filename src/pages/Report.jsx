@@ -18,26 +18,30 @@ const RIASEC_META = {
 export default function Report() {
   const navigate = useNavigate();
   const { profileId } = useParams();
-  const [result, setResult] = useState(null);
-  const [leadUnlocked, setLeadUnlocked] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  
+  const [result] = useState(() => {
+    if (typeof window === "undefined") return null;
+    const sessionRaw = sessionStorage.getItem("tcas_quiz_result");
+    if (sessionRaw) return JSON.parse(sessionRaw);
+    if (profileId) return getStoredQuizResult(profileId);
+    return null;
+  });
+
+  const [leadUnlocked] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return Boolean(profileId && hasLeadCapture(profileId));
+  });
 
   useEffect(() => {
-    const sessionRaw = sessionStorage.getItem("tcas_quiz_result");
-    let parsedResult = null;
-    if (sessionRaw) {
-      parsedResult = JSON.parse(sessionRaw);
-    } else if (profileId) {
-      parsedResult = getStoredQuizResult(profileId);
-    }
-    if (!parsedResult) { navigate("/results"); return; }
-    setResult(parsedResult);
-    setLeadUnlocked(Boolean(profileId && hasLeadCapture(profileId)));
-    setIsReady(true);
-    trackEvent("report_viewed", { page: "report", userProfileId: profileId || null, hasLead: Boolean(profileId && hasLeadCapture(profileId)) });
-  }, [navigate, profileId]);
+    if (!result) { navigate("/results"); return; }
+    trackEvent("report_viewed", { 
+      page: "report", 
+      userProfileId: profileId || null, 
+      hasLead: leadUnlocked 
+    });
+  }, [navigate, result, profileId, leadUnlocked]);
 
-  if (!isReady || !result) return null;
+  if (!result) return null;
 
   // ── Lead gate ──
   if (!leadUnlocked) {

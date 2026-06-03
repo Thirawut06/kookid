@@ -2,7 +2,21 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
+import posthog from 'posthog-js'
+import { PostHogProvider } from 'posthog-js/react'
+
+// Use VITE_ variables to initialize PostHog securely using the Project API Key
+posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
+  api_host: import.meta.env.VITE_POSTHOG_HOST,
+  person_profiles: 'identified_only',
+  autocapture: true, 
+  capture_pageview: true,
+})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <App />
+  <React.StrictMode>
+    <PostHogProvider client={posthog}>
+      <App />
+    </PostHogProvider>
+  </React.StrictMode>,
 )
